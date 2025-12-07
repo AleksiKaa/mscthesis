@@ -1046,7 +1046,7 @@ protrusion=false]{microtype}%
 	}}}}}}%
 	\renewcommand*{\LogoFile}{\LogoSchool\LogoMark\LogoLang.pdf}%
 	% Pass on the logo file name to \includegraphics
-	\renewcommand*{\@@ltologo}{\includegraphics[trim=19 16 19 19, clip, height=11mm]{logos/\LogoFile}}% for the cover
+	\renewcommand*{\@@ltologo}{\includegraphics[trim=19 16 19 19, clip, height=11mm]{../logos/\LogoFile}}% for the cover
   %\gdef\AaltoLogoSchool{}% Contains school name. Set to empty to remove it.
 %  \renewcommand*{\@@ltologo}{\AaltoLogoSmall{0.77}{#1}{black}}% for the cover
 %  \renewcommand*{\@@ltoabslogo}{\AaltoLogoSmall{0.77}{#1}{black}}% for the abstract page

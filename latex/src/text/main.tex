@@ -95,7 +95,7 @@
 %%   margin), or
 %% * the third for two-sided printing.
 %%
-\documentclass[english, 12pt, a4paper, elec, utf8, a-2b, online]{aaltothesis}
+\documentclass[english, 12pt, a4paper, sci, utf8, a-2b, online]{../definitions/aaltothesis}
 %\documentclass[english, 12pt, a4paper, elec, utf8, a-2b, print]{aaltothesis}
 %\documentclass[english, 12pt, a4paper, elec, utf8, a-2b, print, twoside]{aaltothesis}
 
@@ -166,18 +166,18 @@ sorting=nyt, % references are in alphabetical order sorted in the order name,
 firstinits=true, % show initial of first name in bibliography
 urldate=long % date is expressed as Month dd, yyyy
 ]{biblatex}
-\addbibresource{thesisreferences.bib}
+\addbibresource{../references/thesisreferences.bib}
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END BIBLATEX STUFF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Edit to conform to your degree programme
 %% Capitalise the words in the name of the degree programme: it's a name
-\degreeprogram{Electronics and Electrical Engineering}
+\degreeprogram{Computer, Communication and Information Sciences}
 %%
 
 %% Your major
 %%
-\major{An appropriate major}
+\major{Computer Science}
 %%
 
 %% Choose one of the three below
@@ -189,7 +189,7 @@ urldate=long % date is expressed as Month dd, yyyy
 
 %% Your name (self explanatory...)
 %%
-\thesisauthor{Eddie Engineer}
+\thesisauthor{Aleksi Elias Kääriäinen}
 %%
 
 %% Your thesis title and possible subtitle comes here and possibly, again,
@@ -205,12 +205,12 @@ urldate=long % date is expressed as Month dd, yyyy
 %%   is part of the metadata in the pdf/a file, and the metadata cannot contain
 %%   linebreaks.
 %%
-\thesistitle{Title of the thesis}
+\thesistitle{Hallucination Detection and Prevention in CS Education in AI-generated content}
 %\thesistitle[Title of the thesis]{Title of\\ the thesis}
 %%
 %% Either remove or leave \thesissubtitle{} empty if you don't use it
 %%
-\thesissubtitle{A possible subtitle}
+%\thesissubtitle{A possible subtitle}%
 %\thesissubtitle[Subtitle of the thesis]{Subtitle of\\ the thesis}
 %\thesissubtitle{}
 
@@ -220,7 +220,7 @@ urldate=long % date is expressed as Month dd, yyyy
 
 %% The date for the bachelor's thesis is the day it is presented
 %%
-\date{30 June 2025}
+\date{\today}
 %%
 
 %% Thesis supervisor
@@ -230,21 +230,20 @@ urldate=long % date is expressed as Month dd, yyyy
 %% slightly longer space follows, but what is desired is a regular interword
 %% space.
 %%
-\supervisor{Prof.\ Pirjo Professori}
+\supervisor{Prof.\ Juho Leinonen}
 %%
 
 %% Advisor(s)---two at the most---of the thesis. Check with your supervisor how
 %% many official advisors you can have.
 %%
-\advisor{Dr Alan Advisor}
-\advisor{Ms Elsa Expert (MSc)}
+\advisor{Ms Evanfiya Logacheva (MSc)}
 %%
 
 %% If you do your thesis work in a company of other institute, give the name of
 %% the company or instution here. Otherwise, leave the macro empty, comment it
 %% out, or remove it. This will remove this field from the abstract page.
 %%
-\collaborativepartner{Company or institute name (if relevant)}
+%\collaborativepartner{Company or institute name (if relevant)}%
 %%
 
 %% Aaltologo: syntax:
@@ -427,70 +426,6 @@ metadata abstract text must be identical to the text on the abstract page.
 %% Force a new page so that the possible Finnish or Swedish abstract does not
 %% begin on the same page
 %%
-\newpage
-%%
-%% Abstract in Finnish. Delete if you don't need it. 
-%%
-%% Respecify those fields that differ from the earlier specification or simply
-%% respecify all fields.
-\thesistitle{Opinnäyteen otsikko}
-\thesissubtitle{Opinnäytteen mahdollinen alaotsikko}
-\supervisor{Prof.\ Pirjo Professori}
-\advisor{TkT Alan Advisor}
-\advisor{DI Elsa Expert}
-\degreeprogram{Elektroniikka ja sähkötekniikka}
-\major{Sopiva pääaine}
-\collaborativepartner{Yhtiön tai laitoksen nimi (tarvittaessa)}
-\date{30.6.2025}
-%% The keywords need not be separated by \spc now.
-\keywords{Vastus, resistanssi, lämpötila}
-%% Abstract text
-\begin{abstractpage}[finnish]
-Tiivistelmä on lyhyt kuvaus työn keskeisestä sisällöstä usein yhtenä kappaleena:
-mitä tutkittiin ja miten sekä mitkä olivat tärkeimmät tulokset.
-
-Suomenkielisen opinnäytteen tiivistelmä kirjoitetaan suomeksi ja englanniksi ja 
-ruotsinkielisen vastaavasti ruotsiksi ja englanniksi. Suomen- tai
-ruotsinkielisten opiskelijoiden, joiden opinnäytteen kieli on englanti, tulee 
-kirjoittaa tiivistelmänsä englanniksi ja koulusivistyskielellään. Muiden kuin
-koulusivistyskieleltään suomen- tai ruotsinkielisten tulee kirjoittaa
-tiivistelmänsä vain englanniksi. Opiskelija voi halutessaan lisätä
-opinnäytteeseensä toisen tai kolmannen tiivistelmän omalla äidinkielellään.
-\end{abstractpage}
-
-%% Force new page so that the Swedish abstract starts from a new page
-\newpage
-
-%% Swedish abstract. Delete it if you don't need it. 
-%% 
-%% Respecify those fields that differ from the earlier specification or simply
-%% respecify all fields.
-\thesistitle{Arbetets titel}
-\supervisor{Prof.\ Pirjo Professori}
-\advisor{TkD Alan Advisor} %
-\advisor{DI Elsa Expert}
-\degreeprogram{Electronik och electroteknik}
-\collaborativepartner{Company or institute name in Swedish (if relevant)}
-%\date{30.6.2025}
-%% Abstract keywords
-\keywords{Nyckelord p\aa{} svenska, temperatur}
-%% Abstract text
-\begin{abstractpage}[swedish]
-Sammandraget är en kort beskrivning av arbetets centrala innehåll: vad 
-undersöktes, hur undersöktes det och vilka var de viktigaste resultaten?
-
-I lärdomsprov som skrivs på svenska skrivs sammandraget på svenska och engelska, 
-på motsvarande sätt skrivs sammandraget på finska och engelska i lärdomsprov på 
-finska. Finsk- eller svenskspråkiga studerande som skriver sitt lärdomsprov på 
-engelska ska skriva sammandraget på engelska och på sitt skolutbildningsspråk. 
-Studerande vars skolutbildningsspråk inte är svenska eller finska skriver 
-sammandraget endast på engelska. Den studerande kan om hen så önskar lägga till 
-ett andra eller tredje sammandrag på sitt eget modersmål. Sammandraget fungerar 
-då ofta som mognadsprov och bör i så fall vara minst 300 ord långt. Information 
-om mognadsprov på svenska finns på MyCourses:\\
-\url{https://mycourses.aalto.fi/course/view.php?id=26872}.
-\end{abstractpage}
-
 
 \dothesispagenumbering{}
 
@@ -498,17 +433,16 @@ om mognadsprov på svenska finns på MyCourses:\\
 %%
 %% This section is optional. Remove it if you do not want a preface.
 \mysection{Preface}
-%\mysection{Esipuhe}
 I want to thank Professor Pirjo Professor and my instructors Dr Alan Advisor and
 Ms Elsa Expert for their guidance.
 
 I also want to thank my partner for keeping me sane and alive.
 
-\vspace{5cm}
-Otaniemi, 30 June 2025\\
+\vspace*{\fill}
+Otaniemi, \today \\
 
 \vspace{5mm}
-{\hfill Eddie E.\ Engineer \hspace{1cm}}
+{\hfill Aleksi E.\ Kääriäinen \hspace{1cm}}
 
 %% Force a new page after the preface
 %%
