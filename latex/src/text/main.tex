@@ -340,8 +340,8 @@ urldate=long % date is expressed as Month dd, yyyy
 %% Thesis keywords:
 %% Note! The keywords are separated using the \spc macro
 %%
-\keywords{For keywords choose\spc concepts that are\spc central to your\spc 
-thesis}
+\keywords{Liiba\spc laaba\spc foo\spc 
+bar}
 %%
 
 %% The abstract text. This text in one paragraph is included in the metadata of
@@ -403,17 +403,7 @@ metadata abstract text must be identical to the text on the abstract page.
 %% well.
 %%
 \begin{abstractpage}[english]
-  The abstract is a short description of the essential contents of the thesis,
-  usually in one paragraph: what was studied and how and what were the main
-  findings.
-
-  For a Finnish thesis, the abstract should be written in both Finnish and
-  English; for a Swedish thesis, in Swedish and English. The abstracts for
-  English theses written by Finnish or Swedish speakers should be written in
-  English and either in Finnish or in Swedish, depending on the student’s
-  language of basic education. Students educated in languages other than Finnish
-  or Swedish write the abstract only in English. Students may include a second
-  or third abstract in their native language, if they wish.
+    \abstracttext{}
 \end{abstractpage}
 
 %% The text in the \thesisabstract macro is stored in the macro \abstractext, so
@@ -433,10 +423,7 @@ metadata abstract text must be identical to the text on the abstract page.
 %%
 %% This section is optional. Remove it if you do not want a preface.
 \mysection{Preface}
-I want to thank Professor Pirjo Professor and my instructors Dr Alan Advisor and
-Ms Elsa Expert for their guidance.
-
-I also want to thank my partner for keeping me sane and alive.
+Liirumlaarum
 
 \vspace*{\fill}
 Otaniemi, \today \\
@@ -460,36 +447,24 @@ Otaniemi, \today \\
 \subsection*{Symbols}
 
 \begin{tabular}{ll}
-$\mathbf{B}$  & magnetic flux density  \\
-$c$              & speed of light in vacuum $\approx 3\times10^8$ [m/s]\\
-$\omega_{\mathrm{D}}$    & Debye frequency \\
-$\omega_{\mathrm{latt}}$ & average phonon frequency of lattice \\
-$\uparrow$       & electron spin direction up\\
-$\downarrow$     & electron spin direction down
+place & holder \\
 \end{tabular}
 
 \subsection*{Operators}
 
 \begin{tabular}{ll}
-$\nabla \times \mathbf{A}$              & curl of vectorin $\mathbf{A}$\\
-$\displaystyle\frac{\mbox{d}}{\mbox{d} t}$ & derivative with respect to 
-variable $t$\\[3mm]
-$\displaystyle\frac{\partial}{\partial t}$  & partial derivative with respect 
-to variable $t$ \\[3mm]
-$\sum_i $                       & sum over index $i$\\
-$\mathbf{A} \cdot \mathbf{B}$    & dot product of vectors $\mathbf{A}$ and 
-$\mathbf{B}$
+place & holder \\
 \end{tabular}
 
 \subsection*{Abbreviations}
 
 \begin{tabular}{ll}
-AC         & alternating current \\
-APLAC      & an object-oriented analog circuit simulator and design tool \\
-           & (originally Analysis Program for Linear Active Circuits) \\
-BCS        & Bardeen-Cooper-Schrieffer \\ %% dash between the names
-DC         & direct current \\
-TEM        & transverse eletromagnetic
+CS      & Computer Science \\
+LM      & Language Model \\
+NLP     & Natural Language Processing \\
+LLM     & Large Language Model \\
+%ML      & Machine Learning \\
+%AI      & Artificial Intelligence \\
 \end{tabular}
 
 
@@ -507,17 +482,16 @@ TEM        & transverse eletromagnetic
 %% 
 \thispagestyle{empty}
 
-This is the template file for writing your bachelor’s, master’s or licentiate 
-thesis. The template contains parts and text to accommodate the different degree 
-levels, bachelor’s and master’s, and so it may contain parts that may not be 
-relevant to your thesis. If so, simply delete those parts in the thesis that you
-do not need. This applies particularly to the abstract pages, the list of
-symbols, the list of abbreviations, and appendices. You may also want to adjust
-the template section titles to better suit your work.
+The subsequent advances in Language Models (LMs) have significantly extended the capabilities of computational Natural Language Processing (NLP) and text generation. Modern LMs are usually transformer-based and pretrained on a Web-scale text corpora. These models are usually called Large Language Models (LLMs). LLMs, such as GPT-4 and Llama 4, have been shown to excel at a number of tasks, including the generation of program code.
 
-See the file thesistemplate.tex or opinnaytepohja.tex for examples and 
-descriptions on the use of various document elements like lists, figureas, 
-tables equations and more. 
+Computer Science (CS) education and programming skills are usually obtained by completing sets of various exercises. These exercises are typically created by hand by the teaching staff. Distributing the same set of exercises to a large group of students may lead to the students sharing the answers, hindering learning, or the lack of relevant context in the exercises might not inspire students to complete them. Personalizing and contextualizing the exercises has been shown to increase student's engagement and improve the learning outcome. However, personalizing each exercise is a laborious task and is unfeasible for most CS teachers.
+
+Since the emergence of LLMs, researchers, particularly in the field of CS education, have been interested in the models' ability to create contextualized text that is nearly indistinguishable from content written by humans. The use of LLMs in the creation of educational materials have a number of advantages compared to creating each exercise by hand: LLMs decrease the amount of time needed to create each exercise, they allow deep personalization of the exercises and can also be used to create the supporting artifacts in the assignments, including starter code, hints, and example solutions. Time-effectiveness and personalization are not the only important factors in creating educational content, however, it is also crucial to ensure that the materials offered to students are of high quality.
+
+Due to the probabilistic nature of LLMs, they tend to hallucinate, meaning that the output does not correspond to the input. Hallucinations decrease the quality of the generated content, and in an educational environment, may make the content completely unusable. 
+
+This thesis investigates possible methods for detecting, preventing, or reducing hallucinations in CS education content generated using LLMs.
+
 
 \subsection{Typical content in the introduction}
 
@@ -544,36 +518,9 @@ subsections.
 \clearpage
 
 \section{Literature review}
-\subsection{Structure of the thesis}
-
-The thesis comprises the front matter, the main matter and possible appendices.
-The front matter in the required order is:
-
-%% An example of an unordered (itemised) list with the default bullet point
-%% label.
-\begin{itemize}
-	\item a cover page,
-	\item a page containing copyright information,
-	\item the abstract page(s),
-	\item an optional preface, and
-	\item a table of contents.
-\end{itemize}
-
-If the thesis contains mathematical equations, give the list of symbols used to 
-represent various quantities along with the mathematical operators used.
-The list must contain all the abbreviations used as well. Note that lists of
-figures and tables are not required.
-
-Note that the chapters and sections within the main matter are 
-numbered, and that they appear in the table of contents. The references, or the 
-bibliography, is also shown in the table of contents, but without a number 
-labelling it.
-
-The appendix or appendices, when necessary, are presented in the last part of
-the thesis. They contain things like questionnaires used in the study, 
-[selected parts of] data, derivations of mathematical results, a more detailed 
-exposition of some aspect in the thesis, or code listings. Number them in the 
-table of contents.
+\subsection{Fundamentals of Large Language Models}
+\subsection{Hallucinations in LLMs}
+\subsection{Hallucination Mitigation Methods}
 
 
 \clearpage
