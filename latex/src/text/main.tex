@@ -166,7 +166,7 @@ sorting=nyt, % references are in alphabetical order sorted in the order name,
 firstinits=true, % show initial of first name in bibliography
 urldate=long % date is expressed as Month dd, yyyy
 ]{biblatex}
-\addbibresource{../references/thesisreferences.bib}
+\addbibresource{../references/refs.bib}
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END BIBLATEX STUFF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -463,6 +463,7 @@ CS      & Computer Science \\
 LM      & Language Model \\
 NLP     & Natural Language Processing \\
 LLM     & Large Language Model \\
+ICL     & In-Context Learning \\
 %ML      & Machine Learning \\
 %AI      & Artificial Intelligence \\
 \end{tabular}
@@ -482,44 +483,34 @@ LLM     & Large Language Model \\
 %% 
 \thispagestyle{empty}
 
-Computer Science (CS) education and programming skills are usually obtained by completing sets of various exercises. These exercises are typically created by hand by the teaching staff. Distributing the same set of exercises to a large group of students may lead to the students sharing the answers, which hinders learning, or the lack of relevant context in the exercises might not inspire students to complete them. Personalizing and contextualizing the exercises has been shown to increase student's engagement and improve the learning outcome. However, personalizing each exercise is a laborious task and is unfeasible for most CS teachers.
+\textbf{TODO: citations in intro! along with text improvements }
 
-The subsequent advances in Language Models (LMs) have significantly extended the capabilities of computational Natural Language Processing (NLP) and text generation. Modern LMs are usually transformer-based and pretrained on a Web-scale text corpora. These models are usually called Large Language Models (LLMs). LLMs, such as GPT-4 and Llama 4, have been shown to excel at a number of text-related tasks, including the generation of program code.
+The subsequent advances in Language Models (LMs) have significantly extended the capabilities of computational Natural Language Processing (NLP) and text generation. Modern LMs are commonly transformer-based and pretrained on a Web-scale text corpora. These models are usually called Large Language Models (LLMs). LLMs, such as GPT-4 and Llama 4, have been shown to excel at a number of text-related tasks, including the generation of program code \cite{Minaee2024-fr}.
+
+Computer Science (CS) education and programming skills are usually obtained by completing sets of various exercises. These exercises are typically created by hand by the teaching staff. Distributing the same set of exercises to a large group of students may lead to the students sharing the answers, which hinders learning, or the lack of relevant context in the exercises might not inspire students to complete them. Personalizing and contextualizing the exercises has been shown to increase student's engagement and improve the learning outcome. However, personalizing each exercise is a laborious task and is unfeasible for most CS teachers.
 
 Since the emergence of LLMs, researchers, particularly in the field of CS education, have been interested in the models' ability to generate contextualized text, including computer program code, that is nearly indistinguishable from content written by humans. The use of LLMs in the creation of educational materials have a number of advantages compared to creating each exercise by hand: LLMs decrease the amount of time needed to create each exercise, they allow deep personalization of the exercises and can also be used to create the supporting artifacts in the assignments, including starter code, hints, and example solutions. Time-effectiveness and personalization are not the only important factors in creating educational content, however, it is also crucial to ensure that the materials offered to students are of high quality.
 
-Due to the probabilistic nature of LLMs, they tend to hallucinate, meaning that the output does not correspond to the input. Hallucinations decrease the quality of the generated content, and in an educational environment, may make the content unusable. Manually checking each output for erroneous content is time-consuming and prone to human-error. For this reason, it would be highly advantageous to mitigate hallucinations produced or to have the ability to detect and correct outputs containing hallucinations. This thesis investigates possible methods for detecting, preventing, or reducing hallucinations in educational CS content generated using LLMs.
+Various aspects of the training data, the training phase, and inference make LLMs prone to hallucinations. A hallucination in the context of LLMs is a model-generated output that is plausible but factually false \cite{10.1145/3703155}. Hallucinations decrease the quality of the generated content, and in an educational environment, may make the content unusable. Manually checking each output for erroneous content is time-consuming and prone to human-error. For this reason, it would be highly advantageous to mitigate hallucinations produced or to have the ability to detect and correct output containing hallucinations. 
 
-\subsection*{Research questions}
+One promising method of preventing hallucinations is in-context learning (ICL). ICL is the practice of introducing incorrect examples for the model as a demonstration and letting the model learn from them \cite{dong-etal-2024-survey}. ICL has shown great promise in reasoning-heavy tasks, such as mathematical reasoning \cite{an2024learningmistakesmakesllm}. Extending ICL to the generation of program code and programming exercises could decrease the amount of human input needed to create programming exercises.
+
+\textbf{TODO: define scope!} This thesis investigates possible methods for detecting, preventing, or reducing hallucinations in educational CS content generated using LLMs. The study provides an empirical comparison of performance between implicit and explicit in-context learning in LLMs used in the generation of CS education content. The main research questions in this thesis are as follows:
 
 \begin{itemize}
-    \item \textbf{RQ1?}:
-    \item \textbf{RQ2?}:
-    \item \textbf{RQ3?}:
+    \item \textbf{RQ1: How effective are state-of-the-art LLMs in generating error-free programming exercises?} This includes researching the effect of the prompt used in the generation, optimizing the prompt structures, and analyzing the faithfulness and factuality of the output.
+    \item \textbf{RQ2: Can LLMs learn from previously produced erroneous content, producing higher quality content?} The objective of this research question is to find out whether in-context learning can be extended to the generation of CS education material and how much does in-context learning improve the output quality.
+    \item \textbf{RQ3: Which method of ICL outperforms the other in generating CS education materials, implicit or explicit?} If the answer to the second research question is yes, the next point of interest is to compare the performance of the two different types of ICL.
 \end{itemize}
 
-\subsection*{Scope and methods}
+These questions determine the course and content of the study. The thesis is structured as follows:
 
-\subsection{Typical content in the introduction}
-
-In principle, the introduction is like the abstract, only broader in scope, and
-more detailed. The introduction generally describes the following:
-
-%% An example of an unordered (itemised) list. Instead on the default bullet
-%% point, an endash (-- in LaTeX code) is used as the item label.
 \begin{itemize}
-	\item[--] a description of the background of the field of study, what
-	similar work others have already done, as well as an overview of the study,
-	\item[--] the goals of the study,
-	\item[--] the primary research question and the sub-problems in the line
-	of inquiry, and
-	\item[--] the scope and constraints of the study along with the main
-	concepts involved.
+    \item \textbf{Background} In this section, existing relevant literature is reviewed and past studies are explained in order to understand the current state of research and bring the readers to a common level of knowledge on the subject. First topic covered is the Fundamentals of Large Language Models, then Hallucinations in LLMs. After that, a brief explanation on Hallucination Mitigation Methods, and LLMs in CS Education, and finally, existing research in Automatic exercise generation is covered.
+    \item \textbf{Research material and methods} \textbf{TODO: content}
+    \item \textbf{Results} \textbf{TODO: content}
+    \item \textbf{Conclusions} \textbf{TODO: content}
 \end{itemize}
-
-Although the introduction is a general description of the study, be concise and 
-avoid writing a lengthy introduction. A concise introduction need not have any 
-subsections.
 
 %% In a thesis, every section/chapter starts a new page, hence the \clearpage
 \clearpage
@@ -527,8 +518,12 @@ subsections.
 \section{Literature review}
 \subsection{Fundamentals of Large Language Models}
 \subsection{Hallucinations in LLMs}
+\begin{itemize}
+    \item tänne taulu hallusinaatiotyypeistä täältä \cite{10.1145/3703155} sivu 7
+\end{itemize}
 \subsection{Hallucination Mitigation Methods}
 \subsection{LLMs in CS Education}
+\subsection{Automatic exercise generation?}
 
 
 \clearpage
@@ -541,6 +536,20 @@ implementation of your study and the methods used. This section determines the
 methodological strengths and weaknesses of your thesis. Any earlier description 
 of the method should limit itself to work done earlier by others. Here you tell 
 your reader what you have done.
+
+\begin{itemize}
+        \item Feedback loop?
+        \begin{itemize}
+            \item Feed demonstration examples to model
+            \item Prompt
+            \item Output
+            \item Decision: Factual output?
+                \begin{itemize}
+                    \item Yes -> Continue
+                    \item No -> Add set [prompt, output, label, (reasoning)] to demonstration examples
+                \end{itemize}
+        \end{itemize}
+\end{itemize}
 
 \clearpage
 
