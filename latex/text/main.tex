@@ -95,7 +95,7 @@
 %%   margin), or
 %% * the third for two-sided printing.
 %%
-\documentclass[english, 12pt, a4paper, elec, utf8, a-2b, online]{aaltothesis}
+\documentclass[english, 12pt, a4paper, sci, utf8, a-2b, online]{../definitions/aaltothesis}
 %\documentclass[english, 12pt, a4paper, elec, utf8, a-2b, print]{aaltothesis}
 %\documentclass[english, 12pt, a4paper, elec, utf8, a-2b, print, twoside]{aaltothesis}
 
@@ -166,18 +166,18 @@ sorting=nyt, % references are in alphabetical order sorted in the order name,
 firstinits=true, % show initial of first name in bibliography
 urldate=long % date is expressed as Month dd, yyyy
 ]{biblatex}
-\addbibresource{thesisreferences.bib}
+\addbibresource{../references/refs.bib}
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END BIBLATEX STUFF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Edit to conform to your degree programme
 %% Capitalise the words in the name of the degree programme: it's a name
-\degreeprogram{Electronics and Electrical Engineering}
+\degreeprogram{Computer, Communication and Information Sciences}
 %%
 
 %% Your major
 %%
-\major{An appropriate major}
+\major{Computer Science}
 %%
 
 %% Choose one of the three below
@@ -189,7 +189,7 @@ urldate=long % date is expressed as Month dd, yyyy
 
 %% Your name (self explanatory...)
 %%
-\thesisauthor{Eddie Engineer}
+\thesisauthor{Aleksi Elias Kääriäinen}
 %%
 
 %% Your thesis title and possible subtitle comes here and possibly, again,
@@ -205,12 +205,12 @@ urldate=long % date is expressed as Month dd, yyyy
 %%   is part of the metadata in the pdf/a file, and the metadata cannot contain
 %%   linebreaks.
 %%
-\thesistitle{Title of the thesis}
+\thesistitle{Hallucination Detection and Prevention in CS Education in AI-generated content}
 %\thesistitle[Title of the thesis]{Title of\\ the thesis}
 %%
 %% Either remove or leave \thesissubtitle{} empty if you don't use it
 %%
-\thesissubtitle{A possible subtitle}
+%\thesissubtitle{A possible subtitle}%
 %\thesissubtitle[Subtitle of the thesis]{Subtitle of\\ the thesis}
 %\thesissubtitle{}
 
@@ -220,7 +220,7 @@ urldate=long % date is expressed as Month dd, yyyy
 
 %% The date for the bachelor's thesis is the day it is presented
 %%
-\date{30 June 2025}
+\date{\today}
 %%
 
 %% Thesis supervisor
@@ -230,21 +230,20 @@ urldate=long % date is expressed as Month dd, yyyy
 %% slightly longer space follows, but what is desired is a regular interword
 %% space.
 %%
-\supervisor{Prof.\ Pirjo Professori}
+\supervisor{Prof.\ Juho Leinonen}
 %%
 
 %% Advisor(s)---two at the most---of the thesis. Check with your supervisor how
 %% many official advisors you can have.
 %%
-\advisor{Dr Alan Advisor}
-\advisor{Ms Elsa Expert (MSc)}
+\advisor{Ms Evanfiya Logacheva (MSc)}
 %%
 
 %% If you do your thesis work in a company of other institute, give the name of
 %% the company or instution here. Otherwise, leave the macro empty, comment it
 %% out, or remove it. This will remove this field from the abstract page.
 %%
-\collaborativepartner{Company or institute name (if relevant)}
+%\collaborativepartner{Company or institute name (if relevant)}%
 %%
 
 %% Aaltologo: syntax:
@@ -341,8 +340,8 @@ urldate=long % date is expressed as Month dd, yyyy
 %% Thesis keywords:
 %% Note! The keywords are separated using the \spc macro
 %%
-\keywords{For keywords choose\spc concepts that are\spc central to your\spc 
-thesis}
+\keywords{Liiba\spc laaba\spc foo\spc 
+bar}
 %%
 
 %% The abstract text. This text in one paragraph is included in the metadata of
@@ -404,17 +403,7 @@ metadata abstract text must be identical to the text on the abstract page.
 %% well.
 %%
 \begin{abstractpage}[english]
-  The abstract is a short description of the essential contents of the thesis,
-  usually in one paragraph: what was studied and how and what were the main
-  findings.
-
-  For a Finnish thesis, the abstract should be written in both Finnish and
-  English; for a Swedish thesis, in Swedish and English. The abstracts for
-  English theses written by Finnish or Swedish speakers should be written in
-  English and either in Finnish or in Swedish, depending on the student’s
-  language of basic education. Students educated in languages other than Finnish
-  or Swedish write the abstract only in English. Students may include a second
-  or third abstract in their native language, if they wish.
+    \abstracttext{}
 \end{abstractpage}
 
 %% The text in the \thesisabstract macro is stored in the macro \abstractext, so
@@ -427,70 +416,6 @@ metadata abstract text must be identical to the text on the abstract page.
 %% Force a new page so that the possible Finnish or Swedish abstract does not
 %% begin on the same page
 %%
-\newpage
-%%
-%% Abstract in Finnish. Delete if you don't need it. 
-%%
-%% Respecify those fields that differ from the earlier specification or simply
-%% respecify all fields.
-\thesistitle{Opinnäyteen otsikko}
-\thesissubtitle{Opinnäytteen mahdollinen alaotsikko}
-\supervisor{Prof.\ Pirjo Professori}
-\advisor{TkT Alan Advisor}
-\advisor{DI Elsa Expert}
-\degreeprogram{Elektroniikka ja sähkötekniikka}
-\major{Sopiva pääaine}
-\collaborativepartner{Yhtiön tai laitoksen nimi (tarvittaessa)}
-\date{30.6.2025}
-%% The keywords need not be separated by \spc now.
-\keywords{Vastus, resistanssi, lämpötila}
-%% Abstract text
-\begin{abstractpage}[finnish]
-Tiivistelmä on lyhyt kuvaus työn keskeisestä sisällöstä usein yhtenä kappaleena:
-mitä tutkittiin ja miten sekä mitkä olivat tärkeimmät tulokset.
-
-Suomenkielisen opinnäytteen tiivistelmä kirjoitetaan suomeksi ja englanniksi ja 
-ruotsinkielisen vastaavasti ruotsiksi ja englanniksi. Suomen- tai
-ruotsinkielisten opiskelijoiden, joiden opinnäytteen kieli on englanti, tulee 
-kirjoittaa tiivistelmänsä englanniksi ja koulusivistyskielellään. Muiden kuin
-koulusivistyskieleltään suomen- tai ruotsinkielisten tulee kirjoittaa
-tiivistelmänsä vain englanniksi. Opiskelija voi halutessaan lisätä
-opinnäytteeseensä toisen tai kolmannen tiivistelmän omalla äidinkielellään.
-\end{abstractpage}
-
-%% Force new page so that the Swedish abstract starts from a new page
-\newpage
-
-%% Swedish abstract. Delete it if you don't need it. 
-%% 
-%% Respecify those fields that differ from the earlier specification or simply
-%% respecify all fields.
-\thesistitle{Arbetets titel}
-\supervisor{Prof.\ Pirjo Professori}
-\advisor{TkD Alan Advisor} %
-\advisor{DI Elsa Expert}
-\degreeprogram{Electronik och electroteknik}
-\collaborativepartner{Company or institute name in Swedish (if relevant)}
-%\date{30.6.2025}
-%% Abstract keywords
-\keywords{Nyckelord p\aa{} svenska, temperatur}
-%% Abstract text
-\begin{abstractpage}[swedish]
-Sammandraget är en kort beskrivning av arbetets centrala innehåll: vad 
-undersöktes, hur undersöktes det och vilka var de viktigaste resultaten?
-
-I lärdomsprov som skrivs på svenska skrivs sammandraget på svenska och engelska, 
-på motsvarande sätt skrivs sammandraget på finska och engelska i lärdomsprov på 
-finska. Finsk- eller svenskspråkiga studerande som skriver sitt lärdomsprov på 
-engelska ska skriva sammandraget på engelska och på sitt skolutbildningsspråk. 
-Studerande vars skolutbildningsspråk inte är svenska eller finska skriver 
-sammandraget endast på engelska. Den studerande kan om hen så önskar lägga till 
-ett andra eller tredje sammandrag på sitt eget modersmål. Sammandraget fungerar 
-då ofta som mognadsprov och bör i så fall vara minst 300 ord långt. Information 
-om mognadsprov på svenska finns på MyCourses:\\
-\url{https://mycourses.aalto.fi/course/view.php?id=26872}.
-\end{abstractpage}
-
 
 \dothesispagenumbering{}
 
@@ -498,17 +423,13 @@ om mognadsprov på svenska finns på MyCourses:\\
 %%
 %% This section is optional. Remove it if you do not want a preface.
 \mysection{Preface}
-%\mysection{Esipuhe}
-I want to thank Professor Pirjo Professor and my instructors Dr Alan Advisor and
-Ms Elsa Expert for their guidance.
+Liirumlaarum
 
-I also want to thank my partner for keeping me sane and alive.
-
-\vspace{5cm}
-Otaniemi, 30 June 2025\\
+\vspace*{\fill}
+Otaniemi, \today \\
 
 \vspace{5mm}
-{\hfill Eddie E.\ Engineer \hspace{1cm}}
+{\hfill Aleksi E.\ Kääriäinen \hspace{1cm}}
 
 %% Force a new page after the preface
 %%
@@ -526,36 +447,26 @@ Otaniemi, 30 June 2025\\
 \subsection*{Symbols}
 
 \begin{tabular}{ll}
-$\mathbf{B}$  & magnetic flux density  \\
-$c$              & speed of light in vacuum $\approx 3\times10^8$ [m/s]\\
-$\omega_{\mathrm{D}}$    & Debye frequency \\
-$\omega_{\mathrm{latt}}$ & average phonon frequency of lattice \\
-$\uparrow$       & electron spin direction up\\
-$\downarrow$     & electron spin direction down
+place & holder \\
 \end{tabular}
 
 \subsection*{Operators}
 
 \begin{tabular}{ll}
-$\nabla \times \mathbf{A}$              & curl of vectorin $\mathbf{A}$\\
-$\displaystyle\frac{\mbox{d}}{\mbox{d} t}$ & derivative with respect to 
-variable $t$\\[3mm]
-$\displaystyle\frac{\partial}{\partial t}$  & partial derivative with respect 
-to variable $t$ \\[3mm]
-$\sum_i $                       & sum over index $i$\\
-$\mathbf{A} \cdot \mathbf{B}$    & dot product of vectors $\mathbf{A}$ and 
-$\mathbf{B}$
+place & holder \\
 \end{tabular}
 
 \subsection*{Abbreviations}
 
 \begin{tabular}{ll}
-AC         & alternating current \\
-APLAC      & an object-oriented analog circuit simulator and design tool \\
-           & (originally Analysis Program for Linear Active Circuits) \\
-BCS        & Bardeen-Cooper-Schrieffer \\ %% dash between the names
-DC         & direct current \\
-TEM        & transverse eletromagnetic
+CS      & Computer Science \\
+LM      & Language Model \\
+NLP     & Natural Language Processing \\
+LLM     & Large Language Model \\
+ICL     & In-Context Learning \\
+PLM     & Pre-trained Language Model \\
+%ML      & Machine Learning \\
+%AI      & Artificial Intelligence \\
 \end{tabular}
 
 
@@ -573,73 +484,73 @@ TEM        & transverse eletromagnetic
 %% 
 \thispagestyle{empty}
 
-This is the template file for writing your bachelor’s, master’s or licentiate 
-thesis. The template contains parts and text to accommodate the different degree 
-levels, bachelor’s and master’s, and so it may contain parts that may not be 
-relevant to your thesis. If so, simply delete those parts in the thesis that you
-do not need. This applies particularly to the abstract pages, the list of
-symbols, the list of abbreviations, and appendices. You may also want to adjust
-the template section titles to better suit your work.
+\textbf{TODO: citations in intro! along with text improvements }
 
-See the file thesistemplate.tex or opinnaytepohja.tex for examples and 
-descriptions on the use of various document elements like lists, figureas, 
-tables equations and more. 
+The subsequent advances in Language Models (LMs) have significantly extended the capabilities of computational Natural Language Processing (NLP) and text generation. Modern LMs are commonly transformer-based and pretrained on a Web-scale text corpora. These models are usually called Large Language Models (LLMs). LLMs, such as GPT-4 and Llama 4, have been shown to excel at a number of text-related tasks, including the generation of program code \cite{Minaee2024-fr}.
 
-\subsection{Typical content in the introduction}
+Computer Science (CS) education and programming skills are usually obtained by completing sets of various exercises. These exercises are typically created by hand by the teaching staff. Distributing the same set of exercises to a large group of students may lead to the students sharing the answers, which hinders learning, or the lack of relevant context in the exercises might not inspire students to complete them. Personalizing and contextualizing the exercises has been shown to increase student's engagement and improve the learning outcome. However, personalizing each exercise is a laborious task and is unfeasible for most CS teachers.
 
-In principle, the introduction is like the abstract, only broader in scope, and
-more detailed. The introduction generally describes the following:
+Since the emergence of LLMs, researchers, particularly in the field of CS education, have been interested in the models' ability to generate contextualized text, including computer program code, that is nearly indistinguishable from content written by humans. The use of LLMs in the creation of educational materials have a number of advantages compared to creating each exercise by hand: LLMs decrease the amount of time needed to create each exercise, they allow deep personalization of the exercises and can also be used to create the supporting artifacts in the assignments, including starter code, hints, and example solutions. Time-effectiveness and personalization are not the only important factors in creating educational content, however, it is also crucial to ensure that the materials offered to students are of high quality.
 
-%% An example of an unordered (itemised) list. Instead on the default bullet
-%% point, an endash (-- in LaTeX code) is used as the item label.
+Various aspects of the training data, the training phase, and inference make LLMs prone to hallucinations. A hallucination in the context of LLMs is a model-generated output that is plausible but factually false \cite{10.1145/3703155}. Hallucinations decrease the quality of the generated content, and in an educational environment, may make the content unusable. Manually checking each output for erroneous content is time-consuming and prone to human-error. For this reason, it would be highly advantageous to mitigate hallucinations produced or to have the ability to detect and correct output containing hallucinations. 
+
+One promising method of preventing hallucinations is in-context learning (ICL). ICL is the practice of introducing incorrect examples for the model as a demonstration and letting the model learn from them \cite{dong-etal-2024-survey}. ICL has shown great promise in reasoning-heavy tasks, such as mathematical reasoning \cite{an2024learningmistakesmakesllm}. Extending ICL to the generation of program code and programming exercises could decrease the amount of human input needed to create programming exercises.
+
+\textbf{TODO: define scope!} This thesis investigates possible methods for detecting, preventing, or reducing hallucinations in educational CS content generated using LLMs. The study provides an empirical comparison of performance between implicit and explicit in-context learning in LLMs used in the generation of CS education content. The main research questions in this thesis are as follows:
+
 \begin{itemize}
-	\item[--] a description of the background of the field of study, what
-	similar work others have already done, as well as an overview of the study,
-	\item[--] the goals of the study,
-	\item[--] the primary research question and the sub-problems in the line
-	of inquiry, and
-	\item[--] the scope and constraints of the study along with the main
-	concepts involved.
+    \item \textbf{RQ1: How effective are state-of-the-art LLMs in generating error-free programming exercises?} This includes researching the effect of the prompt used in the generation, optimizing the prompt structures, and analyzing the faithfulness and factuality of the output.
+    \item \textbf{RQ2: Can LLMs learn from previously produced erroneous content, producing higher quality content?} The objective of this research question is to find out whether in-context learning can be extended to the generation of CS education material and how much does in-context learning improve the output quality.
+    \item \textbf{RQ3: Which method of ICL outperforms the other in generating CS education materials, implicit or explicit?} If the answer to the second research question is yes, the next point of interest is to compare the performance of the two different types of ICL.
 \end{itemize}
 
-Although the introduction is a general description of the study, be concise and 
-avoid writing a lengthy introduction. A concise introduction need not have any 
-subsections.
+These questions determine the course and content of the study. The thesis is structured as follows:
+
+\begin{itemize}
+    \item \textbf{Background:} In this section, existing relevant literature is reviewed and past studies are explained in order to understand the current state of research and bring the readers to a common level of knowledge on the subject. The first topic covered is the Fundamentals of Large Language Models, then Hallucinations in LLMs. After that, a brief explanation on Hallucination Mitigation Methods, and LLMs in CS Education, and finally, existing research in Automatic exercise generation is covered.
+    \item \textbf{Research material and methods:} \textbf{TODO: content}
+    \item \textbf{Results:} \textbf{TODO: content}
+    \item \textbf{Conclusions:} \textbf{TODO: content}
+\end{itemize}
 
 %% In a thesis, every section/chapter starts a new page, hence the \clearpage
 \clearpage
 
-\section{Literature review}
-\subsection{Structure of the thesis}
+\section{Background}
 
-The thesis comprises the front matter, the main matter and possible appendices.
-The front matter in the required order is:
+This chapter explains the \textbf{TODO: finish paragraph!}
 
-%% An example of an unordered (itemised) list with the default bullet point
-%% label.
+\subsection{Fundamentals of Large Language Models}
+
+Large Language Models belong to the family of Pre-trained Language Models (PLMs). PLMs are task-agnostic, neural-network based, stochastic text prediction functions, trained on very large text corpora. The models operate by outputting the most likely next unit of text given a snippet of text as input. In essence, LLMs are large-scale PLMs, having tens to hundreds of billions of parameters. However, the distinction between the two is necessary, since LLMs have far stronger language understanding and generation abilities, and also exhibit capabilities that are not present in PLMs, such as ICL, instruction following, and multi-step reasoning \cite{Minaee2024-fr}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{latex/images/transformer_architecture.png}
+\caption{The Transformer architecture \cite{DBLP:journals/corr/VaswaniSPUJGKP17}}
+\label{fig:transformer}
+\end{figure}
+
+Most LLMs are based on the Transformer architecture, introduced in \cite{DBLP:journals/corr/VaswaniSPUJGKP17}. The most important innovation in the Transformer model is the application of the attention mechanism, which captures long-term contextual dependencies in the input text, to the parallelizable architecture, depicted in figure \ref{fig:transformer}. This architecture allows for pre-training very large LMs that have been shown to outperform other existing Neural Language Models, such as Recurrent and Convolutional Language Models \cite{DBLP:journals/corr/VaswaniSPUJGKP17}.
+
+The Transformer model consists of an encoder stack and a decoder stack, pictured on the left and right sides of figure \ref{fig:transformer}, respectively. The encoder maps the input from a sequence of symbols $(x_1, \cdots, x_n)$, to a continuous representation of the symbols $z = (z_1, \cdots, z_n)$. Given $z$, the decoder generates an output sequence $y = (y_1, \cdots, y_m)$ of symbols one symbol at a time. The decoder is auto-regressive, which means that it consumes previously generated symbols $(y_1, \cdots, y_{k-1})$ as an additional input when generating the next $y_k$ \cite{DBLP:journals/corr/VaswaniSPUJGKP17}. Such \textit{Encoder-Decoder models} are best suited for sequence-to-sequence language tasks, which are conditioned on the input, such as text summarization and language translation tasks.
+
+However, many LLMs, most notably the GPT-family and the Llama-family, omit the encoder completely and are strictly \textit{Decoder-Only models} \cite{Minaee2024-fr}. These models function purely as auto-regressive language models, predicting the next token based on all previous tokens. For this reason, Decoder-Only models excel at different text generation tasks, such as question answering and program code generation \textbf{TODO: citation?}.
+
+
+\subsubsection{Data cleaning}
+\subsubsection{Tokenization}
+\subsubsection{Training}
+\subsubsection{Alignment?}
+\subsubsection{Decoding strategies?}
+\subsubsection{Cost-Effective Training/Inference, Adaptation & Compression?}
+\subsection{Hallucinations in LLMs}
 \begin{itemize}
-	\item a cover page,
-	\item a page containing copyright information,
-	\item the abstract page(s),
-	\item an optional preface, and
-	\item a table of contents.
+    \item tänne taulu hallusinaatiotyypeistä täältä \cite{10.1145/3703155} sivu 7
 \end{itemize}
-
-If the thesis contains mathematical equations, give the list of symbols used to 
-represent various quantities along with the mathematical operators used.
-The list must contain all the abbreviations used as well. Note that lists of
-figures and tables are not required.
-
-Note that the chapters and sections within the main matter are 
-numbered, and that they appear in the table of contents. The references, or the 
-bibliography, is also shown in the table of contents, but without a number 
-labelling it.
-
-The appendix or appendices, when necessary, are presented in the last part of
-the thesis. They contain things like questionnaires used in the study, 
-[selected parts of] data, derivations of mathematical results, a more detailed 
-exposition of some aspect in the thesis, or code listings. Number them in the 
-table of contents.
+\subsection{Hallucination Mitigation Methods}
+\subsection{LLMs in CS Education}
+\subsection{Automatic exercise generation?}
 
 
 \clearpage
@@ -652,6 +563,20 @@ implementation of your study and the methods used. This section determines the
 methodological strengths and weaknesses of your thesis. Any earlier description 
 of the method should limit itself to work done earlier by others. Here you tell 
 your reader what you have done.
+
+\begin{itemize}
+        \item Feedback loop?
+        \begin{itemize}
+            \item Feed demonstration examples to model
+            \item Prompt
+            \item Output
+            \item Decision: Factual output?
+                \begin{itemize}
+                    \item Yes -> Continue
+                    \item No -> Add set [prompt, output, label, (reasoning)] to demonstration examples
+                \end{itemize}
+        \end{itemize}
+\end{itemize}
 
 \clearpage
 
@@ -687,8 +612,6 @@ of study and new questions your study might have posed.
 As the author of the thesis, you alone are responsible for ensuring that the 
 layout, form and structure of your thesis adheres to the guidelines outlined by 
 your school. This template aims to help you meet these requirements.
-
-Finally, a dummy citation \cite{Dyson} to get a reference to an item in the bibliography.
 
 
 
