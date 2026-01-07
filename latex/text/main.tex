@@ -533,14 +533,26 @@ Large Language Models belong to the family of Pre-trained Language Models (PLMs)
 
 Most LLMs are based on the Transformer architecture, introduced in \cite{DBLP:journals/corr/VaswaniSPUJGKP17}. The most important innovation in the Transformer model is the application of the attention mechanism, which captures long-term contextual dependencies in the input text, to the parallelizable architecture, depicted in figure \ref{fig:transformer}. This architecture allows for pre-training very large LMs that have been shown to outperform other existing Neural Language Models, such as Recurrent and Convolutional Language Models \cite{DBLP:journals/corr/VaswaniSPUJGKP17}.
 
-The Transformer model consists of an encoder stack and a decoder stack, pictured on the left and right sides of figure \ref{fig:transformer}, respectively. The encoder maps the input from a sequence of symbols $(x_1, \cdots, x_n)$, to a continuous representation of the symbols $z = (z_1, \cdots, z_n)$. Given $z$, the decoder generates an output sequence $y = (y_1, \cdots, y_m)$ of symbols one symbol at a time. The decoder is auto-regressive, which means that it consumes previously generated symbols $(y_1, \cdots, y_{k-1})$ as an additional input when generating the next $y_k$ \cite{DBLP:journals/corr/VaswaniSPUJGKP17}. Such \textit{Encoder-Decoder models} are best suited for sequence-to-sequence language tasks, which are conditioned on the input, such as text summarization and language translation tasks.
+The Transformer model consists of an encoder stack and a decoder stack, pictured on the left and right sides of figure \ref{fig:transformer}, respectively. The encoder maps the input from a sequence of symbols $(x_1, \cdots, x_n)$, to a continuous representation of the symbols $z = (z_1, \cdots, z_n)$. Given $z$, the decoder generates an output sequence $y = (y_1, \cdots, y_m)$ of symbols one symbol at a time. The decoder is auto-regressive, which means that it consumes previously generated symbols $(y_1, \cdots, y_{k-1})$ as an additional input when generating the next $y_k$ \cite{DBLP:journals/corr/VaswaniSPUJGKP17}. Such \textit{Encoder-Decoder models} are best suited for sequence-to-sequence language tasks that are conditioned on input, such as text summarization and language translation tasks \cite{Minaee2024-fr}.
 
-However, many LLMs, most notably the GPT-family and the Llama-family, omit the encoder completely and are strictly \textit{Decoder-Only models} \cite{Minaee2024-fr}. These models function purely as auto-regressive language models, predicting the next token based on all previous tokens. For this reason, Decoder-Only models excel at different text generation tasks, such as question answering and program code generation \textbf{TODO: citation?}.
+However, many LLMs, most notably the GPT-family and the Llama-family, omit the encoder completely and are strictly \textit{Decoder-Only models} \cite{Minaee2024-fr}. These models function purely as auto-regressive language models, predicting the next token based on all previous tokens. Decoder-Only models have been shown to excel in different text generation tasks, such as answering questions and generating program code \cite{Chen2021EvaluatingLL}.
 
+\subsubsection{Training Stages of LLMs}
 
-\subsubsection{Data cleaning}
-\subsubsection{Tokenization}
-\subsubsection{Training}
+In order for any neural LM to be able to take text as input, the text first has to be converted to a form that the LM can understand. Tokenization is the practice of breaking down text into smaller chunks, called tokens. A token is the basic unit of operation in LMs. The most basic tokenizers split text on whitespace, but more advanced tokenizers break each individual word into subwords, or even into single characters. Using smaller tokens enables them to be combined to form words, effectively increasing the size of the vocabulary and decreasing the chance of out-of-vocabulary encounters \cite{Minaee2024-fr}.
+
+Most LLMs and the Transformer convert tokens further into an embedding, which is a high-dimensional vector representation of the token. This is usually done in the embedding layer \cite{DBLP:journals/corr/VaswaniSPUJGKP17}, which is learnable, which means that the model optimizes the vector representation of each token, allowing capture and measurement of word similarities. Additionally, positional encoding is included in the embeddings, which allows the model to learn positional dependencies and to carry contextual information spread out in the input sequence.
+
+LLMs acquire their capabilities through a three phase training process:
+
+\begin{enumerate}
+    \item \textbf{Pre-training:} During this phase, the LLMs undergo autoregressive prediction of subsequent tokens in text sequences. The self-supervised training on large textual corpora, often spanning a significant portion of the textual content on the internet, results in the LLM amassing knowledge of language syntax, world knowledge, and reasoning capabilities \cite{10.1145/3703155}. During this phase, however, the model also learns biases, infactualities, and half-truths present in the training data \cite{Kalai2025-fl}.
+    \item \textbf{Supervised Fine-Tuning:}
+    \item \textbf{Reinforcement Learning from Human Feedback:}
+\end{enumerate}
+
+Training kamaa täältä \cite{10.1145/3703155}
+
 \subsubsection{Alignment?}
 \subsubsection{Decoding strategies?}
 \subsubsection{Cost-Effective Training/Inference, Adaptation & Compression?}
