@@ -464,6 +464,7 @@ LM      & Language Model \\
 NLP     & Natural Language Processing \\
 LLM     & Large Language Model \\
 ICL     & In-Context Learning \\
+PLM     & Pre-trained Language Model \\
 %ML      & Machine Learning \\
 %AI      & Artificial Intelligence \\
 \end{tabular}
@@ -506,24 +507,39 @@ One promising method of preventing hallucinations is in-context learning (ICL). 
 These questions determine the course and content of the study. The thesis is structured as follows:
 
 \begin{itemize}
-    \item \textbf{Background} In this section, existing relevant literature is reviewed and past studies are explained in order to understand the current state of research and bring the readers to a common level of knowledge on the subject. The first topic covered is the Fundamentals of Large Language Models, then Hallucinations in LLMs. After that, a brief explanation on Hallucination Mitigation Methods, and LLMs in CS Education, and finally, existing research in Automatic exercise generation is covered.
-    \item \textbf{Research material and methods} \textbf{TODO: content}
-    \item \textbf{Results} \textbf{TODO: content}
-    \item \textbf{Conclusions} \textbf{TODO: content}
+    \item \textbf{Background:} In this section, existing relevant literature is reviewed and past studies are explained in order to understand the current state of research and bring the readers to a common level of knowledge on the subject. The first topic covered is the Fundamentals of Large Language Models, then Hallucinations in LLMs. After that, a brief explanation on Hallucination Mitigation Methods, and LLMs in CS Education, and finally, existing research in Automatic exercise generation is covered.
+    \item \textbf{Research material and methods:} \textbf{TODO: content}
+    \item \textbf{Results:} \textbf{TODO: content}
+    \item \textbf{Conclusions:} \textbf{TODO: content}
 \end{itemize}
 
 %% In a thesis, every section/chapter starts a new page, hence the \clearpage
 \clearpage
 
 \section{Background}
+
+This chapter explains the \textbf{TODO: finish paragraph!}
+
 \subsection{Fundamentals of Large Language Models}
-In this section, 
+
+Large Language Models belong to the family of Pre-trained Language Models (PLMs). PLMs are task-agnostic, neural-network based, stochastic text prediction functions, trained on very large text corpora. The models operate by outputting the most likely next unit of text given a snippet of text as input. In essence, LLMs are large-scale PLMs, having tens to hundreds of billions of parameters. The distinction between the two is necessary, since LLMs have far stronger language understanding and generation abilities, but also exhibit capabilities that are not present in PLMs, such as ICL, instruction following, and multi-step reasoning \cite{Minaee2024-fr}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{latex/src/images/transformer_architecture.png}
+\caption{The Transformer architecture \cite{DBLP:journals/corr/VaswaniSPUJGKP17}}
+\label{fig:transformer}
+\end{figure}
+
+Most LLMs are based on the Transformer architecture, introduced in \cite{DBLP:journals/corr/VaswaniSPUJGKP17}. The most important innovation in the Transformer model is the application of the attention mechanism, which captures long-term contextual dependencies in the input text, to the parallelizable architecture, depicted in figure \ref{fig:transformer}. This architecture allows for pre-training very large LMs that outperform other existing Neural Language Models, such as Recurrent and Convolutional Language Models.
+
+The Transformer model consists of an encoder stack and a decoder stack, pictured on the left and right sides of figure \ref{fig:transformer}, respectively. The encoder maps the input from a sequence of symbols $(x_1, \cdots, x_n)$, to a continuous representation of the symbols $z = (z_1, \cdots, z_n)$. Given $z$, the decoder generates an output sequence $y = (y_1, \cdots, y_m)$ of symbols one symbol at a time. The decoder is auto-regressive, which means that it consumes previously generated symbols $(y_1, \cdots, y_{k-1})$ as an additional input when generating the next $y_k$ \cite{DBLP:journals/corr/VaswaniSPUJGKP17}. Such \textit{Encoder-Decoder models} are best suited for sequence-to-sequence language tasks, which are conditioned on the input, such as text summarization and language translation tasks.
+
+However, many LLMs, most notably the GPT-family and the Llama-family, omit the encoder completely and are strictly \textit{Decoder-Only models} \cite{Minaee2024-fr}.
+
 \subsubsection{Prevalent LLM Architectures}
 \begin{itemize}
     \item Transformer
-    \item Encoder-Only
-    \item Decoder-Only
-    \item Encoder-Decoder
 \end{itemize}
 \subsubsection{Data cleaning}
 \subsubsection{Tokenization}
