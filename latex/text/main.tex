@@ -549,19 +549,37 @@ LLMs acquire their capabilities through a three phase training process:
 
 \begin{enumerate}
     \item \textbf{Pre-training:} During this phase, the LLM undergoes autoregressive prediction of subsequent tokens in text sequences. The self-supervised training on large textual corpora, often covering a significant portion of textual content on the internet, results in the LLM acquiring knowledge of language syntax, world knowledge, and reasoning abilities \cite{10.1145/3703155}. However, during this phase, the model also learns biases, infactualities, and half-truths present in the training data \cite{Kalai2025-fl}.
-    \item \textbf{Supervised Fine-Tuning:} While pre-training focuses on refining the text completion and language understanding abilities of the model, Supervised Fine-Tuning (SFT) focuses on enchancing the model's task completion ability. During SFT, the model is fed pairs of $(\texttt{instruction, output})$, where \texttt{instruction} (e.g., write an email to person $X$ on the topic $Y$) is the input, instructing the model to complete a specific task, and \texttt{output} is the desired outcome of the task. The objective of using $(\texttt{instruction, output})$ pairs is to constrain the model's outputs to a desired domain of knowledge and align the model with specific response characteristics \cite{zhang2025instructiontuninglargelanguage}. The datasets used in this phase are usually constructed from existing annotated natural language datasets. Examples of such data sets are Flan \cite{longpre2023flancollectiondesigningdata} and P3 (Public Pool of Prompts) \cite{sanh2022multitaskpromptedtrainingenables}. Another possible way of creating a dataset of $(\texttt{instruction, output})$ pairs is to employ an existing LLM to generate such pairs. This approach has been explored for instance by \citeauthor{wang2023selfinstructaligninglanguagemodels} \cite{wang2023labelwordsanchorsinformation}.
-    \item \textbf{Reinforcement Learning from Human Feedback:} Reinforcement Learning from Human Feedback (RLHF)
+    
+    \item \textbf{Supervised Fine-Tuning:} While pre-training focuses on refining the text completion and language understanding abilities of the model, Supervised Fine-Tuning (SFT) focuses on enchancing the model's task completion ability. During SFT, the model is fed pairs of $(\texttt{instruction, output})$, where \texttt{instruction} (e.g., write an email to person $X$ on the topic $Y$) is the input, instructing the model to complete a specific task, and \texttt{output} is the desired outcome of the task. The objective of using $(\texttt{instruction, output})$ pairs is to constrain the model's outputs to a desired domain of knowledge and align the model with specific response characteristics \cite{zhang2025instructiontuninglargelanguage}. The datasets used in this phase are usually constructed from existing annotated natural language datasets. Examples of such datasets are Flan \cite{longpre2023flancollectiondesigningdata} and P3 (Public Pool of Prompts) \cite{sanh2022multitaskpromptedtrainingenables}. Another possible way of creating a dataset of $(\texttt{instruction, output})$ pairs is to employ an existing LLM to generate such pairs. This approach has been explored for instance by \textcite{wang2023labelwordsanchorsinformation}.
+
+    \begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{latex/images/rlhf.png}
+    \caption{The 3-step pipeline of RLHF used by \textcite{ouyang2022traininglanguagemodelsfollow} to fine-tune an LLM. Note that Step 1 is analogous to SFT.}
+    \label{fig:rlhf}
+    \end{figure}
+
+    \item \textbf{Reinforcement Learning from Human Feedback:} Reinforcement Learning from Human Feedback (RLHF), sometimes called Alignment and sometimes included in the SFT phase, is the final stage of training an LLM. RLHF is the process of aligning the output of the model to the preference of human users. Figure \ref{fig:rlhf} shows the progress of RLHF: the model is first fine-tuned in the SFT phase. Then, a reward model is trained on human-ranked responses and finally, using a policy optimization algorithm, such as PPO \cite{zhang2025instructiontuninglargelanguage}, the reward is maximized. This type of training allows the model to learn high-level objectives, such as values, tone, and behavior patterns. RLHF is also used to mitigate the possible harm the model could do once deployed in the real world \cite{ouyang2022traininglanguagemodelsfollow}. These unwanted responses include biased outputs, leaking private information, presenting misinformation as factual content, and generating harmful and toxic content \cite{weidinger2021ethicalsocialrisksharm}.
 \end{enumerate}
 
-Training kamaa täältä \cite{10.1145/3703155}
-
-\subsubsection{Alignment?}
 \subsubsection{Decoding strategies?}
-\subsubsection{Cost-Effective Training/Inference, Adaptation & Compression?}
+\subsubsection{Cost-Effective Training/Inference, Adaptation \& Compression?}
+
 \subsection{Hallucinations in LLMs}
-\begin{itemize}
-    \item tänne taulu hallusinaatiotyypeistä täältä \cite{10.1145/3703155} sivu 7
-\end{itemize}
+
+Hallucinations in the context of LLMs are $\cdots$
+
+\subsubsection{Hallucination types}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{latex/images/hallucination_types.png}
+    \caption{Examples of each type of LLM hallucination presented by \textcite{10.1145/3571730}.}
+    \label{fig:hallucination_types}
+\end{figure}
+
+\subsubsection{Causes of hallucinations}
+
 \subsection{Hallucination Mitigation Methods}
 \subsection{LLMs in CS Education}
 \subsection{Automatic exercise generation?}
