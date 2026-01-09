@@ -467,6 +467,7 @@ ICL     & In-Context Learning \\
 PLM     & Pre-trained Language Model \\
 SFT     & Supervised Fine-Tuning \\
 RLHF    & Reinforcement Learning from Human Feedback \\
+NLG     & Natural Language Generation \\
 %ML      & Machine Learning \\
 %AI      & Artificial Intelligence \\
 \end{tabular}
@@ -550,16 +551,16 @@ LLMs acquire their capabilities through a three phase training process:
 \begin{enumerate}
     \item \textbf{Pre-training:} During this phase, the LLM undergoes autoregressive prediction of subsequent tokens in text sequences. The self-supervised training on large textual corpora, often covering a significant portion of textual content on the internet, results in the LLM acquiring knowledge of language syntax, world knowledge, and reasoning abilities \cite{10.1145/3703155}. However, during this phase, the model also learns biases, infactualities, and half-truths present in the training data \cite{Kalai2025-fl}.
     
-    \item \textbf{Supervised Fine-Tuning:} While pre-training focuses on refining the text completion and language understanding abilities of the model, Supervised Fine-Tuning (SFT) focuses on enchancing the model's task completion ability. During SFT, the model is fed pairs of $(\texttt{instruction, output})$, where \texttt{instruction} (e.g., write an email to person $X$ on the topic $Y$) is the input, instructing the model to complete a specific task, and \texttt{output} is the desired outcome of the task. The objective of using $(\texttt{instruction, output})$ pairs is to constrain the model's outputs to a desired domain of knowledge and align the model with specific response characteristics \cite{zhang2025instructiontuninglargelanguage}. The datasets used in this phase are usually constructed from existing annotated natural language datasets. Examples of such datasets are Flan \cite{longpre2023flancollectiondesigningdata} and P3 (Public Pool of Prompts) \cite{sanh2022multitaskpromptedtrainingenables}. Another possible way of creating a dataset of $(\texttt{instruction, output})$ pairs is to employ an existing LLM to generate such pairs. This approach has been explored for instance by \textcite{wang2023labelwordsanchorsinformation}.
+    \item \textbf{Supervised Fine-Tuning:} While pre-training focuses on refining the text completion and language understanding abilities, Supervised Fine-Tuning (SFT) focuses on enchancing the model's task completion ability. During SFT, the model is fed pairs of $(\texttt{instruction, output})$, where \texttt{instruction} (e.g., write an email to person $X$ on the topic $Y$) is the input, instructing the model to complete a specific task, and \texttt{output} is the desired outcome of the task. The objective of using $(\texttt{instruction, output})$ pairs is to constrain the model's outputs to a desired domain of knowledge and align the model with specific response characteristics \cite{zhang2025instructiontuninglargelanguage}. The datasets used in this phase are usually constructed from existing annotated natural language datasets. Examples of such datasets are Flan \cite{longpre2023flancollectiondesigningdata} and P3 (Public Pool of Prompts) \cite{sanh2022multitaskpromptedtrainingenables}. Another possible way of creating a dataset of $(\texttt{instruction, output})$ pairs is to employ an existing LLM to generate such pairs. This approach has been explored for instance by \textcite{wang2023labelwordsanchorsinformation}.
 
     \begin{figure}[h]
     \centering
-    \includegraphics[width=1\textwidth]{latex/images/rlhf.png}
+    \includegraphics[width=0.8\textwidth]{latex/images/rlhf.png}
     \caption{The 3-step pipeline of RLHF used by \textcite{ouyang2022traininglanguagemodelsfollow} to fine-tune an LLM. Note that Step 1 is analogous to SFT.}
     \label{fig:rlhf}
     \end{figure}
 
-    \item \textbf{Reinforcement Learning from Human Feedback:} Reinforcement Learning from Human Feedback (RLHF), sometimes called Alignment and sometimes included in the SFT phase, is the final stage of training an LLM. RLHF is the process of aligning the output of the model to the preference of human users. Figure \ref{fig:rlhf} shows the progress of RLHF: the model is first fine-tuned in the SFT phase. Then, a reward model is trained on human-ranked responses and finally, using a policy optimization algorithm, such as PPO \cite{zhang2025instructiontuninglargelanguage}, the reward is maximized. This type of training allows the model to learn high-level objectives, such as values, tone, and behavior patterns. RLHF is also used to mitigate the possible harm the model could do once deployed in the real world \cite{ouyang2022traininglanguagemodelsfollow}. These unwanted responses include biased outputs, leaking private information, presenting misinformation as factual content, and generating harmful and toxic content \cite{weidinger2021ethicalsocialrisksharm}.
+    \item \textbf{Reinforcement Learning from Human Feedback:} Reinforcement Learning from Human Feedback (RLHF), sometimes called Alignment and in some literature included in the SFT phase, is the final stage of training an LLM. RLHF is the process of aligning the output of the model to the preference of human users. Figure \ref{fig:rlhf} shows the progress of RLHF: the model is first fine-tuned in the SFT phase. Then, a reward model is trained on human-ranked responses and finally, using a policy optimization algorithm, such as PPO \cite{zhang2025instructiontuninglargelanguage}, the reward is maximized. This type of training allows the model to learn high-level objectives, such as values, tone, and behavior patterns. RLHF is also used to mitigate the possible harm the model could do once deployed in the real world \cite{ouyang2022traininglanguagemodelsfollow}. These unwanted responses include biased outputs, leaking private information, presenting misinformation as factual content, and generating harmful and toxic content \cite{weidinger2021ethicalsocialrisksharm}.
 \end{enumerate}
 
 \subsubsection{Decoding strategies?}
@@ -567,9 +568,9 @@ LLMs acquire their capabilities through a three phase training process:
 
 \subsection{Hallucinations in LLMs}
 
-Hallucinations in the context of LLMs are $\cdots$
+Hallucinations in Natural Language Generation (NLG) tasks refer to generated content that does not faithfully follow the input or is nonsensical \cite{filippova-2020-controlled}. Traditionally, hallucinations in NLG have been categorized as \textit{intrinsic} and \textit{extrinsic} hallucinations \cite{maynez2020faithfulnessfactualityabstractivesummarization}. Intrinsic hallucinations refer to synthesized content present in the input, using terms or concepts available, but misrepresenting them, creating an unreliable output. Extrinsic hallucinations refer to generated output that ignores or discards the source material \cite{10.1145/3571730}.
 
-\subsubsection{Hallucination types}
+In the context of LLMs, their versatility and usage in various fields of research and business have highlighted limitations in the existing categorization, creating the need for a more precise categorization of hallucinations. \textcite{10.1145/3703155}, based on the survey by \textcite{10.1145/3571730}, propose the categorization of LLM-generated hallucinations to \textit{factuality hallucinations} and \textit{faithfulness hallucinations}. This categorization is shown in \ref{fig:hallucination_types}, from which it can be seen that both categories have been further divided into multiple subcategories. The subcategories are explained in the following sections.
 
 \begin{figure}[h]
     \centering
@@ -577,6 +578,30 @@ Hallucinations in the context of LLMs are $\cdots$
     \caption{Examples of each type of LLM hallucination presented by \textcite{10.1145/3571730}.}
     \label{fig:hallucination_types}
 \end{figure}
+
+\subsubsection{Factuality hallucinations}
+
+Factuality hallucinations refer to generated content that deviates from established world knowledge, containing either inconsistentities that conflict real-world facts or unverifiable information. Factuality hallucinations are further divided into:
+
+\begin{enumerate}
+    \item \textit{Factual contradiction} refers to situations where the LLM generates an output presenting information contradicting established knowledge as facts. Facutal contradictions can be divided into two subcategories: \textit{entity-error hallucinations} and \textit{relation-error hallucinations}. Entity-error hallucinations contain erroneous entities in the output, shown in figure \ref{fig:hallucination_types} when Thomas Edison was falsely credited as the inventor of the telephone, even though it in fact was developed by Alexander Graham Bell. Relation-error hallucinations, on the other hand, contain misrepresented relations between entities. From \ref{fig:hallucination_types}, the model claiming that Thomas Edison was the inventor of the lightbulb, when in reality he made improvements to the existing design, is a relation-error hallucination.
+    
+    \item \textit{Factual fabrication}
+        \begin{itemize}
+            \item Unverifiability hallucination
+            \item Overclaim hallucination
+        \end{itemize}
+\end{enumerate}
+
+\subsubsection{Faithfulness hallucinations}
+
+Faithfulness hallucinations, on the other hand, refer to generated content that does not follow the given context or set of instructions. They are divided into three subcategories:
+
+\begin{enumerate}
+    \item \textit{Instruction inconsistency}
+    \item \textit{Context inconsistency}
+    \item \textit{Logical inconsistency}
+\end{enumerate}
 
 \subsubsection{Causes of hallucinations}
 
