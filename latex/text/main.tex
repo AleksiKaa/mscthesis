@@ -584,13 +584,12 @@ In the context of LLMs, their versatility and usage in various fields of researc
 Factuality hallucinations refer to generated content that deviates from established world knowledge, containing either inconsistentities that conflict real-world facts or unverifiable information. Factuality hallucinations are further divided into:
 
 \begin{enumerate}
-    \item \textit{Factual contradiction} refers to situations where the LLM generates an output presenting information contradicting established knowledge as facts. Facutal contradictions can be divided into two subcategories: \textit{entity-error hallucinations} and \textit{relation-error hallucinations}. Entity-error hallucinations contain erroneous entities in the output, shown in figure \ref{fig:hallucination_types} when Thomas Edison was falsely credited as the inventor of the telephone, even though it in fact was developed by Alexander Graham Bell. Relation-error hallucinations, on the other hand, contain misrepresented relations between entities. From \ref{fig:hallucination_types}, the model claiming that Thomas Edison was the inventor of the lightbulb, when in reality he made improvements to the existing design, is a relation-error hallucination.
+    \item \textit{Factual contradiction} refers to situations where the LLM generates an output presenting information contradicting established knowledge as facts. Factual contradictions can be divided into two subcategories: \textit{entity-error hallucinations} and \textit{relation-error hallucinations}. Entity-error hallucinations contain erroneous entities in the output, shown in figure \ref{fig:hallucination_types} when Thomas Edison was falsely credited as the inventor of the telephone, although it in fact was developed by Alexander Graham Bell. Relation-error hallucinations, on the other hand, contain misrepresented relations between entities. From \ref{fig:hallucination_types}, the model claiming that Thomas Edison was the inventor of the lightbulb, when in reality he made improvements to the existing design, is a relation-error hallucination.
     
-    \item \textit{Factual fabrication}
-        \begin{itemize}
-            \item Unverifiability hallucination
-            \item Overclaim hallucination
-        \end{itemize}
+    \item \textit{Factual fabrication} is a type of hallucination where the LLM output presents information that cannot be verified with current world knowledge as facts. Factual fabrications can be divided further into \textit{unverifiability hallucinations} and \textit{overclaim hallucinations}. Unverifiability hallucinations involve outputs that contain statements that are completely false or cannot be established with available knowledge.
+
+    Overclaim hallucinations contain biased claims, making the output unreliable.
+
 \end{enumerate}
 
 \subsubsection{Faithfulness hallucinations}
