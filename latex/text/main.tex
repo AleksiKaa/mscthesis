@@ -600,7 +600,44 @@ Faithfulness hallucinations refer to generated content that does not follow the 
     \item \textit{Logical inconsistency} hallucinations can be detected most often in reasoning tasks. They show logical contradictions in the output. These inconsistencies can be found between inside reasoning steps and between steps and the final result of the reasoning task. The example in figure \ref{fig:hallucination_types} shows the logical inconsistency inside a reasoning step: Dividing both sides of $2x = 8$ by 2 incorrectly yields $x = 3$.
 \end{enumerate}
 
-\subsubsection{Causes of hallucinations}
+\subsection{Causes of hallucinations}
+
+The root-causes for hallucinations are multi-faceted, spanning the LLM ability obtaining process comprehensively. This section covers the three main elements from which hallucinations originate: data, training, and inference. 
+
+\subsubsection{Hallucination from Data}
+
+Training LLMs require data in two forms: raw textual data used in the pre-training phase, which lays the foundation for the abilities and world knowledge of the model, and alignment data, in the form of $(\texttt{instruction, output})$ pairs, which trains the model to conform to and follow user instructions. While diverse data expands the abilities of LLMs, it is also one of the primary causes for LLM hallucinations \cite{Kalai2025-fl}. The hallucinations are caused by misinformation and biases in the pre-training data, as well as the knowledge boundaries of the pre-training data, and low-quality alignment data used in the SFT phase.
+
+LLMs have been shown to have remarkable memorization capabilities \cite{carlini2023quantifyingmemorizationneurallanguage}. As the model size increases, the ability to memorize the pre-training data has been shown to improve \cite{JMLR:v24:22-1144}. The increasing demand for larger textual corpora for LLM pre-training results in the capability to maintain the data quality decreasing, meaning that more misinformation ends up in the pre-training datasets. This, combined with the findings of \textcite{carlini2023quantifyingmemorizationneurallanguage} that LLMs memorize repeated strings better, poses the risk of misinformation and biases making their way from the pre-training data to the model output.
+
+Some hallucinations, mainly factual contradictions, are caused by the knowledge boundaries of the model. \textcite{Kalai2025-fl} state that when an LLM encounters a task outside of its domain of knowledge, it tends to guess, producing an overconfident and usually nonfactual answer. As stated before, the domain of knowledge of an LLM is established during the pre-training phase, so it follows that the knowledge boundaries also arise from the pre-training. Multiple aspects have an effect on the knowledge boundaries: the inability of the model to memorize everything in the pre-training data, the data containing outdated information and excluding current information  \cite{onoe-etal-2022-entity}, and the exclusion of legally restricted data, such as copyright protected knowledge \cite{min2024silolanguagemodelsisolating}.
+
+
+
+
+
+\begin{itemize}
+    \item Misinformation and biases
+    \item Knowledge boundaries
+    \item Inferior alignment data
+\end{itemize}
+
+\subsubsection{Hallucination from Training}
+
+\begin{itemize}
+    \item Hallucination from Pre-training
+    \item Hallucination from SFT
+    \item Hallucination from RLHF
+\end{itemize}
+
+\subsubsection{Hallucination from Inference}
+
+\begin{itemize}
+    \item Imperfect Decoding Strategies (Decoding not covered in previous sections)
+    \item Over-confidence
+    \item Softmax Bottleneck (Softmax not covered in previous sections)
+    \item Reasoning Failure
+\end{itemize}
 
 \subsection{Hallucination Mitigation Methods}
 \subsection{LLMs in CS Education}
