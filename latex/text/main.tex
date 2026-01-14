@@ -586,20 +586,18 @@ Factuality hallucinations refer to generated content that deviates from establis
 \begin{enumerate}
     \item \textit{Factual contradiction} refers to situations where the LLM generates an output presenting information contradicting established knowledge as facts. Factual contradictions can be divided into two subcategories: \textit{entity-error hallucinations} and \textit{relation-error hallucinations}. Entity-error hallucinations contain erroneous entities in the output, shown in figure \ref{fig:hallucination_types} when Thomas Edison was falsely credited as the inventor of the telephone, although it in fact was developed by Alexander Graham Bell. Relation-error hallucinations, on the other hand, contain misrepresented relations between entities. From \ref{fig:hallucination_types}, the model claiming that Thomas Edison was the inventor of the lightbulb, when in reality he made improvements to the existing design, is a relation-error hallucination.
     
-    \item \textit{Factual fabrication} is a type of hallucination where the LLM output presents information that cannot be verified with current world knowledge as facts. Factual fabrications can be divided further into \textit{unverifiability hallucinations} and \textit{overclaim hallucinations}. Unverifiability hallucinations involve outputs that contain statements that are completely false or cannot be established with available knowledge.
-
-    Overclaim hallucinations contain biased claims, making the output unreliable.
+    \item \textit{Factual fabrication} is a type of hallucination where the LLM output presents information that cannot be verified with current world knowledge as facts. Factual fabrications can be divided further into \textit{unverifiability hallucinations} and \textit{overclaim hallucinations}. Unverifiability hallucinations involve outputs that contain statements that are completely false or cannot be established with available knowledge. In figure \ref{fig:hallucination_types}, the claim "The construction of the Eiffel Tower in 1889 led to the extinction of the Parisian tiger" is an unverifiability hallucination, since the Parisian tiger does not exist, and thus the claim can not be verified against any records. Overclaim hallucinations, on the other hand, contain biased claims, making the output unreliable. An example of an overclaim hallucination can be found in figure \ref{fig:hallucination_types}: the claim that the construction of the Eiffel tower is  "widely recognized as the event that sparked the global green architecture movement", is an overclaim, since there is no evidence to the claim and no common understanding on the subject.
 
 \end{enumerate}
 
 \subsubsection{Faithfulness hallucinations}
 
-Faithfulness hallucinations, on the other hand, refer to generated content that does not follow the given context or set of instructions. They are divided into three subcategories:
+Faithfulness hallucinations refer to generated content that does not follow the given context or set of instructions. They are divided into three subcategories:
 
 \begin{enumerate}
-    \item \textit{Instruction inconsistency}
-    \item \textit{Context inconsistency}
-    \item \textit{Logical inconsistency}
+    \item \textit{Instruction inconsistencies} are hallucinations in which the model's output does not follow the given instructions. Instruction inconsistensies may arise from the model's safety and operational guidelines, but in the perspective of hallucinations, the inconsistensy hallucinations refer to unintentional misalignment with non-malicious user input. Figure \ref{fig:hallucination_types}, shows an example of an instruction inconsistency hallucination, where the model is asked to perform a translation task, but the model performs a question-answering task instead.
+    \item \textit{Context inconsistency} refers to model output that does not follow the user-provided context. In figure \ref{fig:hallucination_types}, the user-provided context states that the Nile originates in the Great Lakes region of central Africa, while the model states that the Nile originates in the mountain ranges of central Africa.
+    \item \textit{Logical inconsistency} hallucinations can be detected most often in reasoning tasks. They show logical contradictions in the output. These inconsistencies can be found between inside reasoning steps and between steps and the final result of the reasoning task. The example in figure \ref{fig:hallucination_types} shows the logical inconsistency inside a reasoning step: Dividing both sides of $2x = 8$ by 2 incorrectly yields $x = 3$.
 \end{enumerate}
 
 \subsubsection{Causes of hallucinations}
