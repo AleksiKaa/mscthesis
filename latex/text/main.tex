@@ -563,8 +563,27 @@ LLMs acquire their capabilities through a three phase training process:
     \item \textbf{Reinforcement Learning from Human Feedback:} Reinforcement Learning from Human Feedback (RLHF), sometimes called Alignment and in some literature included in the SFT phase, is the final stage of training an LLM. RLHF is the process of aligning the output of the model to the preference of human users. Figure \ref{fig:rlhf} shows the progress of RLHF: the model is first fine-tuned in the SFT phase. Then, a reward model is trained on human-ranked responses and finally, using a policy optimization algorithm, such as PPO \cite{zhang2025instructiontuninglargelanguage}, the reward is maximized. This type of training allows the model to learn high-level objectives, such as values, tone, and behavior patterns. RLHF is also used to mitigate the possible harm the model could do once deployed in the real world \cite{ouyang2022traininglanguagemodelsfollow}. These unwanted responses include biased outputs, leaking private information, presenting misinformation as factual content, and generating harmful and toxic content \cite{weidinger2021ethicalsocialrisksharm}.
 \end{enumerate}
 
-\subsubsection{Decoding strategies?}
-\subsubsection{Cost-Effective Training/Inference, Adaptation \& Compression?}
+\subsubsection{Decoding strategies}
+
+During inference, given an input to the LLM, the input is first transformed into tokens, and then using these tokens, the model produces logits. The logits are converted into probabilities using a softmax function. Softmax is defined as
+
+\begin{align}
+    \sigma(z)_i = \frac{e^{z_i}}{\sum^{K}_{j=1}e^{z_j}}.
+\end{align}
+
+The softmax function normalizes the input vector into a propability distribution, fulfilling properties $\sigma(z)_i \in [0, 1]$ and $\sum_i^K \sigma(z)_i = 1$. Additionally, softmax has the property that for any $z_i, z_j$, where $z_i > z_j$, holds $\sigma(z)_i > \sigma(z)_j$. These properties make the softmax function especially functional for multi-class prediction, including token prediction.
+
+Decoding is the process of selecting which token the model produces using the probabilities obtained. There are many different decoding strategies, which each affect the nature of the model's output. The most popular decoding strategies include \textit{greedy search}, \textit{top-$k$ sampling}, \textit{top-$p$ sampling}, and \textit{beam search} \cite{Minaee2024-fr}.
+
+The greedy search is the simplest of the decoding methods. It is intuitive, straight-forward, and computationally inexpensive. The greedy search takes the most probable token at each step, discarding all others. Like other greedy algorithms, the greedy search does not achieve the global optimum by favoring local optima, often producing repetitive, generic output. One advantage of using the greedy search is that it is deterministic, meaning that the model will always produce the same output on the same input.
+
+Top-$k$ sampling is a more sophisticated decoding method compared to greedy search. In top-$k$ sampling, $k$ is a constant hyperparameter that decides the number of candidates with the highest probabilities to be considered as the next output. The most intuitive way to describe top-$k$ sampling is to sort the logit probabilities into descending order, and pick the top $k$ candidates. The final candidate is selected from the top candidates following the relative probabilities. This approach ensures variety in the output, but prioritizes the most probable tokens \cite{holtzman2020curiouscaseneuraltext}.
+
+Like top-$k$ sampling, top-$p$ sampling samples from a truncated distribution. The difference is the way of obtaining the distribution. In top-$p$ sampling, $p$ is a constant hyperparameter that decides the probability mass for the truncated distribution. One way of seeing the top-$p$ method is to once again sort the candidates in a descending order by their probabilities. Then, add candidates to the set of candidates until the total probability mass of the set of candidates exceeds $p$. The final token is obtained by randomly from the truncated distribution \cite{holtzman2020curiouscaseneuraltext}. Using a probability mass instead of a constant number of candidates as the cut-off point for the truncated distribution means that the shape of the probability distribution affects the number of candidates: flat distributions have many candidates to sample from, while peaked distributions focus only on a few candidates.
+
+Sampling with temperature
+
+Beam search
 
 \subsection{Hallucinations in LLMs}
 
@@ -581,10 +600,10 @@ In the context of LLMs, their versatility and usage in various fields of researc
 
 \subsubsection{Factuality hallucinations}
 
-Factuality hallucinations refer to generated content that deviates from established world knowledge, containing either inconsistentities that conflict real-world facts or unverifiable information. Factuality hallucinations are further divided into:
+Factuality hallucinations refer to generated content that deviates from established world knowledge, containing either inconsistentities that conflict real-world facts or unverifiable information. Factuality hallucinations are further divided into two subcategories:
 
 \begin{enumerate}
-    \item \textit{Factual contradiction} refers to situations where the LLM generates an output presenting information contradicting established knowledge as facts. Factual contradictions can be divided into two subcategories: \textit{entity-error hallucinations} and \textit{relation-error hallucinations}. Entity-error hallucinations contain erroneous entities in the output, shown in figure \ref{fig:hallucination_types} when Thomas Edison was falsely credited as the inventor of the telephone, although it in fact was developed by Alexander Graham Bell. Relation-error hallucinations, on the other hand, contain misrepresented relations between entities. From \ref{fig:hallucination_types}, the model claiming that Thomas Edison was the inventor of the lightbulb, when in reality he made improvements to the existing design, is a relation-error hallucination.
+    \item \textit{Factual contradiction} refers to situations where the LLM generates an output presenting information contradicting established knowledge as facts. Factual contradictions can be divided into two subcategories: \textit{entity-error hallucinations} and \textit{relation-error hallucinations}. This categorization is not universal and variations exist. \textcite{li2024dawndarkempiricalstudy} include in the categorization \textit{incompleteness hallucinations} and \textit{outdatedness hallucinations} in addition to previously mentioned hallucination types. Entity-error hallucinations contain erroneous entities in the output, shown in figure \ref{fig:hallucination_types} when Thomas Edison was falsely credited as the inventor of the telephone, although it in fact was developed by Alexander Graham Bell. Relation-error hallucinations, on the other hand, contain misrepresented relations between entities. From \ref{fig:hallucination_types}, the model claiming that Thomas Edison was the inventor of the lightbulb, when in reality he made improvements to the existing design, is a relation-error hallucination. Incompleteness hallucination refers to situations where the LLM output is clearly incomplete. This occurs most often when generating long or listed responses. An example of an incompleteness hallucination is the LLM producing a list of 7 popular fantasy books when asked to produce a list of 10. Outdatedness hallucinations occur when the knowledge of the LLM is out-of-date, and no longer true. For example, an LLM trained before 2025 would answer "Joe Biden", when asked about the current president of the United States, when the current answer is "Donald Trump".
     
     \item \textit{Factual fabrication} is a type of hallucination where the LLM output presents information that cannot be verified with current world knowledge as facts. Factual fabrications can be divided further into \textit{unverifiability hallucinations} and \textit{overclaim hallucinations}. Unverifiability hallucinations involve outputs that contain statements that are completely false or cannot be established with available knowledge. In figure \ref{fig:hallucination_types}, the claim "The construction of the Eiffel Tower in 1889 led to the extinction of the Parisian tiger" is an unverifiability hallucination, since the Parisian tiger does not exist, and thus the claim can not be verified against any records. Overclaim hallucinations, on the other hand, contain biased claims, making the output unreliable. An example of an overclaim hallucination can be found in figure \ref{fig:hallucination_types}: the claim that the construction of the Eiffel tower is  "widely recognized as the event that sparked the global green architecture movement", is an overclaim, since there is no evidence to the claim and no common understanding on the subject.
 
@@ -612,15 +631,7 @@ LLMs have been shown to have remarkable memorization capabilities \cite{carlini2
 
 Some hallucinations, mainly factual contradictions, are caused by the knowledge boundaries of the model. \textcite{Kalai2025-fl} state that when an LLM encounters a task outside of its domain of knowledge, it tends to guess, producing an overconfident and usually nonfactual answer. As stated before, the domain of knowledge of an LLM is established during the pre-training phase, so it follows that the knowledge boundaries also arise from the pre-training. Multiple aspects have an effect on the knowledge boundaries: the inability of the model to memorize everything in the pre-training data, the data containing outdated information and excluding current information  \cite{onoe-etal-2022-entity}, and the exclusion of legally restricted data, such as copyright protected knowledge \cite{min2024silolanguagemodelsisolating}.
 
-
-
-
-
-\begin{itemize}
-    \item Misinformation and biases
-    \item Knowledge boundaries
-    \item Inferior alignment data
-\end{itemize}
+Alignment data of low quality used in the SFT phase can also cause hallucinations. \textcite{gekhman2024doesfinetuningllmsnew} show that LLMs struggle to take in new information during SFT compared to pre-training. They also find, that the tendency of LLMs to hallucinate grows linearly with the amount of new information obtained during SFT.
 
 \subsubsection{Hallucination from Training}
 
