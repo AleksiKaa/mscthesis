@@ -489,22 +489,23 @@ NLG     & Natural Language Generation \\
 
 \textbf{TODO: citations in intro! along with text improvements }
 
-The subsequent advances in Language Models (LMs) have significantly extended the capabilities of computational Natural Language Processing (NLP) and text generation. Modern LMs are commonly transformer-based and pretrained on a Web-scale text corpora. These models are usually called Large Language Models (LLMs). LLMs, such as GPT-4 and Llama 4, have been shown to excel at a number of text-related tasks, including the generation of program code \cite{Minaee2024-fr}.
+The recent advances in Language Models (LMs) have significantly extended the capabilities of computational Natural Language Processing (NLP) and text generation. Modern LMs are commonly transformer-based and pretrained on a Web-scale text corpora. These models are usually called Large Language Models (LLMs). LLMs, such as GPT-4 and Llama 4, have been shown to excel at a number of text-related tasks, including the generation of program code \cite{Minaee2024-fr}.
 
 Computer Science (CS) education and programming skills are usually obtained by completing sets of various exercises. These exercises are typically created by hand by the teaching staff. Distributing the same set of exercises to a large group of students may lead to the students sharing the answers, which hinders learning, or the lack of relevant context in the exercises might not inspire students to complete them. Personalizing and contextualizing the exercises has been shown to increase student's engagement and improve the learning outcome. However, personalizing each exercise is a laborious task and is unfeasible for most CS teachers.
 
 Since the emergence of LLMs, researchers, particularly in the field of CS education, have been interested in the models' ability to generate contextualized text, including computer program code, that is nearly indistinguishable from content written by humans. The use of LLMs in the creation of educational materials have a number of advantages compared to creating each exercise by hand: LLMs decrease the amount of time needed to create each exercise, they allow deep personalization of the exercises and can also be used to create the supporting artifacts in the assignments, including starter code, hints, and example solutions. Time-effectiveness and personalization are not the only important factors in creating educational content, however, it is also crucial to ensure that the materials offered to students are of high quality.
 
-Various aspects of the training data, the training phase, and inference make LLMs prone to hallucinations. A hallucination in the context of LLMs is a model-generated output that is plausible but factually false \cite{10.1145/3703155}. Hallucinations decrease the quality of the generated content, and in an educational environment, may make the content unusable. Manually checking each output for erroneous content is time-consuming and prone to human-error. For this reason, it would be highly advantageous to mitigate hallucinations produced or to have the ability to detect and correct output containing hallucinations. 
+Various aspects of the training data, the training phase, and inference make LLMs prone to hallucinations. A hallucination in the context of LLMs is a model-generated output that is "either
+nonsensical or unfaithful to the provided source content". \cite{10.1145/3703155}. Hallucinations decrease the quality of the generated content, and in an educational environment, may make the content unusable \cite{10.1145/3769994.3770036}. Manually checking each output for erroneous content is time-consuming and prone to human-error. For this reason, it would be highly advantageous to mitigate hallucinations produced or to have the ability to detect and correct output containing hallucinations. 
 
 One promising method of preventing hallucinations is in-context learning (ICL). ICL is the practice of introducing incorrect examples for the model as a demonstration and letting the model learn from them \cite{dong-etal-2024-survey}. ICL has shown great promise in reasoning-heavy tasks, such as mathematical reasoning \cite{an2024learningmistakesmakesllm}. Extending ICL to the generation of program code and programming exercises could decrease the amount of human input needed to create programming exercises.
 
 \textbf{TODO: define scope!} This thesis investigates possible methods for detecting, preventing, or reducing hallucinations in educational CS content generated using LLMs. The study provides an empirical comparison of performance between implicit and explicit in-context learning in LLMs used in the generation of CS education content. The main research questions in this thesis are as follows:
 
 \begin{itemize}
-    \item \textbf{RQ1: How effective are state-of-the-art LLMs in generating error-free programming exercises?} This includes researching the effect of the prompt used in the generation, optimizing the prompt structures, and analyzing the faithfulness and factuality of the output.
+    \item \textbf{RQ1: How effective is a state-of-the-art LLM in generating hallucination-free programming exercises?} This includes researching the effect of the prompt used in the generation, optimizing the prompt structures, and analyzing the faithfulness and factuality of the output.
     \item \textbf{RQ2: Can LLMs learn from previously produced erroneous content, producing higher quality content?} The objective of this research question is to find out whether in-context learning can be extended to the generation of CS education material and how much does in-context learning improve the output quality.
-    \item \textbf{RQ3: Which method of ICL outperforms the other in generating CS education materials, implicit or explicit?} If the answer to the second research question is yes, the next point of interest is to compare the performance of the two different types of ICL.
+    \item \textbf{RQ3: Can CS education materials generated using implicit in-context learning achieve the same level of quality, or outperform explicit in-context learning?} If the answer to the second research question is yes, the next point of interest is to compare the performance of the two different types of ICL.
 \end{itemize}
 
 These questions determine the course and content of the study. The thesis is structured as follows:
@@ -544,7 +545,7 @@ However, many LLMs, most notably the GPT-family and the Llama-family, omit the e
 
 In order for any neural LM to be able to take text as input, the text first has to be converted to a form that the LM can understand. Tokenization is the practice of breaking down text into smaller chunks, called tokens. A token is the basic unit of operation in LMs. The most basic tokenizers split text on whitespace, but more advanced tokenizers break each individual word into subwords, or even into single characters. Using smaller tokens enables combining multiple tokens to form words, effectively increasing the size of the vocabulary and decreasing the chance of out-of-vocabulary encounters \cite{Minaee2024-fr}.
 
-Most LLMs, and the Transformer, convert tokens further into an embedding, which is a high-dimensional vector representation of the token. This is usually done in the learnable embedding layer \cite{DBLP:journals/corr/VaswaniSPUJGKP17}, which means that the model optimizes the vector representation of each token, allowing capture and measurement of word similarities and distances. Additionally, positional encoding is included in the embeddings, which allows the model to learn positional dependencies and to carry contextual information spread out in the input sequence.
+Neural language models, like the Transformer and LLMs, convert tokens further into an embedding, which is a high-dimensional vector representation of the token. This is usually done in the learnable embedding layer \cite{DBLP:journals/corr/VaswaniSPUJGKP17}, which means that the model optimizes the vector representation of each token, allowing capture and measurement of word similarities and distances. Additionally, positional encoding is included in the embeddings, which allows the model to learn positional dependencies and to carry contextual information spread out in the input sequence.
 
 LLMs acquire their capabilities through a three phase training process:
 
@@ -571,19 +572,27 @@ During inference, given an input to the LLM, the input is first transformed into
     \sigma(z)_i = \frac{e^{z_i}}{\sum^{K}_{j=1}e^{z_j}}.
 \end{align}
 
-The softmax function normalizes the input vector into a propability distribution, fulfilling properties $\sigma(z)_i \in [0, 1]$ and $\sum_i^K \sigma(z)_i = 1$. Additionally, softmax has the property that for any $z_i, z_j$, where $z_i > z_j$, holds $\sigma(z)_i > \sigma(z)_j$. These properties make the softmax function especially functional for multi-class prediction, including token prediction.
+The softmax function normalizes the input vector into a probability distribution, fulfilling properties $\sigma(z)_i \in [0, 1]$ and $\sum_i^K \sigma(z)_i = 1$. Additionally, softmax has the property that for any $z_i, z_j$, where $z_i > z_j$, holds $\sigma(z)_i > \sigma(z)_j$. These properties make the softmax function especially functional for multi-class prediction, including token prediction.
 
 Decoding is the process of selecting which token the model produces using the probabilities obtained. There are many different decoding strategies, which each affect the nature of the model's output. The most popular decoding strategies include \textit{greedy search}, \textit{top-$k$ sampling}, \textit{top-$p$ sampling}, and \textit{beam search} \cite{Minaee2024-fr}.
 
 The greedy search is the simplest of the decoding methods. It is intuitive, straight-forward, and computationally inexpensive. The greedy search takes the most probable token at each step, discarding all others. Like other greedy algorithms, the greedy search does not achieve the global optimum by favoring local optima, often producing repetitive, generic output. One advantage of using the greedy search is that it is deterministic, meaning that the model will always produce the same output on the same input.
 
+Unlike the greedy search that only considers the most probable token at any given step, beam search is a decoding method that considers multiple token sequences, "beams", at the same time. Beam search is a search tree algorithm that, given the starting token, finds the most likely sequence of tokens among $N$ beams, until the maximum sequence length $M$ is reached or the end-of-sequence token produced by the model. This means that at worst, the decoder has to keep track of $N^M$ sequences, making beam search much computationally intensive than greedy search. 
+
 Top-$k$ sampling is a more sophisticated decoding method compared to greedy search. In top-$k$ sampling, $k$ is a constant hyperparameter that decides the number of candidates with the highest probabilities to be considered as the next output. The most intuitive way to describe top-$k$ sampling is to sort the logit probabilities into descending order, and pick the top $k$ candidates. The final candidate is selected from the top candidates following the relative probabilities. This approach ensures variety in the output, but prioritizes the most probable tokens \cite{holtzman2020curiouscaseneuraltext}.
 
-Like top-$k$ sampling, top-$p$ sampling samples from a truncated distribution. The difference is the way of obtaining the distribution. In top-$p$ sampling, $p$ is a constant hyperparameter that decides the probability mass for the truncated distribution. One way of seeing the top-$p$ method is to once again sort the candidates in a descending order by their probabilities. Then, add candidates to the set of candidates until the total probability mass of the set of candidates exceeds $p$. The final token is obtained by randomly from the truncated distribution \cite{holtzman2020curiouscaseneuraltext}. Using a probability mass instead of a constant number of candidates as the cut-off point for the truncated distribution means that the shape of the probability distribution affects the number of candidates: flat distributions have many candidates to sample from, while peaked distributions focus only on a few candidates.
+Like top-$k$ sampling, top-$p$ sampling samples from a truncated distribution. The difference is the way of obtaining the distribution. In top-$p$ sampling, $p \in [0, 1]$ is a constant hyperparameter that decides the probability mass for the truncated distribution. One way of seeing the top-$p$ method is to once again sort the candidates in a descending order by their probabilities. Then, add candidates to the set of candidates until the total probability mass of the set of candidates exceeds $p$. The final token is obtained by sampling the truncated distribution \cite{holtzman2020curiouscaseneuraltext}. Using a probability mass instead of a constant number of candidates as the cut-off point for the truncated distribution means that the shape of the probability distribution affects the number of candidates: flat distributions have many candidates to sample from, while peaked distributions focus only on a few candidates.
 
-Sampling with temperature
+One common approach used in sampling based decoding methods is to shape the distribution using a parameter called temperature \cite{ACKLEY1985147}. Including temperature $T$ as a hyperparameter, the softmax function becomes
 
-Beam search
+\begin{align}
+    \sigma(z)_i = \frac{e^{z_i/T}}{\sum^{K}_{j=1}e^{z_j/T}}.
+\end{align}
+
+The effect of $T$ on the distribution depends on its value: when $T \rightarrow \inf$, the distribution tends towards a uniform distribution, while when $T \rightarrow 0$ the distribution favors high probability outcomes even heavier \cite{xuan2025exploringimpacttemperaturescaling}.  
+
+\subsection{In-Context Learning}
 
 \subsection{Hallucinations in LLMs}
 
@@ -594,7 +603,7 @@ In the context of LLMs, their versatility and usage in various fields of researc
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{latex/images/hallucination_types.png}
-    \caption{Examples of each type of LLM hallucination presented by \textcite{10.1145/3571730}.}
+    \caption{Examples of each type of LLM hallucination presented by \textcite{10.1145/3703155}.}
     \label{fig:hallucination_types}
 \end{figure}
 
@@ -650,7 +659,7 @@ Alignment data of low quality used in the SFT phase can also cause hallucination
     \item Reasoning Failure
 \end{itemize}
 
-\subsection{Hallucination Mitigation Methods}
+\subsection{Hallucination Mitigation and Detection Methods}
 \subsection{LLMs in CS Education}
 \subsection{Automatic exercise generation?}
 
