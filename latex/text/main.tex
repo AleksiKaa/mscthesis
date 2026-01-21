@@ -541,7 +541,7 @@ The Transformer model consists of an encoder stack and a decoder stack, pictured
 
 However, many LLMs, most notably the GPT-family and the Llama-family, omit the encoder completely and are strictly \textit{Decoder-Only models} \cite{Minaee2024-fr}. These models function purely as auto-regressive language models, predicting the next token based only on previous tokens. Decoder-Only models have been shown to excel in different text generation tasks, such as answering questions and generating program code \cite{Chen2021EvaluatingLL}.
 
-\subsubsection{Training Stages of LLMs}
+\subsubsection{Training Stages of LLMs} \label{sec:training}
 
 In order for any neural LM to be able to take text as input, the text first has to be converted to a form that the LM can understand. Tokenization is the practice of breaking down text into smaller chunks, called tokens. A token is the basic unit of operation in LMs. The most basic tokenizers split text on whitespace, but more advanced tokenizers break each individual word into subwords, or even into single characters. Using smaller tokens enables combining multiple tokens to form words, effectively increasing the size of the vocabulary and decreasing the chance of out-of-vocabulary encounters \cite{Minaee2024-fr}.
 
@@ -594,6 +594,29 @@ The effect of $T$ on the distribution depends on its value: when $T \rightarrow 
 
 \subsection{In-Context Learning}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=1\textwidth]{latex/images/icl_example.png}
+\caption{Illustration of the flow of in-context learning as per \textcite{dong-etal-2024-survey}}
+\label{fig:icl}
+\end{figure}
+
+In-context learning is the practice of adapting a pre-trained LLM to a new task using only a few examples as a demonstration during inference \cite{NEURIPS2020_1457c0d6}. The idea is that, much like humans, the LLM can learn from analogy. Figure \ref{fig:icl} contains an example of ICL. Demonstration examples are usually formed by inserting data into a natural language template. Then, a query is concatenated to the demonstration set and given to the LLM as an input. By entering a demonstration set along with the query, the LLM is expected to learn the hidden pattern of the demonstration set, improving prediction accuracy \cite{dong-etal-2024-survey}. The input can also include an instruction that further describes the task that is to be completed by the LLM.
+
+\textcite{dong-etal-2024-survey} define ICL formally as: given a query input text $x$ and a set of candidate responses $Y = \{y_1, \cdots, y_m\}$, the model $M$ predicts the candidate response with the highest score, conditioned on a demonstration set $C$. $C$ consists of $k$ demonstration examples, with an optional task instruction. The instruction can be the same across all examples or vary between examples, depending on whether the learning is \textit{cross-task} ICL or \textit{task-specific} ICL. Thus, $C = \{I, [(x_1^\prime, y_1^\prime), \cdots, (x_k^\prime, y_k^\prime)]\}$ for task-specific ICL and $C = \{(I_1, x_1^\prime, y_1^\prime), \cdots, (I_k, x_k^\prime, y_k^\prime)\}$ for cross-task ICL. The likelihood of a candidate response is calculated using a scoring function on the whole input:
+
+\begin{align}
+    P(y_j | x) := f_M(y_j, C, x).
+\end{align}
+
+The final prediction is the candidate with the highest score:
+
+\begin{align}
+    \hat{y} = \arg \max_{y_j \in Y}P(y_j|x).
+\end{align}
+
+ICL has a number of features that make it more attractive in comparison to fine-tuning a task-specific LM, but maybe the most prominent feature is that ICL is conducted on a pre-trained LLM during inference. This suggests that ICL is less resource intensive than fine-tuning, since no actual model parameter updates are made. In addition to savings in training resources, ICL has shown great promise in many reasoning-heavy tasks, even surpassing the capabilities of state-of-the-art fine-tuned language models in some tasks \cite{NEURIPS2020_1457c0d6}. However, studies have shown that ICL can be finicky and it's performance is sensitive to settings, including the form of the prompt template and the order and selection of demonstration examples \cite{wang2024largelanguagemodelslatent}. This poses a challenge for all applications of ICL in finding optimal performance, often requiring human intervention in adjusting the prompt and selecting the demonstrations.
+
 \subsection{Hallucinations in LLMs}
 
 Hallucinations in Natural Language Generation (NLG) tasks refer to generated content that does not faithfully follow the input or is nonsensical \cite{filippova-2020-controlled}. Traditionally, hallucinations in NLG have been categorized as \textit{intrinsic} and \textit{extrinsic} hallucinations \cite{maynez2020faithfulnessfactualityabstractivesummarization}. Intrinsic hallucinations refer to synthesized content present in the input, using terms or concepts available, but misrepresenting them, creating an unreliable output. Extrinsic hallucinations refer to generated output that ignores or discards the source material \cite{10.1145/3571730}.
@@ -644,18 +667,21 @@ Alignment data of low quality used in the SFT phase can also cause hallucination
 
 \subsubsection{Hallucination from Training}
 
+As explained in more detail in section \ref{sec:training}, an LLM obtains it's capabilities through a 3-step training process, with general world-knowledge and language understanding being obtained in pre-training, task completion in SFT, and alignment with human preferences in RLHF. Although these phases are crucial for equipping LLMs with their exceptional language understanding capabilities, each phase has its pitfalls that may induce hallucinations.
+
+The auto-regressive, unidirectional manner of predicting tokens conducted during pre-training limits the model's ability to capture sophisticated contextual dependencies leading to potential hallucinations. \textcite{li2023batgptbidirectionalautoregessivetalker} suggest that this could be alleviated by employing a bidirectional architecture. Additionally, the phenomenon of exposure bias, arising from optimizing with ground-truth labels during training but employing model predictions instead during inference, has been shown to cause hallucinations in a variety of neural language models \cite{wang-sennrich-2020-exposure}.
+
 \begin{itemize}
-    \item Hallucination from Pre-training
     \item Hallucination from SFT
-    \item Hallucination from RLHF
+    \item Hallucination from RLHF Tänne ehkä kamaa rlhf bias: esim sukupuolten bias
 \end{itemize}
 
 \subsubsection{Hallucination from Inference}
 
 \begin{itemize}
-    \item Imperfect Decoding Strategies (Decoding not covered in previous sections)
+    \item Imperfect Decoding Strategies
     \item Over-confidence
-    \item Softmax Bottleneck (Softmax not covered in previous sections)
+    \item Softmax Bottleneck
     \item Reasoning Failure
 \end{itemize}
 
