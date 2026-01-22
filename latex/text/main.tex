@@ -564,7 +564,7 @@ LLMs acquire their capabilities through a three phase training process:
     \item \textbf{Reinforcement Learning from Human Feedback:} Reinforcement Learning from Human Feedback (RLHF), sometimes called Alignment and in some literature included in the SFT phase, is the final stage of training an LLM. RLHF is the process of aligning the output of the model to the preference of human users. Figure \ref{fig:rlhf} shows the progress of RLHF: the model is first fine-tuned in the SFT phase. Then, a reward model is trained on human-ranked responses and finally, using a policy optimization algorithm, such as PPO \cite{zhang2025instructiontuninglargelanguage}, the reward is maximized. This type of training allows the model to learn high-level objectives, such as values, tone, and behavior patterns. RLHF is also used to mitigate the possible harm the model could do once deployed in the real world \cite{ouyang2022traininglanguagemodelsfollow}. These unwanted responses include biased outputs, leaking private information, presenting misinformation as factual content, and generating harmful and toxic content \cite{weidinger2021ethicalsocialrisksharm}.
 \end{enumerate}
 
-\subsubsection{Decoding strategies}
+\subsubsection{Decoding strategies} \label{sec:decoding}
 
 During inference, given an input to the LLM, the input is first transformed into tokens, and then using these tokens, the model produces logits. The logits are converted into probabilities using a softmax function. Softmax is defined as
 
@@ -592,7 +592,7 @@ One common approach used in sampling based decoding methods is to shape the dist
 
 The effect of $T$ on the distribution depends on its value: when $T \rightarrow \inf$, the distribution tends towards a uniform distribution, while when $T \rightarrow 0$ the distribution favors high probability outcomes even heavier \cite{xuan2025exploringimpacttemperaturescaling}.  
 
-\subsection{In-Context Learning}
+\subsection{In-Context Learning} \label{sec:icl}
 
 \begin{figure}[h]
 \centering
@@ -617,7 +617,7 @@ The final prediction is the candidate with the highest score:
 
 ICL has a number of features that make it more attractive in comparison to fine-tuning a task-specific LM, but maybe the most prominent feature is that ICL is conducted on a pre-trained LLM during inference. This suggests that ICL is less resource intensive than fine-tuning, since no actual model parameter updates are made. In addition to savings in training resources, ICL has shown great promise in many reasoning-heavy tasks, even surpassing the capabilities of state-of-the-art fine-tuned language models in some tasks \cite{NEURIPS2020_1457c0d6}. However, studies have shown that ICL can be finicky and it's performance is sensitive to settings, including the form of the prompt template and the order and selection of demonstration examples \cite{wang2024largelanguagemodelslatent}. This poses a challenge for all applications of ICL in finding optimal performance, often requiring human intervention in adjusting the prompt and selecting the demonstrations.
 
-\subsection{Hallucinations in LLMs}
+\subsection{Hallucinations in LLMs} \label{sec:hallcinations}
 
 Hallucinations in Natural Language Generation (NLG) tasks refer to generated content that does not faithfully follow the input or is nonsensical \cite{filippova-2020-controlled}. Traditionally, hallucinations in NLG have been categorized as \textit{intrinsic} and \textit{extrinsic} hallucinations \cite{maynez2020faithfulnessfactualityabstractivesummarization}. Intrinsic hallucinations refer to synthesized content present in the input, using terms or concepts available, but misrepresenting them, creating an unreliable output. Extrinsic hallucinations refer to generated output that ignores or discards the source material \cite{10.1145/3571730}.
 
@@ -630,7 +630,7 @@ In the context of LLMs, their versatility and usage in various fields of researc
     \label{fig:hallucination_types}
 \end{figure}
 
-\subsubsection{Factuality hallucinations}
+\subsubsection{Factuality hallucinations} \label{sec:factuality_hallucinations}
 
 Factuality hallucinations refer to generated content that deviates from established world knowledge, containing either inconsistentities that conflict real-world facts or unverifiable information. Factuality hallucinations are further divided into two subcategories:
 
@@ -641,7 +641,7 @@ Factuality hallucinations refer to generated content that deviates from establis
 
 \end{enumerate}
 
-\subsubsection{Faithfulness hallucinations}
+\subsubsection{Faithfulness hallucinations} \label{sec:faithfulness_hallucinations}
 
 Faithfulness hallucinations refer to generated content that does not follow the given context or set of instructions. They are divided into three subcategories:
 
@@ -651,11 +651,11 @@ Faithfulness hallucinations refer to generated content that does not follow the 
     \item \textit{Logical inconsistency} hallucinations can be detected most often in reasoning tasks. They show logical contradictions in the output. These inconsistencies can be found between inside reasoning steps and between steps and the final result of the reasoning task. The example in figure \ref{fig:hallucination_types} shows the logical inconsistency inside a reasoning step: Dividing both sides of $2x = 8$ by 2 incorrectly yields $x = 3$.
 \end{enumerate}
 
-\subsection{Causes of hallucinations}
+\subsection{Causes of hallucinations} \label{sec:hallucination_causes}
 
 The root-causes for hallucinations are multi-faceted, spanning the LLM ability obtaining process comprehensively. This section covers the three main elements from which hallucinations originate: data, training, and inference. 
 
-\subsubsection{Hallucination from Data}
+\subsubsection{Hallucination from Data} \label{sec:data_hallucination}
 
 Training LLMs require data in two forms: raw textual data used in the pre-training phase, which lays the foundation for the abilities and world knowledge of the model, and alignment data, in the form of $(\texttt{instruction, output})$ pairs, which trains the model to conform to and follow user instructions. While diverse data expands the abilities of LLMs, it is also one of the primary causes for LLM hallucinations \cite{Kalai2025-fl}. The hallucinations are caused by misinformation and biases in the pre-training data, as well as the knowledge boundaries of the pre-training data, and low-quality alignment data used in the SFT phase.
 
@@ -665,27 +665,27 @@ Some hallucinations, mainly factual contradictions, are caused by the knowledge 
 
 Alignment data of low quality used in the SFT phase can also cause hallucinations. \textcite{gekhman2024doesfinetuningllmsnew} show that LLMs struggle to take in new information during SFT compared to pre-training. They also find, that the tendency of LLMs to hallucinate grows linearly with the amount of new information obtained during SFT.
 
-\subsubsection{Hallucination from Training}
+\subsubsection{Hallucination from Training} \label{sec:training_hallucination}
 
 As explained in more detail in section \ref{sec:training}, an LLM obtains it's capabilities through a 3-step training process, with general world-knowledge and language understanding being obtained in pre-training, task completion in SFT, and alignment with human preferences in RLHF. Although these phases are crucial for equipping LLMs with their exceptional language understanding capabilities, each phase has its pitfalls that may induce hallucinations.
 
 The auto-regressive, unidirectional manner of predicting tokens conducted during pre-training limits the model's ability to capture sophisticated contextual dependencies leading to potential hallucinations. \textcite{li2023batgptbidirectionalautoregessivetalker} suggest that this could be alleviated by employing a bidirectional architecture. Additionally, the phenomenon of exposure bias, arising from optimizing with ground-truth labels during training but employing model predictions instead during inference, has been shown to cause hallucinations in a variety of neural language models \cite{wang-sennrich-2020-exposure}.
 
-\begin{itemize}
-    \item Hallucination from SFT
-    \item Hallucination from RLHF Tänne ehkä kamaa rlhf bias: esim sukupuolten bias
-\end{itemize}
+Referring to section \ref{sec:training}, SFT seeks to turn the capabilities of the LLM from a next token predictor into a language model that can follow instructions and complete tasks. It was established in section \ref{sec:data_hallucination} that alignment data outside the domain of knowledge of the model induce hallucinations. Furthermore, models are usually trained to complete each response, without the ability to express uncertainty \cite{Kalai2025-fl}. Not being able to respond 'I don't know' means the model has to guess and fabricate responses, manifesting as hallucinations \cite{yang2024alignmenthonesty, zhang2024rtuninginstructinglargelanguage}.
 
-\subsubsection{Hallucination from Inference}
+\textcite{azaria2023internalstatellmknows} propose that LLMs may have an internal mechanism to know the truthfulness of the responses generated. Despite that, LLMs consistently output unfactual responses. In addition, models have been shown to conform to and affirm users' beliefs over truthful ones. The root for this kind of behavior might be learned by the model during RLHF. While RLHF is used to teach the model to avoid generating harmful content and to follow values and behave in a specific way, studies \cite{sharma2025understandingsycophancylanguagemodels, wei2024simplesyntheticdatareduces} have shown that RLHF also encourages this sycophantic behavior in the model.
 
-\begin{itemize}
-    \item Imperfect Decoding Strategies
-    \item Over-confidence
-    \item Softmax Bottleneck
-    \item Reasoning Failure
-\end{itemize}
+\subsubsection{Hallucination from Inference} \label{sec:inference_hallucination}
 
-\subsection{Hallucination Mitigation and Detection Methods}
+Decoding is a crucial component in utilizing the capabilities obtained by an LLM during training to the fullest. Still, there are weaknesses in decoding strategies that may induce hallucinations. The greedy search is deterministic, and always outputs the same response for the same input by selecting the most probable token at each step. The greedy search has many shortcomings, as they produce bland, low-quality text, and repeate false information if it is most probable. Via stochastic sampling,  LLMs are able to output diverse and rich content, circumventing the shortcomings of the greedy search. Although utilizing randomness in the selecting process introduces a different reason for hallucinations, as sampling tokens includes the possibility of ones with false or unfaithful content to be selected.
+
+Even though LLMs are equipped with breath-taking reasoning abilities, they still may fail completely in some tasks. Reasoning limits may be exceeded with complicated relations between objects in the prompt, even though the model possesses the knowledge needed for the task. Furthermore, \textcite{berglund2024reversalcursellmstrained} show a specific reasoning failure called the \textit{Reversal Curse}. The study shows that LLMs fail to generalize information and understand bidirectional relations. The Reversal Curse is exhibited when an LLM trained on a statement of the form "A is B" is asked the to assess the truthfulness of the statement "B is A". For example, an LLM trained on "Homer Simpson is Bart Simpson's father." might fail to truthfully answer when asked "Who is Bart Simpson's father?", since the model cannot infer the relation from the training data.  
+
+Over-confidence?
+
+Softmax bottleneck?
+
+\subsection{Hallucination Detection and Mitigation Methods}
 \subsection{LLMs in CS Education}
 \subsection{Automatic exercise generation?}
 
