@@ -468,6 +468,7 @@ PLM     & Pre-trained Language Model \\
 SFT     & Supervised Fine-Tuning \\
 RLHF    & Reinforcement Learning from Human Feedback \\
 NLG     & Natural Language Generation \\
+RAG     & Retrieval-Augmented Generation \\
 %ML      & Machine Learning \\
 %AI      & Artificial Intelligence \\
 \end{tabular}
@@ -677,15 +678,39 @@ Referring to section \ref{sec:training}, SFT seeks to turn the capabilities of t
 
 \subsubsection{Hallucination from Inference} \label{sec:inference_hallucination}
 
-Decoding is a crucial component in utilizing the capabilities obtained by an LLM during training to the fullest. Still, there are weaknesses in decoding strategies that may induce hallucinations. The greedy search is deterministic, and always outputs the same response for the same input by selecting the most probable token at each step. The greedy search has many shortcomings, as they produce bland, low-quality text, and repeate false information if it is most probable. Via stochastic sampling,  LLMs are able to output diverse and rich content, circumventing the shortcomings of the greedy search. Although utilizing randomness in the selecting process introduces a different reason for hallucinations, as sampling tokens includes the possibility of ones with false or unfaithful content to be selected.
+Decoding is a crucial component in utilizing the capabilities obtained by an LLM during training to the fullest. However, there are weaknesses in decoding strategies that can induce hallucinations. The greedy search is deterministic and always outputs the same response for the same input by selecting the most probable token at each step. The greedy search has many shortcomings, as they produce bland, low-quality text, and repeat false information if it is most probable. Through stochastic sampling,  LLMs can output diverse and rich content, circumventing the shortcomings of the greedy search. Although utilizing randomness in the selection process introduces a different reason for hallucinations, since sampling tokens includes the possibility selection of those with false or unfaithful content.
 
-Even though LLMs are equipped with breath-taking reasoning abilities, they still may fail completely in some tasks. Reasoning limits may be exceeded with complicated relations between objects in the prompt, even though the model possesses the knowledge needed for the task. Furthermore, \textcite{berglund2024reversalcursellmstrained} show a specific reasoning failure called the \textit{Reversal Curse}. The study shows that LLMs fail to generalize information and understand bidirectional relations. The Reversal Curse is exhibited when an LLM trained on a statement of the form "A is B" is asked the to assess the truthfulness of the statement "B is A". For example, an LLM trained on "Homer Simpson is Bart Simpson's father." might fail to truthfully answer when asked "Who is Bart Simpson's father?", since the model cannot infer the relation from the training data.  
+Although LLMs are equipped with breath-taking reasoning abilities, they may still fail completely on some tasks. Reasoning limits may be exceeded with complicated relations between objects in the prompt, even if the model possesses the knowledge needed for the task. Furthermore, \textcite{berglund2024reversalcursellmstrained} show a specific reasoning failure called the \textit{Reversal Curse}. The study shows that LLMs fail to generalize information and understand bidirectional relations. The Reversal Curse is exhibited when an LLM trained on a statement of the form "A is B" is asked to assess the truthfulness of the statement "B is A". For example, an LLM trained on "Homer Simpson is Bart Simpson's father." might fail to truthfully answer when asked "Who is Bart Simpson's father?", since the model cannot infer the relation from the training data.  
 
-Over-confidence?
+%Over-confidence?
 
-Softmax bottleneck?
+%Softmax bottleneck?
 
 \subsection{Hallucination Detection and Mitigation Methods}
+
+The prevalence of hallucinations in LLMs has raised a lot of concern about their reliability and ability to perform in real-world tasks. For this reason, much research focuses on the detection and prevention of hallucinations. The methods of hallucination detection differ depending on the type of hallucination. Factuality hallucination detection aims to identify the unfactual content in the model's output, whereas faithfulness hallucination detection evaluates context together with the output, measuring the faithfulness of the output \cite{10.1145/3703155}. 
+
+Factuality hallucination detection is generally done via fact-checking methods or model uncertainty estimation. Fact-checking is usually a two-step procedure: facts are extracted from the output and then verified against knowledge sources. A straight-forward method to evaluate the factuality of the output is through an external source, such as FACTSCORE \cite{min2023factscorefinegrainedatomicevaluation}. FACTSCORE extracts atomic facts from the generated content and computes the percentage of supported facts from trusted knowledge sources. Uncertainty estimation involves studying the internal state of the LLM. The token probability can be used as a metric for the model's certainty, where a low probability indicates strong uncertainty \cite{varshney2023stitchtimesavesnine}.
+
+Many faithfulness hallucination detection methods employ a kind of metric to assess the faithfulness of the output. These metrics, such as \cite{nan-etal-2021-entity, durmus-etal-2020-feqa}, consider the overlap of the information in the context and output to determine the faithfulness of the output. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{latex/images/icl_faithfulness.png}
+    \caption{Prompt design of evaluation of faithfulness of text summarization with ICL using GPT-3 by \textcite{Jain_2023}.}
+    \label{fig:icl_faithfulness}
+\end{figure}
+
+A different kind of faithfulness hallucination detection method is to use an external LLM as a judging entity through in-context learning. \textcite{gao2023humanlikesummarizationevaluationchatgpt} found that by providing ChatGPT with strict evaluation guidelines, the original text as context and an LLM-generated summary, it was able to accurately assess the quality of the summary, including faithfulness. 
+
+Figure \ref{fig:icl_faithfulness} shows the prompt design of the ICL evaluation framework used by \textcite{Jain_2023}. It features in-context demonstrations in blue and the task to evaluate the consistency of the provided summary based on the original text in red. In the actual experiment, 4 demonstration examples were used for each input, and the evaluated dimensions were consistency, relevance, fluency, and coherence. Unlike \textcite{gao2023humanlikesummarizationevaluationchatgpt}, \textcite{Jain_2023} did not provide the model with any evaluation guidelines, but the model's task was to predict the score only based on the in-context demonstrations. The study found that through ICL, the model was able to achieve state-of-the-art scores on summary relevance and consistency.
+
+Various strategies are employed to mitigate hallucinations. Typical methods for hallucination mitigation are data filtering, model editing, and Retrieval-Augmented Generation (RAG). Data filtering seeks to decrease the frequency of LLM hallucinations arising from low quality pre-training data. By filtering out misinformation, biased information, and duplicate data among other unwanted data qualities from the pre-training data, the factual correctness of LLMs has been shown to improve \cite{gunasekar2023textbooksneed}. Additionally, diverse datasets consisting of multiple smaller high-quality datasets improve the generalization and cross-domain capabilities of LLMs \cite{gao2020pile800gbdatasetdiverse}, reducing hallucinations.
+
+\begin{itemize}
+    \item ICL! \cite{alazraki-etal-2025-need, madaan2023selfrefineiterativerefinementselffeedback, vamshi2026manifoldbasedsamplingincontexthallucination, Jain_2023}
+\end{itemize}
+
 \subsection{LLMs in CS Education}
 \subsection{Automatic exercise generation?}
 
