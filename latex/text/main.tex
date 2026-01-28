@@ -469,6 +469,8 @@ SFT     & Supervised Fine-Tuning \\
 RLHF    & Reinforcement Learning from Human Feedback \\
 NLG     & Natural Language Generation \\
 RAG     & Retrieval-Augmented Generation \\
+RALM    & Retrieval-Augmented Language Model \\
+COT     & Chain-Of-Thought \\
 %ML      & Machine Learning \\
 %AI      & Artificial Intelligence \\
 \end{tabular}
@@ -572,7 +574,6 @@ During inference, given an input to the LLM, the input is first transformed into
 \begin{align}
     \sigma(z)_i = \frac{e^{z_i}}{\sum^{K}_{j=1}e^{z_j}}.
 \end{align}
-
 The softmax function normalizes the input vector into a probability distribution, fulfilling properties $\sigma(z)_i \in [0, 1]$ and $\sum_i^K \sigma(z)_i = 1$. Additionally, softmax has the property that for any $z_i, z_j$, where $z_i > z_j$, holds $\sigma(z)_i > \sigma(z)_j$. These properties make the softmax function especially functional for multi-class prediction, including token prediction.
 
 Decoding is the process of selecting which token the model produces using the probabilities obtained. There are many different decoding strategies, which each affect the nature of the model's output. The most popular decoding strategies include \textit{greedy search}, \textit{top-$k$ sampling}, \textit{top-$p$ sampling}, and \textit{beam search} \cite{Minaee2024-fr}.
@@ -590,7 +591,6 @@ One common approach used in sampling based decoding methods is to shape the dist
 \begin{align}
     \sigma(z)_i = \frac{e^{z_i/T}}{\sum^{K}_{j=1}e^{z_j/T}}.
 \end{align}
-
 The effect of $T$ on the distribution depends on its value: when $T \rightarrow \inf$, the distribution tends towards a uniform distribution, while when $T \rightarrow 0$ the distribution favors high probability outcomes even heavier \cite{xuan2025exploringimpacttemperaturescaling}.  
 
 \subsection{In-Context Learning} \label{sec:icl}
@@ -609,13 +609,11 @@ In-context learning is the practice of adapting a pre-trained LLM to a new task 
 \begin{align}
     P(y_j | x) := f_M(y_j, C, x).
 \end{align}
-
 The final prediction is the candidate with the highest score:
 
 \begin{align}
     \hat{y} = \arg \max_{y_j \in Y}P(y_j|x).
 \end{align}
-
 ICL has a number of features that make it more attractive in comparison to fine-tuning a task-specific LM, but maybe the most prominent feature is that ICL is conducted on a pre-trained LLM during inference. This suggests that ICL is less resource intensive than fine-tuning, since no actual model parameter updates are made. In addition to savings in training resources, ICL has shown great promise in many reasoning-heavy tasks, even surpassing the capabilities of state-of-the-art fine-tuned language models in some tasks \cite{NEURIPS2020_1457c0d6}. However, studies have shown that ICL can be finicky and it's performance is sensitive to settings, including the form of the prompt template and the order and selection of demonstration examples \cite{wang2024largelanguagemodelslatent}. This poses a challenge for all applications of ICL in finding optimal performance, often requiring human intervention in adjusting the prompt and selecting the demonstrations.
 
 \subsection{Hallucinations in LLMs} \label{sec:hallcinations}
@@ -701,11 +699,54 @@ Many faithfulness hallucination detection methods employ a kind of metric to ass
     \label{fig:icl_faithfulness}
 \end{figure}
 
-A different kind of faithfulness hallucination detection method is to use an external LLM as a judging entity through in-context learning. \textcite{gao2023humanlikesummarizationevaluationchatgpt} found that by providing ChatGPT with strict evaluation guidelines, the original text as context and an LLM-generated summary, it was able to accurately assess the quality of the summary, including faithfulness. 
+A different kind of faithfulness hallucination detection method is to use an external LLM as a judging entity through in-context learning. \textcite{gao2023humanlikesummarizationevaluationchatgpt} found that by providing ChatGPT with strict evaluation guidelines, the original text as context, and an LLM-generated summary, it was able to accurately assess the quality of the summary, including faithfulness. 
 
 Figure \ref{fig:icl_faithfulness} shows the prompt design of the ICL evaluation framework used by \textcite{Jain_2023}. It features in-context demonstrations in blue and the task to evaluate the consistency of the provided summary based on the original text in red. In the actual experiment, 4 demonstration examples were used for each input, and the evaluated dimensions were consistency, relevance, fluency, and coherence. Unlike \textcite{gao2023humanlikesummarizationevaluationchatgpt}, \textcite{Jain_2023} did not provide the model with any evaluation guidelines, but the model's task was to predict the score only based on the in-context demonstrations. The study found that through ICL, the model was able to achieve state-of-the-art scores on summary relevance and consistency.
 
-Various strategies are employed to mitigate hallucinations. Typical methods for hallucination mitigation are data filtering, model editing, and Retrieval-Augmented Generation (RAG). Data filtering seeks to decrease the frequency of LLM hallucinations arising from low quality pre-training data. By filtering out misinformation, biased information, and duplicate data among other unwanted data qualities from the pre-training data, the factual correctness of LLMs has been shown to improve \cite{gunasekar2023textbooksneed}. Additionally, diverse datasets consisting of multiple smaller high-quality datasets improve the generalization and cross-domain capabilities of LLMs \cite{gao2020pile800gbdatasetdiverse}, reducing hallucinations.
+Various strategies are employed to mitigate hallucinations. Typical methods for hallucination mitigation include data filtering, model editing, and Retrieval-Augmented Generation (RAG). Data filtering seeks to decrease the frequency of LLM hallucinations arising from low quality pre-training data. By filtering out misinformation, biased information, and duplicate data among other unwanted data qualities from the pre-training data, the factual correctness of LLMs has been shown to improve \cite{gunasekar2023textbooksneed}. Additionally, diverse datasets consisting of multiple smaller high-quality datasets improve the generalization and cross-domain capabilities of LLMs \cite{gao2020pile800gbdatasetdiverse}, reducing hallucinations.
+
+Model editing aims to mitigate hallucinations by rectifying gaps in the model knowledge or behavior by introducing additional knowledge to the model. Usually, model editing methods consist of two steps: locating the buggy part of model parameters responsible for the unwanted behavior and updating it. While providing a targeted way to mitigate hallucinations caused by specific misinformation, studies have found that this type of model editing does not scale well \cite{yao2023editinglargelanguagemodels}. Large-scale updates are difficult to perform and may unintentionally weaken the model's performance in unrelated domains.
+
+The RAG architecture \cite{NEURIPS2020_6b493230} consists of a retriever and a generator. The retriever employs an external non-parametric knowledge base, retrieving information relevant to input, and feeds it to the generator with the original prompt. The generator then produces an output conditioned by the prompt and the retrieved information. Using RAG targets specifically hallucinations caused by the knowledge boundaries of the model, mitigating them without impacting the performance of the model \cite{shuster-etal-2021-retrieval-augmentation}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{latex/images/icralm.png}
+    \caption{The In-Context RALM framework by \textcite{ram2023incontextretrievalaugmentedlanguagemodels}}
+    \label{fig:icralm}
+\end{figure}
+
+The original RAG architecture uses a pre-trained retriever and a pre-trained generator, which are fine-tuned end-to-end. As fine-tuning LLMs can be very costly, alternative methods have been explored. \textcite{ram2023incontextretrievalaugmentedlanguagemodels} propose a training-free framework for retrieval-augmenting: the In-Context Retrieval-Augmented Language Model (RALM) is an RAG pipeline that operates during inference. The operation principle of the In-Context RALM is illustrated in figure \ref{fig:icralm}. The prompt is first fed into a retriever and the information fetched by it is concatenated with the prompt. The augmented prompt is then given to the LM as input. This framework is very simple, yet proved to be effective: \textcite{ram2023incontextretrievalaugmentedlanguagemodels} reported notable gains in model performance in language modeling and open-domain question answering. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{latex/images/cot.png}
+    \caption{COT experiment setup by \textcite{wei2023chainofthoughtpromptingelicitsreasoning}}
+    \label{fig:cot}
+\end{figure}
+
+Other applications of ICL have shown great promise in reducing faithfulness hallucinations. \textcite{wei2023chainofthoughtpromptingelicitsreasoning} experimented utilizing Chain-of-Thought (CoT) examples in an ICL setting. A CoT example $e^{CoT}$ is a tuple of form
+
+\begin{align} \label{eq:cot}
+    e^{CoT} = (q, a),
+\end{align}
+where $q$ is the question and $a$ the answer. In the experiment, \textcite{wei2023chainofthoughtpromptingelicitsreasoning} provided the LLM with multi-step reasoning tasks accompanied by a few examples in-context. Their most crucial finding was that modifying the answers in the in-context examples to include the reasoning steps needed to obtain the correct answer (the chain-of-thought highlighted in blue in figure \ref{fig:cot}) elicited the same kind of CoT reasoning in the answers (figure \ref{fig:cot}, highlighted in green) which subsequently improved the accuracy of the model in various reasoning tasks. They also found that LLMs' CoT abilities only improve with increasing model size.
+
+Extending the work of \textcite{wei2023chainofthoughtpromptingelicitsreasoning}, \textcite{} experimented with including wrong answers and corrective rationale in the setting. Thus, an example can be extended to
+
+\begin{align}
+    e^{CoT} = (q, w, r, a),
+\end{align}
+where $q, a$ are unchanged, but the wrong answer $w$ and rationale $r$ are included. 
+
+tuloksia jne
+
+More recently, \textcite{alazraki-etal-2025-need} experimented with omitting the rationale from the examples. The example was of the form
+
+\begin{align}
+    e^{CoT} = (q, w, a)
+\end{align}
+instead. rationale of study
 
 \begin{itemize}
     \item ICL! \cite{alazraki-etal-2025-need, madaan2023selfrefineiterativerefinementselffeedback, vamshi2026manifoldbasedsamplingincontexthallucination, Jain_2023}
@@ -718,26 +759,44 @@ Various strategies are employed to mitigate hallucinations. Typical methods for 
 
 \section{Research material and methods}
 
-This part is the core of your work, where you explain the methodological choices
-you made, its limitations, how you pick your research material or subjects, the 
-implementation of your study and the methods used. This section determines the 
-methodological strengths and weaknesses of your thesis. Any earlier description 
-of the method should limit itself to work done earlier by others. Here you tell 
-your reader what you have done.
+%This part is the core of your work, where you explain the methodological choices you made, its limitations, how you pick your research material or subjects, the implementation of your study and the methods used. This section determines the methodological strengths and weaknesses of your thesis. Any earlier description of the method should limit itself to work done earlier by others. Here you tell your reader what you have done.
 
 \begin{itemize}
-        \item Feedback loop?
+    \item Compare different methods in generating programming exercises
+    \item goal is to reduce faithfulness hallucinations and obtain functional programming exercises
+    \subsubsection{Method 1: implicit vs explicit}
+    \begin{itemize}
+        \item Feed model a prompt with demonstration example(s) of form (instruction, solution, label, (reasoning)) and instruction for model to complete
+    \begin{itemize}
+        \item Is there data available with erroneous examples? If not, experiment difficult to conduct
+        \item Other considerations include:
         \begin{itemize}
-            \item Feed demonstration examples to model
-            \item Prompt
-            \item Output
-            \item Decision: Factual output?
-                \begin{itemize}
-                    \item Yes -> Continue
-                    \item No -> Add set [prompt, output, label, (reasoning)] to demonstration examples
-                \end{itemize}
+            \item Model?
+            \item System prompt?
+            \item selecting demonstrations, strategy -> random/learned?, number of demonstrations?
+            \item model settings? decoding, temperature, etc.
         \end{itemize}
+    \end{itemize}
+    \item Run same prompts with and without reasonings
+    \item Evaluation? Manual/automated pipeline? (AI judge)
+    \end{itemize}
+
+    \subsubsection{Method 2: Standard vs icl}
+    \begin{itemize}
+    \item Generating regularly, use instruction and feed to prompt
+    \item For ICL: feed model a prompt with demonstration example(s) of form (instruction, solution) and instruction for model to complete
+    \begin{itemize}
+        \item Considerations:
+        \item Model?
+        \item System prompt?
+        \item selecting demonstrations, strategy -> random/learned?, number of demonstrations?
+        \item model settings? decoding, temperature, etc.
+    \end{itemize}
+    \item Run same prompts with and demonstration examples
+    \item Evaluation? Manual(validating and testing functionality?)/automated pipeline? (AI judge?)
+    \end{itemize}
 \end{itemize}
+
 
 \clearpage
 
