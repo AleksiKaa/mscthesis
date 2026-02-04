@@ -570,7 +570,6 @@ LLMs acquire their capabilities through a three phase training process:
 \subsubsection{Decoding strategies} \label{sec:decoding}
 
 During inference, given an input to the LLM, the input is first transformed into tokens, and then using these tokens, the model produces logits. The logits are converted into probabilities using a softmax function. Softmax is defined as
-
 \begin{align}
     \sigma(z)_i = \frac{e^{z_i}}{\sum^{K}_{j=1}e^{z_j}}.
 \end{align}
@@ -587,7 +586,6 @@ Top-$k$ sampling is a more sophisticated decoding method compared to greedy sear
 Like top-$k$ sampling, top-$p$ sampling samples from a truncated distribution. The difference is the way of obtaining the distribution. In top-$p$ sampling, $p \in [0, 1]$ is a constant hyperparameter that decides the probability mass for the truncated distribution. One way of seeing the top-$p$ method is to once again sort the candidates in a descending order by their probabilities. Then, add candidates to the set of candidates until the total probability mass of the set of candidates exceeds $p$. The final token is obtained by sampling the truncated distribution \cite{holtzman2020curiouscaseneuraltext}. Using a probability mass instead of a constant number of candidates as the cut-off point for the truncated distribution means that the shape of the probability distribution affects the number of candidates: flat distributions have many candidates to sample from, while peaked distributions focus only on a few candidates.
 
 One common approach used in sampling based decoding methods is to shape the distribution using a parameter called temperature \cite{ACKLEY1985147}. Including temperature $T$ as a hyperparameter, the softmax function becomes
-
 \begin{align}
     \sigma(z)_i = \frac{e^{z_i/T}}{\sum^{K}_{j=1}e^{z_j/T}}.
 \end{align}
@@ -602,19 +600,17 @@ The effect of $T$ on the distribution depends on its value: when $T \rightarrow 
 \label{fig:icl}
 \end{figure}
 
-In-context learning is the practice of adapting a pre-trained LLM to a new task using only a few examples as a demonstration during inference \cite{NEURIPS2020_1457c0d6}. The idea is that, much like humans, the LLM can learn from analogy. Figure \ref{fig:icl} contains an example of ICL. Demonstration examples are usually formed by inserting data into a natural language template. Then, a query is concatenated to the demonstration set and given to the LLM as an input. By entering a demonstration set along with the query, the LLM is expected to learn the hidden pattern of the demonstration set, improving prediction accuracy \cite{dong-etal-2024-survey}. The input can also include an instruction that further describes the task that is to be completed by the LLM.
+In-context learning, also referred to as few-shot prompting, is the practice of adapting a pre-trained LLM to a new task using only a few examples as a demonstration during inference \cite{NEURIPS2020_1457c0d6}. The idea is that, much like humans, the LLM can learn from analogy. Figure \ref{fig:icl} contains an example of ICL. Demonstration examples are usually formed by inserting data into a natural language template. Then, a query is concatenated to the demonstration set and given to the LLM as an input. By entering a demonstration set along with the query, the LLM is expected to learn the hidden pattern of the demonstration set, improving prediction accuracy \cite{dong-etal-2024-survey}. The input can also include an instruction that further describes the task that is to be completed by the LLM.
 
 \textcite{dong-etal-2024-survey} define ICL formally as: given a query input text $x$ and a set of candidate responses $Y = \{y_1, \cdots, y_m\}$, the model $M$ predicts the candidate response with the highest score, conditioned on a demonstration set $C$. $C$ consists of $k$ demonstration examples, with an optional task instruction. The instruction can be the same across all examples or vary between examples, depending on whether the learning is \textit{cross-task} ICL or \textit{task-specific} ICL. Thus, $C = \{I, [(x_1^\prime, y_1^\prime), \cdots, (x_k^\prime, y_k^\prime)]\}$ for task-specific ICL and $C = \{(I_1, x_1^\prime, y_1^\prime), \cdots, (I_k, x_k^\prime, y_k^\prime)\}$ for cross-task ICL. The likelihood of a candidate response is calculated using a scoring function on the whole input:
-
 \begin{align}
     P(y_j | x) := f_M(y_j, C, x).
 \end{align}
 The final prediction is the candidate with the highest score:
-
 \begin{align}
     \hat{y} = \arg \max_{y_j \in Y}P(y_j|x).
 \end{align}
-ICL has a number of features that make it more attractive in comparison to fine-tuning a task-specific LM, but maybe the most prominent feature is that ICL is conducted on a pre-trained LLM during inference. This suggests that ICL is less resource intensive than fine-tuning, since no actual model parameter updates are made. In addition to savings in training resources, ICL has shown great promise in many reasoning-heavy tasks, even surpassing the capabilities of state-of-the-art fine-tuned language models in some tasks \cite{NEURIPS2020_1457c0d6}. However, studies have shown that ICL can be finicky and it's performance is sensitive to settings, including the form of the prompt template and the order and selection of demonstration examples \cite{wang2024largelanguagemodelslatent}. This poses a challenge for all applications of ICL in finding optimal performance, often requiring human intervention in adjusting the prompt and selecting the demonstrations.
+ICL has a number of features that make it more attractive in comparison to fine-tuning a task-specific LM, but maybe the most prominent feature is that ICL is conducted on a pre-trained LLM during inference. This suggests that ICL is less resource intensive than fine-tuning, since no actual model parameter updates are made. In addition to savings in training resources, ICL has shown great promise in many reasoning-heavy tasks, even surpassing the capabilities of state-of-the-art fine-tuned language models in some tasks \cite{NEURIPS2020_1457c0d6}. However, studies have shown that ICL can be unreliable and its performance is sensitive to settings, including the form of the prompt template and the order and selection of demonstration examples \cite{wang2024largelanguagemodelslatent}. This poses a challenge for all applications of ICL in finding optimal performance, often requiring human intervention in adjusting the prompt and selecting the demonstrations.
 
 \subsection{Hallucinations in LLMs} \label{sec:hallcinations}
 
@@ -676,7 +672,7 @@ Referring to section \ref{sec:training}, SFT seeks to turn the capabilities of t
 
 \subsubsection{Hallucination from Inference} \label{sec:inference_hallucination}
 
-Decoding is a crucial component in utilizing the capabilities obtained by an LLM during training to the fullest. However, there are weaknesses in decoding strategies that can induce hallucinations. The greedy search is deterministic and always outputs the same response for the same input by selecting the most probable token at each step. The greedy search has many shortcomings, as they produce bland, low-quality text, and repeat false information if it is most probable. Through stochastic sampling,  LLMs can output diverse and rich content, circumventing the shortcomings of the greedy search. Although utilizing randomness in the selection process introduces a different reason for hallucinations, since sampling tokens includes the possibility selection of those with false or unfaithful content.
+Decoding is a crucial component in utilizing the capabilities obtained by an LLM during training to the fullest. However, there are weaknesses in decoding strategies that can induce hallucinations. As established in section \ref{sec:decoding}, the greedy search is deterministic and always outputs the same response for the same input by selecting the most probable token at each step. This in turn means that the greedy search produces bland, low-quality text, and repeats false information if it is most probable. Through stochastic sampling,  LLMs can produce diverse and rich content, circumventing the shortcomings of the greedy search. Although utilizing randomness in the selection process introduces a different reason for hallucinations, since sampling tokens includes the possibility of selecting those with false or unfaithful content.
 
 Although LLMs are equipped with breath-taking reasoning abilities, they may still fail completely on some tasks. Reasoning limits may be exceeded with complicated relations between objects in the prompt, even if the model possesses the knowledge needed for the task. Furthermore, \textcite{berglund2024reversalcursellmstrained} show a specific reasoning failure called the \textit{Reversal Curse}. The study shows that LLMs fail to generalize information and understand bidirectional relations. The Reversal Curse is exhibited when an LLM trained on a statement of the form "A is B" is asked to assess the truthfulness of the statement "B is A". For example, an LLM trained on "Homer Simpson is Bart Simpson's father." might fail to truthfully answer when asked "Who is Bart Simpson's father?", since the model cannot infer the relation from the training data.  
 
@@ -726,34 +722,56 @@ The original RAG architecture uses a pre-trained retriever and a pre-trained gen
 \end{figure}
 
 Other applications of ICL have shown great promise in reducing faithfulness hallucinations. \textcite{wei2023chainofthoughtpromptingelicitsreasoning} experimented utilizing Chain-of-Thought (CoT) examples in an ICL setting. A CoT example $e^{CoT}$ is a tuple of form
-
 \begin{align} \label{eq:cot}
     e^{CoT} = (q, a),
 \end{align}
-where $q$ is the question and $a$ the answer. In the experiment, \textcite{wei2023chainofthoughtpromptingelicitsreasoning} provided the LLM with multi-step reasoning tasks accompanied by a few examples in-context. Their most crucial finding was that modifying the answers in the in-context examples to include the reasoning steps needed to obtain the correct answer (the chain-of-thought highlighted in blue in figure \ref{fig:cot}) elicited the same kind of CoT reasoning in the answers (figure \ref{fig:cot}, highlighted in green) which subsequently improved the accuracy of the model in various reasoning tasks. They also found that LLMs' CoT abilities only improve with increasing model size.
+where $q$ is the question and $a$ the step-by-step answer. In the experiment, \textcite{wei2023chainofthoughtpromptingelicitsreasoning} provided the LLM with multi-step reasoning tasks accompanied by a few examples in-context. Their most crucial finding was that modifying the answers in the in-context examples to include the reasoning steps needed to obtain the correct answer (the chain-of-thought highlighted in blue in figure \ref{fig:cot}) elicited the same kind of CoT reasoning in the answers (figure \ref{fig:cot}, highlighted in green) which subsequently improved the accuracy of the model in various reasoning tasks. They also found that LLMs' CoT abilities only improve with increasing model size.
 
-Extending the work of \textcite{wei2023chainofthoughtpromptingelicitsreasoning}, \textcite{} experimented with including wrong answers and corrective rationale in the setting. Thus, an example can be extended to
-
-\begin{align}
-    e^{CoT} = (q, w, r, a),
+Extending the work of \textcite{wei2023chainofthoughtpromptingelicitsreasoning}, \cite{madaan2023selfrefineiterativerefinementselffeedback, kim2023languagemodelssolvecomputer, shinn2023reflexionlanguageagentsverbal} experimented with including wrong step-by-step answers and an explicit corrective rationale explaining the errors in the wrong answer in the ICL setting. Thus, an example can be extended to
+\begin{align} \label{eq:explicit}
+    e^{explicit} = (q, w, r, a),
 \end{align}
-where $q, a$ are unchanged, but the wrong answer $w$ and rationale $r$ are included. 
+where $q, a$ are unchanged, but the wrong answer $w$ and the rationale $r$ are included. These studies explored the possibility of iteratively refining the generated content by instructing the model to critique and correct its own output based on the critique. 
 
-tuloksia jne
+%\textcite{madaan2023selfrefineiterativerefinementselffeedback} built the SELF-REFINE pipeline, where the model initially receives a task instruction $x$ and $k$ demonstration examples in the form of \ref{eq:cot}. The model output $y_0$ is iterated by passing the input and output $(x, y_t)$ back to the model along with a prompt that instructs the model to critique the answer, producing the corrective rationale $r_t$. Lastly, the This iteration loop is performed until a stopping condition is met. 
 
-More recently, \textcite{alazraki-etal-2025-need} experimented with omitting the rationale from the examples. The example was of the form
-
-\begin{align}
-    e^{CoT} = (q, w, a)
+More recently, \textcite{alazraki-etal-2025-need} found that LLMs can learn implicitly in an ICL setting, without the use of corrective rationale. They omitted the explicit rationale from the examples, using demonstrations of the form
+\begin{align} \label{eq:implicit}
+    e^{implicit} = (q, w, a)
 \end{align}
-instead. rationale of study
+instead. In the study, \textcite{alazraki-etal-2025-need} compared the performance of LLM models in various  tasks in an ICL setting using demonstration examples of the forms \ref{eq:cot}, \ref{eq:explicit} and \ref{eq:implicit}. The results of the empirical study show that implicit in-context learning beats explicit ICL prompting in nearly all tasks and across all models. Although the answers produced using without corrective rationales are noticably shorter on average than with rationales, the answers were atleast equally exhaustive. \textcite{alazraki-etal-2025-need} hypothesize that the model is over-constrained by the rationale, allowing the implicit learning setting to exceed the performance of explicit prompting.
 
+\iffalse
 \begin{itemize}
     \item ICL! \cite{alazraki-etal-2025-need, madaan2023selfrefineiterativerefinementselffeedback, vamshi2026manifoldbasedsamplingincontexthallucination, Jain_2023}
 \end{itemize}
+\fi
 
 \subsection{LLMs in CS Education}
-\subsection{Automatic exercise generation?}
+
+The astounding capabilities of LLMs in an array of NLP tasks have garnered much attention in utilizing them in Computer Science education. Recently, the usage of LLMs in the support of novice programmers by providing code solutions for learning, producing learning resources, and exploring new pedagogical approaches has been studied \cite{10.1145/3545945.3569759}. The results of studies of such applications show great promise, highlighting their potential to enhance learning experiences, but have also revealed challenges concerning ethical issues, biases, and over-reliance on LLMs.
+
+Students typically acquire their programming skills by completing a series of programming exercises for each topic. These exercises are usually automatically graded, but do not include any explanations for the assessments, leaving the student alone in figuring out the solution. To alleviate this problem, LLMs been used to develop coding assistants for students \cite{10.1145/3631802.3631830}. The coding assistant could be used to provide suggestions or a solution to the problem. Even when the student is successful in completing an exercise, the assistant could show the student improvement suggestions or alternative ways to complete the exercise.
+
+As novice programmers do not yet have a grasp of the fundamentals, they might face learning barriers. One common learning barrier among novices is understanding program error messages \cite{10.1145/3328778.3366882}.  Program error messages typically have an unconventional visual style and poor readability. They often also include programming concepts that are far too advanced for novices, such as null pointer references and stack overflow errors. \textcite{10.1145/3545945.3569770} developed a
+
+\begin{itemize}
+    \item Applications \cite{10.1145/3545945.3569759}
+    \item Advantages?
+    \item Overcoming obstacles, such as cryptic error messages, via enhancing error messages \cite{10.1145/3545945.3569770}
+    \item Challenges?
+\end{itemize}
+
+\subsection{Automatic Exercise Generation}
+
+% AI idea
+%Programming exercises play a central role in computer science education, as they enable students to practice problem-solving and reinforce conceptual understanding. However, creating high-quality exercises that are appropriately leveled, diverse, and pedagogically meaningful requires substantial effort from instructors. As a result, automatic exercise generation has become an active area of research, with prior approaches ranging from template-based and rule-based systems to data-driven methods.
+
+%More recently, LLMs have been proposed as a flexible alternative for exercise generation, capable of producing varied and context-aware programming tasks from natural language prompts.
+\begin{itemize}
+    \item \cite{10.1145/3501385.3543957}
+
+\end{itemize}
 
 \clearpage
 
