@@ -1,0 +1,12 @@
+
+These are pre-downloaded and cached models from HuggingFace. Before using a
+model from this collection check that you have accepted the user agreement for
+the model in HuggingFace. 
+
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]
+Loading checkpoint shards:  33%|███▎      | 1/3 [00:04<00:09,  4.68s/it]
+Loading checkpoint shards:  67%|██████▋   | 2/3 [00:09<00:04,  5.00s/it]
+Loading checkpoint shards: 100%|██████████| 3/3 [00:13<00:00,  4.48s/it]
+Loading checkpoint shards: 100%|██████████| 3/3 [00:13<00:00,  4.59s/it]
+Device set to use cuda:0
+Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
