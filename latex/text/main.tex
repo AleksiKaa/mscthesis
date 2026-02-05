@@ -747,31 +747,26 @@ instead. In the study, \textcite{alazraki-etal-2025-need} compared the performan
 \end{itemize}
 \fi
 
-\subsection{LLMs in CS Education}
+\subsection{LLMs in CS Education} \label{sec:cs_edu}
 
 The astounding capabilities of LLMs in an array of NLP tasks have garnered much attention in utilizing them in Computer Science education. Recently, the usage of LLMs in the support of novice programmers by providing code solutions for learning, producing learning resources, and exploring new pedagogical approaches has been studied \cite{10.1145/3545945.3569759}. The results of studies of such applications show great promise, highlighting their potential to enhance learning experiences, but have also revealed challenges concerning ethical issues, biases, and over-reliance on LLMs.
 
-Students typically acquire their programming skills by completing a series of programming exercises for each topic. These exercises are usually automatically graded, but do not include any explanations for the assessments, leaving the student alone in figuring out the solution. To alleviate this problem, LLMs been used to develop coding assistants for students \cite{10.1145/3631802.3631830}. The coding assistant could be used to provide suggestions or a solution to the problem. Even when the student is successful in completing an exercise, the assistant could show the student improvement suggestions or alternative ways to complete the exercise.
+Students typically acquire their programming skills by completing a series of programming exercises for each topic. These exercises are usually automatically graded, but do not include any explanations for the assessments, leaving the student alone in figuring out the solution. To alleviate this problem, LLMs been used to develop coding assistants for students \cite{10.1145/3631802.3631830}. The coding assistant could be used to provide suggestions or a solution to the problem. Even when the student is successful in completing an exercise, the assistant could show the student improvement suggestions or alternative ways to complete the exercise. 
 
-As novice programmers do not yet have a grasp of the fundamentals, they might face learning barriers. One common learning barrier among novices is understanding program error messages \cite{10.1145/3328778.3366882}.  Program error messages typically have an unconventional visual style and poor readability. They often also include programming concepts that are far too advanced for novices, such as null pointer references and stack overflow errors. \textcite{10.1145/3545945.3569770} developed a
+As novice programmers do not yet have a grasp of the fundamentals of programming, they might face learning barriers. One common learning barrier among novices is understanding program error messages \cite{10.1145/3328778.3366882}, since they often have an unconventional visual style and poor readability. They often also include programming concepts that are far too advanced for novices, such as null pointer references and stack overflow errors. \textcite{10.1145/3545945.3569770} explored the possibility of having an LLM generate plain text explanations of Python error messages with instructions for fixing the problem. Although the results of the study were mixed, it highlighted the possibility of improving the program error messages with LLMs and paved the way for further study on the topic.
 
-\begin{itemize}
-    \item Applications \cite{10.1145/3545945.3569759}
-    \item Advantages?
-    \item Overcoming obstacles, such as cryptic error messages, via enhancing error messages \cite{10.1145/3545945.3569770}
-    \item Challenges?
-\end{itemize}
+Rubber-duck debugging and other ways of expressing one's own understanding of the topic at hand have been shown to positively impact the learning process \cite{10.1145/2505290}. Translating one's understanding of program code into natural language is a task that requires deep understanding of the topic and programming concepts present. However, beginner programmers often have difficulty understanding the exercise program code itself. Using an LLM to generate code explanations could positively impact the learning process of students, since high quality code explanations are a key resource to cultivate the students' understanding of programming concepts \cite{10.1145/3545945.3569759}. \textcite{10.1145/3501385.3543957} found that an LLM (Codex) was quite reliably able to explain the problems present in introductory programming classes. 
 
 \subsection{Automatic Exercise Generation}
 
-% AI idea
-%Programming exercises play a central role in computer science education, as they enable students to practice problem-solving and reinforce conceptual understanding. However, creating high-quality exercises that are appropriately leveled, diverse, and pedagogically meaningful requires substantial effort from instructors. As a result, automatic exercise generation has become an active area of research, with prior approaches ranging from template-based and rule-based systems to data-driven methods.
+Students directly interacting with the model, as in the previously presented methods, may cause students to become over-reliant on the LLM. Over-reliance may lead to students not carefully reading the assignment or even dismissing it before relying on the usage of an LLM \cite{10.1145/3545945.3569759}. Another method of utilizing the capabilities of LLMs in CS education is not by presenting LLM-based tools to the students, but rather the teaching staff. LLMs can be used to generate education materials, such as illustrative examples of algorithms, data structures and programming concepts. 
 
-%More recently, LLMs have been proposed as a flexible alternative for exercise generation, capable of producing varied and context-aware programming tasks from natural language prompts.
-\begin{itemize}
-    \item \cite{10.1145/3501385.3543957}
+More importantly, LLMs have been used to generate complete programming exercises using a natural language prompt. Typically, creating a programming exercise requires at least developing the problem definition, a sample solution, and unit tests that validate the functionality of the student's code. As stated in section \ref{sec:cs_edu}, beginners usually obtain programming skills by completing numerous programming exercises. Creating a number of suitable programming exercises quickly becomes a demanding task for the teaching staff. 
 
-\end{itemize}
+\textcite{10.1145/3501385.3543957} studied the generation of complete programming exercises along with the generation of code explanations using the Codex LLM. These exercises include a problem description, example solution, and unit tests validating the functionality of the student's code. The focus of the study was on the sensibility and novelty of the generated exercises, as well as the measure of how easily applicable they were to a learning environment. In the study, an exercise is defined as sensible if "the requirements are described clearly within a context that makes logical sense" and novel if  "the exercise description returns no valid matches when used as the input for a search using Google or GitHub". The applicability was a collection of multiple measures, including whether the generated sample solution matches the problem description, the
+
+
+Randomly selecting 120 generated exercises from a total of 240, 75.0\% were sensible, 81.8\% novel, and
 
 \clearpage
 
