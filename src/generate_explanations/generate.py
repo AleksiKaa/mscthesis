@@ -1,14 +1,14 @@
-# Imports
-
-print("imports")
+print("Importing libraries...")
 import pandas as pd
 import numpy as np
 import os
 from dotenv import dotenv_values
 from transformers import pipeline
 
-print("config")
+print("Loading config...")
 config = dotenv_values(".env")
+
+DATAPATH="/home/kaariaa3/mscthesis/data/out.csv"
 
 SYSTEM_PROMPT = """
 I want you to act as a programming teacher for an in-
@@ -32,7 +32,7 @@ Exercise description: $problemDescription
 Code: $exampleSolution
 """
 
-print("pipe")
+print("Initializing pipeline...")
 # Initialize the pipeline
 pipe = pipeline(
   "text-generation", # Task type
@@ -41,9 +41,9 @@ pipe = pipeline(
   max_new_tokens=1000
 )
 
-print("df")
+print("Reading input data...")
 # Read CSV
-df = pd.read_csv(config["DATAPATH"], sep=";")
+df = pd.read_csv(DATAPATH, sep=";")
 
 # Get rows with "no" labels
 label_col = df.columns[-1]
@@ -55,7 +55,7 @@ messages = [
 ]
 
 
-print("prompts")
+print("Creating prompts...")
 # Generate prompts
 for idx, row in wrongs.iterrows():
     _, topic, theme, concept, problem_description, example_solution, *evals = row
@@ -98,6 +98,8 @@ for idx, row in wrongs.iterrows():
     break
     
 # Generate text and print the response
+print("Generating responses")
 response = pipe(messages, return_full_text=False)
+
 print(response)
 

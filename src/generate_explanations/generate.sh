@@ -12,4 +12,4 @@ module load model-huggingface
 # Load a ready to use conda environment to use HuggingFace Transformers
 module load scicomp-llm-env
 
-python /home/kaariaa3/mscthesis/src/generate_explanations/generate.py
+python generate.py
