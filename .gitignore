@@ -2,6 +2,8 @@
 .vscode
 *.csv
 *.xlsx
+*.err
+*.out
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
