@@ -1,10 +1,13 @@
 # Imports
+
+print("imports")
 import pandas as pd
 import numpy as np
 import os
 from dotenv import dotenv_values
 from transformers import pipeline
 
+print("config")
 config = dotenv_values(".env")
 
 SYSTEM_PROMPT = """
@@ -29,6 +32,7 @@ Exercise description: $problemDescription
 Code: $exampleSolution
 """
 
+print("pipe")
 # Initialize the pipeline
 pipe = pipeline(
   "text-generation", # Task type
@@ -37,64 +41,63 @@ pipe = pipeline(
   max_new_tokens=1000
 )
 
-def main():
+print("df")
+# Read CSV
+df = pd.read_csv(config["DATAPATH"], sep=";")
 
-    # Read CSV
-    df = pd.read_csv(config["DATAPATH"], sep=";")
+# Get rows with "no" labels
+label_col = df.columns[-1]
+cond = df[label_col] == "no"
+wrongs = df[cond]
 
-    # Get rows with "no" labels
-    label_col = df.columns[-1]
-    cond = df[label_col] == "no"
-    wrongs = df[cond]
+messages = [
+    {"role": "system", "content": SYSTEM_PROMPT},
+]
+
+
+print("prompts")
+# Generate prompts
+for idx, row in wrongs.iterrows():
+    _, topic, theme, concept, problem_description, example_solution, *evals = row
+
+    p = CRITIQUE_TEMPLATE
+
+    # Map from index to template label
+    idx = {
+        1: "$Theme",
+        2: "$Topic",
+        3: "$Concept"
+    }
+
+    # Map template label to content
+    rep = {
+        "$Theme": theme,
+        "$Topic": topic,
+        "$Concept": concept
+    }
+
+    # Replace template labels with content
+    for i, evaluation in enumerate(evals):
+        key = idx.get(i, "")
+        rep_str = rep.get(key, "")
+        if key == "" or rep_str == "":
+            continue
+
+        if evaluation == "yes":
+            p = p.replace(key, "")
+            continue
+
+        p = p.replace(key, f"{key[1:]}: " +  rep_str + "\n")
+
+    p = p \
+        .replace("$problemDescription", problem_description) \
+        .replace("$exampleSolution", example_solution)
     
-    messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-    ]
+    # Add prompt to list of messages
+    messages.append({"role": "user", "content": p})
+    break
+    
+# Generate text and print the response
+response = pipe(messages, return_full_text=False)
+print(response)
 
-    # Generate prompts
-    for idx, row in wrongs.iterrows():
-        _, topic, theme, concept, problem_description, example_solution, *evals = row
-
-        p = CRITIQUE_TEMPLATE
-
-        # Map from index to template label
-        idx = {
-            1: "$Theme",
-            2: "$Topic",
-            3: "$Concept"
-        }
-
-        # Map template label to content
-        rep = {
-            "$Theme": theme,
-            "$Topic": topic,
-            "$Concept": concept
-        }
-
-        # Replace template labels with content
-        for i, evaluation in enumerate(evals):
-            key = idx.get(i, "")
-            rep_str = rep.get(key, "")
-            if key == "" or rep_str == "":
-                continue
-
-            if evaluation == "yes":
-                p = p.replace(key, "")
-                continue
-
-            p = p.replace(key, f"{key[1:]}: " +  rep_str + "\n")
-
-        p = p \
-            .replace("$problemDescription", problem_description) \
-            .replace("$exampleSolution", example_solution)
-        
-        # Add prompt to list of messages
-        messages.append({"role": "user", "content": p})
-        break
-        
-    # Generate text and print the response
-    response = pipe(messages, return_full_text=False)
-    print(response)
-
-if __name__ == "__main__":
-    main()

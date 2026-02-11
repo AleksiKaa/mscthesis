@@ -1,6 +1,0 @@
- This sequence follows the rule that each number is the sum of the two preceding numbers. So, if we continue:
-
-8 (last number) + 5 = 13
-13 + 3 (previous number) = 16
-
-So, the next number in the sequence would be 16.
