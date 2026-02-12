@@ -1,14 +1,8 @@
 print("Importing libraries...")
 import pandas as pd
-import numpy as np
-import os
-from dotenv import dotenv_values
 from transformers import pipeline
 
-print("Loading config...")
-config = dotenv_values(".env")
-
-DATAPATH="/home/kaariaa3/mscthesis/data/out.csv"
+DATAPATH = "/home/kaariaa3/mscthesis/data/out.csv"
 
 SYSTEM_PROMPT = """
 I want you to act as a programming teacher for an in-
@@ -24,7 +18,7 @@ physical disorders, for example, weight loss or diet.
 CRITIQUE_TEMPLATE = """
 Please generate an explanation why the following exercise description and Dart
 code are not faithful to the provided topic, theme or concept. Your response
-should be a JSON string.
+should be a JSON string with key "explanation".
 
 $Topic$Theme$Concept
 Exercise description: $problemDescription
@@ -35,10 +29,10 @@ Code: $exampleSolution
 print("Initializing pipeline...")
 # Initialize the pipeline
 pipe = pipeline(
-  "text-generation", # Task type
-  model="mistralai/Mistral-7B-Instruct-v0.3", # Model name
-  device_map="auto", # Let the pipeline automatically select best available device
-  max_new_tokens=1000
+    "text-generation",  # Task type
+    model="mistralai/Mistral-7B-Instruct-v0.3",  # Model name
+    device_map="auto",  # Let the pipeline automatically select best available device
+    max_new_tokens=1000,
 )
 
 print("Reading input data...")
@@ -50,9 +44,7 @@ label_col = df.columns[-1]
 cond = df[label_col] == "no"
 wrongs = df[cond]
 
-messages = [
-    {"role": "system", "content": SYSTEM_PROMPT},
-]
+system_message = {"role": "system", "content": SYSTEM_PROMPT}
 
 
 print("Creating prompts...")
@@ -60,21 +52,13 @@ print("Creating prompts...")
 for idx, row in wrongs.iterrows():
     _, topic, theme, concept, problem_description, example_solution, *evals = row
 
-    p = CRITIQUE_TEMPLATE
+    prompt = CRITIQUE_TEMPLATE
 
     # Map from index to template label
-    idx = {
-        1: "$Theme",
-        2: "$Topic",
-        3: "$Concept"
-    }
+    idx = {1: "$Theme", 2: "$Topic", 3: "$Concept"}
 
     # Map template label to content
-    rep = {
-        "$Theme": theme,
-        "$Topic": topic,
-        "$Concept": concept
-    }
+    rep = {"$Theme": theme, "$Topic": topic, "$Concept": concept}
 
     # Replace template labels with content
     for i, evaluation in enumerate(evals):
@@ -84,22 +68,38 @@ for idx, row in wrongs.iterrows():
             continue
 
         if evaluation == "yes":
-            p = p.replace(key, "")
+            prompt = prompt.replace(key, "")
             continue
 
-        p = p.replace(key, f"{key[1:]}: " +  rep_str + "\n")
+        prompt = prompt.replace(key, f"{key[1:]}: " + rep_str + "\n")
 
-    p = p \
-        .replace("$problemDescription", problem_description) \
-        .replace("$exampleSolution", example_solution)
-    
-    # Add prompt to list of messages
-    messages.append({"role": "user", "content": p})
+    prompt = prompt.replace("$problemDescription", problem_description).replace(
+        "$exampleSolution", example_solution
+    )
+
+    # Generate text and print the response
+    print("Generating responses")
+    response = pipe(
+        [system_message, {"role": "user", "content": prompt}], return_full_text=True
+    )
+
+    print(response)
     break
-    
-# Generate text and print the response
-print("Generating responses")
-response = pipe(messages, return_full_text=False)
 
-print(response)
 
+"""
+wrongs = wrongs.assign(explanation=response)
+
+# Keep only columns from right that are not already in left
+cols_to_add = wrongs.columns.difference(df.columns)
+
+# Merge on index (left join)
+result = df.merge(
+    wrongs[cols_to_add],
+    left_index=True,
+    right_index=True,
+    how='left'
+).replace({np.nan: ""})
+
+result
+"""
