@@ -1,36 +1,35 @@
 print("Importing libraries...")
 import pandas as pd
+import numpy as np
 from transformers import pipeline
 
 DATAPATH = "/home/kaariaa3/mscthesis/data/out.csv"
 
-SYSTEM_PROMPT = """
-I want you to act as a programming teacher for an in-
+SYSTEM_PROMPT = """I want you to act as a programming teacher for an in-
 troductory Dart course. Your students are programming
 novices. I will provide some coding example exercises,
 and it will be your job to critique them. Your responses 
 should be written in simple English. Do not cite music 
 lyrics or books. Do not include any greetings, be concise. 
 Do not mention trigger words associated with mental or 
-physical disorders, for example, weight loss or diet.
-"""
+physical disorders, for example, weight loss or diet."""
 
-CRITIQUE_TEMPLATE = """
-Please generate an explanation why the following exercise description and Dart
+CRITIQUE_TEMPLATE = """Please generate an explanation why the following exercise description and Dart
 code are not faithful to the provided topic, theme or concept. Your response
-should be a JSON string with key "explanation".
+should be a string literal.
 
 $Topic$Theme$Concept
 Exercise description: $problemDescription
 
-Code: $exampleSolution
-"""
+Code: $exampleSolution"""
+
+USED_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"
 
 print("Initializing pipeline...")
 # Initialize the pipeline
 pipe = pipeline(
     "text-generation",  # Task type
-    model="mistralai/Mistral-7B-Instruct-v0.3",  # Model name
+    model=USED_MODEL,  # Model name
     device_map="auto",  # Let the pipeline automatically select best available device
     max_new_tokens=1000,
 )
@@ -46,6 +45,7 @@ wrongs = df[cond]
 
 system_message = {"role": "system", "content": SYSTEM_PROMPT}
 
+explanations = {}
 
 print("Creating prompts...")
 # Generate prompts
@@ -55,14 +55,14 @@ for idx, row in wrongs.iterrows():
     prompt = CRITIQUE_TEMPLATE
 
     # Map from index to template label
-    idx = {1: "$Theme", 2: "$Topic", 3: "$Concept"}
+    label = {1: "$Theme", 2: "$Topic", 3: "$Concept"}
 
     # Map template label to content
     rep = {"$Theme": theme, "$Topic": topic, "$Concept": concept}
 
     # Replace template labels with content
     for i, evaluation in enumerate(evals):
-        key = idx.get(i, "")
+        key = label.get(i, "")
         rep_str = rep.get(key, "")
         if key == "" or rep_str == "":
             continue
@@ -78,28 +78,16 @@ for idx, row in wrongs.iterrows():
     )
 
     # Generate text and print the response
-    print("Generating responses")
+    print("Generating response...")
     response = pipe(
-        [system_message, {"role": "user", "content": prompt}], return_full_text=True
+        [system_message, {"role": "user", "content": prompt}], return_full_text=False
     )
 
-    print(response)
-    break
+    response_text = response[0]["generated_text"]
+    explanations[idx] = response_text
+    print(response_text)
 
 
-"""
-wrongs = wrongs.assign(explanation=response)
+df = df.assign(Explanation=explanations).replace({np.nan: ""})
 
-# Keep only columns from right that are not already in left
-cols_to_add = wrongs.columns.difference(df.columns)
-
-# Merge on index (left join)
-result = df.merge(
-    wrongs[cols_to_add],
-    left_index=True,
-    right_index=True,
-    how='left'
-).replace({np.nan: ""})
-
-result
-"""
+df.to_csv("out.csv", sep=";", index=False)
