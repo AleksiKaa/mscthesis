@@ -18,21 +18,28 @@ CRITIQUE_TEMPLATE = """Please generate an explanation why the following exercise
 code are not faithful to the provided topic, theme or concept. Your response
 should be a string literal.
 
+Input example is not faithful to:
 $Topic$Theme$Concept
 Exercise description: $problemDescription
 
 Code: $exampleSolution"""
 
+
 USED_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"
+
+# Model parameters
+params = {
+    "model": USED_MODEL,
+    "task": "text-generation",
+    "device_map": "auto",
+    "max_new_tokens": 1000,
+    "temperature": 0.7,
+}
+print(f"Model parameters: {params}")
 
 print("Initializing pipeline...")
 # Initialize the pipeline
-pipe = pipeline(
-    "text-generation",  # Task type
-    model=USED_MODEL,  # Model name
-    device_map="auto",  # Let the pipeline automatically select best available device
-    max_new_tokens=1000,
-)
+pipe = pipeline(**params)
 
 print("Reading input data...")
 # Read CSV
@@ -50,12 +57,12 @@ explanations = {}
 print("Creating prompts...")
 # Generate prompts
 for idx, row in wrongs.iterrows():
-    _, topic, theme, concept, problem_description, example_solution, *evals = row
+    title, topic, theme, concept, problem_description, example_solution, *evals = row
 
     prompt = CRITIQUE_TEMPLATE
 
     # Map from index to template label
-    label = {1: "$Theme", 2: "$Topic", 3: "$Concept"}
+    label = {0: "$Theme", 1: "$Topic", 2: "$Concept"}
 
     # Map template label to content
     rep = {"$Theme": theme, "$Topic": topic, "$Concept": concept}
@@ -77,8 +84,10 @@ for idx, row in wrongs.iterrows():
         "$exampleSolution", example_solution
     )
 
+    print("\n" + prompt + "\n")
+
     # Generate text and print the response
-    print("Generating response...")
+    print("Generating response...\n")
     response = pipe(
         [system_message, {"role": "user", "content": prompt}], return_full_text=False
     )

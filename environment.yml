@@ -4,5 +4,6 @@ channels:
 dependencies:
   - numpy
   - pandas
+  - ipykernel
   - torch
   - transformers==5.1.0
