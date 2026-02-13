@@ -2,6 +2,8 @@ print("Importing libraries...")
 import pandas as pd
 import numpy as np
 from transformers import pipeline
+from datasets import Dataset
+import json
 
 DATAPATH = "/home/kaariaa3/mscthesis/data/out.csv"
 
@@ -26,18 +28,6 @@ $TEXT$
 Example solution:
 $CODE$
 
-Determine whether the exercise follows each requirement:
-
-1. Theme
-2. Topic
-3. Programming concept
-
-If it fails any requirement, explain WHY in detail.
-Focus on concrete mismatches between instructions and content.
-"""
-
-# TEST!
-"""
 Analyze the exercise step by step.
 
 Step 1 — Identify what the exercise is actually about.
@@ -45,11 +35,15 @@ Step 2 — Check alignment with the theme.
 Step 3 — Check alignment with the topic.
 Step 4 — Check alignment with the programming concept.
 Step 5 — Provide a final explanation of failures.
+
+Return a JSON of form 
+{
+    "Correct" : "yes" or "no"
+    "Explanation": reasoning
+}
 """
 
-
 USED_MODEL = "Qwen/Qwen2.5-14B-Instruct"
-# USED_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"
 
 # Model parameters
 params = {
@@ -65,73 +59,50 @@ print("Initializing pipeline...")
 # Initialize the pipeline
 pipe = pipeline(**params)
 
+
+def make_prompt(row):
+    _, topic, theme, concept, problem_description, example_solution, *_ = row
+    return (
+        CRITIQUE_TEMPLATE.replace("$THEME$", theme)
+        .replace("$TOPIC$", topic)
+        .replace("$CONCEPT$", concept)
+        .replace("$TEXT$", problem_description)
+        .replace("$CODE$", example_solution)
+    )
+
+
+def run_model(data):
+    response = pipe(
+        [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": dataset["prompt"]},
+        ],
+        return_full_text=False,
+    )
+    result = response[0]["generated_text"]
+    result_as_json = json.loads(result)
+    data["Correct"] = result_as_json["Correct"]
+    data["Explanation"] = result_as_json["Explanation"]
+    return data
+
+
 print("Reading input data...")
 # Read CSV
 df = pd.read_csv(DATAPATH, sep=";")
 
 # Get rows with "no" labels
-label_col = df.columns[-1]
-cond = df[label_col] == "no"
-wrongs = df[cond]
+# label_col = df.columns[-1]
+# cond = df[label_col] == "no"
+# wrongs = df[cond]
 
-system_message = {"role": "system", "content": SYSTEM_PROMPT}
-
-explanations = {}
+# eval_df = wrongs
+eval_df = df
 
 print("Creating prompts...")
-# Generate prompts
-for idx, row in wrongs.iterrows():
-    title, topic, theme, concept, problem_description, example_solution, *evals = row
+eval_df["prompt"] = eval_df.apply(make_prompt, axis=1)
+dataset = Dataset.from_pandas(eval_df)
 
-    prompt = CRITIQUE_TEMPLATE
+print("Generating responses...\n")
+dataset = dataset.map(run_model)
 
-    # Explain all features
-    prompt = (
-        prompt.replace("$THEME$", theme)
-        .replace("$TOPIC$", topic)
-        .replace("$CONCEPT$", concept)
-    )
-
-    # Explain features marked as hallucinations in dataset
-    """
-    # Map from index to template label
-    label = {0: "$THEME$", 1: "$TOPIC$", 2: "$CONCEPT$"}
-
-    # Map template label to content
-    rep = {"$THEME$": theme, "$TOPIC$": topic, "$CONCEPT$": concept}
-
-    # Replace template labels with content
-
-    # For finer explanations
-    for i, evaluation in enumerate(evals):
-        key = label.get(i, "")
-        rep_str = rep.get(key, "")
-        if key == "" or rep_str == "":
-            continue
-
-        if evaluation == "yes":
-            prompt = prompt.replace(key, "")
-            continue
-        prompt = prompt.replace(key, f"{key[1:]}: " + rep_str + "\n")
-    """
-
-    prompt = prompt.replace("$TEXT$", problem_description).replace(
-        "$CODE$", example_solution
-    )
-
-    print("\n" + prompt + "\n")
-
-    # Generate text and print the response
-    print("Generating response...\n")
-    response = pipe(
-        [system_message, {"role": "user", "content": prompt}], return_full_text=False
-    )
-
-    response_text = response[0]["generated_text"]
-    explanations[idx] = response_text
-    print(response_text)
-
-
-df = df.assign(Explanation=explanations).replace({np.nan: ""})
-
-df.to_csv("out.csv", sep=";", index=False)
+dataset.to_csv("out.csv", sep=";", index=False)
