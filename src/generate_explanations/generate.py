@@ -14,18 +14,42 @@ lyrics or books. Do not include any greetings, be concise.
 Do not mention trigger words associated with mental or 
 physical disorders, for example, weight loss or diet."""
 
-CRITIQUE_TEMPLATE = """Please generate an explanation why the following exercise description and Dart
-code are not faithful to the provided topic, theme or concept. Your response
-should be a string literal.
+CRITIQUE_TEMPLATE = """You are evaluating a programming exercise.
 
-Input example is not faithful to:
-$Topic$Theme$Concept
-Exercise description: $problemDescription
+Intended theme: $THEME$
+Intended topic: $TOPIC$
+Intended programming concept: $CONCEPT$
 
-Code: $exampleSolution"""
+Exercise description:
+$TEXT$
+
+Example solution:
+$CODE$
+
+Determine whether the exercise follows each requirement:
+
+1. Theme
+2. Topic
+3. Programming concept
+
+If it fails any requirement, explain WHY in detail.
+Focus on concrete mismatches between instructions and content.
+"""
+
+# TEST!
+"""
+Analyze the exercise step by step.
+
+Step 1 — Identify what the exercise is actually about.
+Step 2 — Check alignment with the theme.
+Step 3 — Check alignment with the topic.
+Step 4 — Check alignment with the programming concept.
+Step 5 — Provide a final explanation of failures.
+"""
 
 
-USED_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"
+USED_MODEL = "Qwen/Qwen2.5-14B-Instruct"
+# USED_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"
 
 # Model parameters
 params = {
@@ -33,7 +57,7 @@ params = {
     "task": "text-generation",
     "device_map": "auto",
     "max_new_tokens": 1000,
-    "temperature": 0.7,
+    "temperature": 0.3,
 }
 print(f"Model parameters: {params}")
 
@@ -61,13 +85,24 @@ for idx, row in wrongs.iterrows():
 
     prompt = CRITIQUE_TEMPLATE
 
+    # Explain all features
+    prompt = (
+        prompt.replace("$THEME$", theme)
+        .replace("$TOPIC$", topic)
+        .replace("$CONCEPT$", concept)
+    )
+
+    # Explain features marked as hallucinations in dataset
+    """
     # Map from index to template label
-    label = {0: "$Theme", 1: "$Topic", 2: "$Concept"}
+    label = {0: "$THEME$", 1: "$TOPIC$", 2: "$CONCEPT$"}
 
     # Map template label to content
-    rep = {"$Theme": theme, "$Topic": topic, "$Concept": concept}
+    rep = {"$THEME$": theme, "$TOPIC$": topic, "$CONCEPT$": concept}
 
     # Replace template labels with content
+
+    # For finer explanations
     for i, evaluation in enumerate(evals):
         key = label.get(i, "")
         rep_str = rep.get(key, "")
@@ -77,11 +112,11 @@ for idx, row in wrongs.iterrows():
         if evaluation == "yes":
             prompt = prompt.replace(key, "")
             continue
-
         prompt = prompt.replace(key, f"{key[1:]}: " + rep_str + "\n")
+    """
 
-    prompt = prompt.replace("$problemDescription", problem_description).replace(
-        "$exampleSolution", example_solution
+    prompt = prompt.replace("$TEXT$", problem_description).replace(
+        "$CODE$", example_solution
     )
 
     print("\n" + prompt + "\n")

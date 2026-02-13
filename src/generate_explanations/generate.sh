@@ -3,6 +3,7 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16GB # This is system memory, not GPU memory.
 #SBATCH --gpus=1
+#SBATCH --gres=min-vram:32g
 #SBATCH --output jobs/generate.%J.out
 #SBATCH --error errs/generate.%J.err
 
