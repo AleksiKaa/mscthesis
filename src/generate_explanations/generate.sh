@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --time=00:30:00
+#SBATCH --time=00:15:00
 #SBATCH --cpus-per-task=4
-#SBATCH --mem=32GB # This is system memory, not GPU memory.
+#SBATCH --mem=16GB # This is system memory, not GPU memory.
 #SBATCH --gpus=1
 #SBATCH --gres=min-vram:32g
 #SBATCH --output jobs/generate.%J.out

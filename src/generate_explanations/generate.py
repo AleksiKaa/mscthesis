@@ -2,7 +2,6 @@ print("Importing libraries...")
 import pandas as pd
 import numpy as np
 from transformers import pipeline
-from datasets import Dataset
 import json
 
 DATAPATH = "/home/kaariaa3/mscthesis/data/out.csv"
@@ -44,22 +43,23 @@ Return a JSON of form
 """
 
 USED_MODEL = "Qwen/Qwen2.5-14B-Instruct"
+# USED_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"
 
 # Model parameters
 params = {
     "model": USED_MODEL,
-    "task": "text-generation",
-    "device_map": "auto",
-    "max_new_tokens": 1000,
+    "device_map": 0,  # Force GPU
+    "max_new_tokens": 500,
     "temperature": 0.3,
 }
 print(f"Model parameters: {params}")
 
 print("Initializing pipeline...")
 # Initialize the pipeline
-pipe = pipeline(**params)
+pipe = pipeline("text-generation", **params)
 
 
+# Functions
 def make_prompt(row):
     _, topic, theme, concept, problem_description, example_solution, *_ = row
     return (
@@ -75,14 +75,18 @@ def run_model(data):
     response = pipe(
         [
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": dataset["prompt"]},
+            {"role": "user", "content": data["prompt"]},
         ],
         return_full_text=False,
+        max_new_tokens=500,
     )
+
     result = response[0]["generated_text"]
     result_as_json = json.loads(result)
+
     data["Correct"] = result_as_json["Correct"]
     data["Explanation"] = result_as_json["Explanation"]
+
     return data
 
 
@@ -100,9 +104,8 @@ eval_df = df
 
 print("Creating prompts...")
 eval_df["prompt"] = eval_df.apply(make_prompt, axis=1)
-dataset = Dataset.from_pandas(eval_df)
 
 print("Generating responses...\n")
-dataset = dataset.map(run_model)
+eval_df = eval_df.apply(run_model, axis=1)
 
-dataset.to_csv("out.csv", sep=";", index=False)
+eval_df.to_csv("out.csv", sep=";", index=False)
