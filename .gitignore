@@ -4,6 +4,8 @@
 *.xlsx
 *.err
 *.out
+/outputs
+/data
 /errs
 /jobs
 
