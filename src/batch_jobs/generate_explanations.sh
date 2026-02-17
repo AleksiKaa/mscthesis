@@ -4,8 +4,8 @@
 #SBATCH --mem=16GB # This is system memory, not GPU memory.
 #SBATCH --gpus=1
 #SBATCH --gres=min-vram:32g
-#SBATCH --output ../../outputs/jobs/generate.%J.out
-#SBATCH --error ../../outputs/errs/generate.%J.err
+#SBATCH --output ../../outputs/jobs/generate_explanations.%J.out
+#SBATCH --error ../../outputs/errs/generate_explanations.%J.err
 
 # By loading the model-huggingface module, models will be loaded from /scratch/shareddata/dldata/huggingface-hub-cache which is a shared scratch space.
 module load model-huggingface

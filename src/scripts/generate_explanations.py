@@ -1,7 +1,6 @@
 print("Importing libraries...")
 import argparse
 import pandas as pd
-import numpy as np
 import transformers
 import json
 
@@ -115,7 +114,9 @@ def main():
     print("Generating responses...\n")
     eval_df = eval_df.apply(lambda row: run_model(pipeline, row), axis=1)
 
-    eval_df.to_csv("../../outputs/results/out_gen.csv", sep=";", index=False)
+    eval_df.to_csv(
+        "../../outputs/results/generate_explanations_result.csv", sep=";", index=False
+    )
 
 
 if __name__ == "__main__":
