@@ -1,10 +1,11 @@
 print("Importing libraries...")
+import argparse
 import pandas as pd
 import numpy as np
-from transformers import pipeline
+import transformers
 import json
 
-DATAPATH = "/home/kaariaa3/mscthesis/data/out.csv"
+DEFAULT_DATA = "/home/kaariaa3/mscthesis/data/cleaned.csv"
 
 SYSTEM_PROMPT = """I want you to act as a programming teacher for an in-
 troductory Dart course. Your students are programming
@@ -42,21 +43,7 @@ Return a JSON of form
 }
 """
 
-USED_MODEL = "Qwen/Qwen2.5-14B-Instruct"
-# USED_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"
-
-# Model parameters
-params = {
-    "model": USED_MODEL,
-    "device_map": 0,  # Force GPU
-    "max_new_tokens": 500,
-    "temperature": 0.3,
-}
-print(f"Model parameters: {params}")
-
-print("Initializing pipeline...")
-# Initialize the pipeline
-pipe = pipeline("text-generation", **params)
+DEFAULT_MODEL = "Qwen/Qwen2.5-14B-Instruct"
 
 
 # Functions
@@ -71,7 +58,7 @@ def make_prompt(row):
     )
 
 
-def run_model(data):
+def run_model(pipe, data):
     response = pipe(
         [
             {"role": "system", "content": SYSTEM_PROMPT},
@@ -90,22 +77,46 @@ def run_model(data):
     return data
 
 
-print("Reading input data...")
-# Read CSV
-df = pd.read_csv(DATAPATH, sep=";")
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--file", type=str, default=DEFAULT_DATA)
+    parser.add_argument("-m", "--model", type=str, default=DEFAULT_MODEL)
+    parser.add_argument("-s", "--skipgen", type=bool, default=False)
 
-# Get rows with "no" labels
-# label_col = df.columns[-1]
-# cond = df[label_col] == "no"
-# wrongs = df[cond]
+    args = parser.parse_args()
 
-# eval_df = wrongs
-eval_df = df
+    # Print CL arguments
+    print(args)
 
-print("Creating prompts...")
-eval_df["prompt"] = eval_df.apply(make_prompt, axis=1)
+    # Skip flag
+    if args.skipgen:
+        return
 
-print("Generating responses...\n")
-eval_df = eval_df.apply(run_model, axis=1)
+    # Model parameters
+    params = {
+        "model": args.model,
+        "device_map": 0,  # Force GPU
+        "max_new_tokens": 500,
+        "temperature": 0.3,
+    }
+    print(f"Model parameters: {params}")
 
-eval_df.to_csv("out.csv", sep=";", index=False)
+    print("Initializing pipeline...")
+    # Initialize the pipeline
+    pipeline = transformers.pipeline("text-generation", **params)
+
+    print("Reading input data...")
+    # Read CSV
+    eval_df = pd.read_csv(args.file, sep=";")
+
+    print("Creating prompts...")
+    eval_df["prompt"] = eval_df.apply(make_prompt, axis=1)
+
+    print("Generating responses...\n")
+    eval_df = eval_df.apply(lambda row: run_model(pipeline, row), axis=1)
+
+    eval_df.to_csv("../../outputs/results/out_gen.csv", sep=";", index=False)
+
+
+if __name__ == "__main__":
+    main()
