@@ -4,7 +4,13 @@ import pandas as pd
 import transformers
 import json
 
-from ..utils.prompts import SYSTEM_PROMPT, CRITIQUE_TEMPLATE
+import os, sys
+
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+)  # Add parent to path
+
+from utils.prompts import SYSTEM_PROMPT, CRITIQUE_TEMPLATE
 
 DEFAULT_DATA = "/home/kaariaa3/mscthesis/data/cleaned.csv"
 DEFAULT_MODEL = "Qwen/Qwen2.5-14B-Instruct"
