@@ -139,6 +139,8 @@
 %% Add here the packges you need
 %%
 \usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
 
 
 %% For tables that span multiple pages; used to split a paraphrasing example in
@@ -778,20 +780,91 @@ Randomly selecting 120 generated exercises from a total of 240, 75.0\% were sens
     \item Compare different methods in generating programming exercises
     \item goal is to reduce faithfulness hallucinations and obtain functional programming exercises
 \end{itemize}
-    \subsubsection{}
+\subsection{Practical part formulation/ideas}
+   \subsubsection{What has been done} 
     \begin{itemize}
-        \item Feed model a prompt with demonstration example(s) of form (instruction, solution, label, (reasoning)) and instruction for model to complete
-    \begin{itemize}
-        \item Is there data available with erroneous examples? If not, experiment difficult to conduct
-        \item Other considerations include:
+        \item Used existing dataset. The dataset contains 5 sheets with identical data, but containing different (yes/partially/no) evaluations for each datapoint. Evaluation metrics: 
+
         \begin{itemize}
-            \item Model?
-            \item System prompt?
-            \item selecting demonstrations, strategy -> random/learned?, number of demonstrations?
-            \item model settings? decoding, temperature, etc.
+            \item The exercise description matched the selected theme (Yes/Partially/No)
+            \item The exercise description matched the selected topic (Yes/Partially/No)
+            \item The exercise description matched the selected concept (Yes/No)
         \end{itemize}
+        \item Combined the evaluations, if all 5 evaluations are Yes => Yes, else No. No indicates that point contains hallucinations. Example of evaluations after combining:
+    
+    \begin{tabularx}{\textwidth}{X|X|X|X|X}
+    \toprule
+    Title & Theme matching & Topic matching & Concept matching & All matching \\
+    \midrule
+    Wildlife Spotting & yes & yes & yes & yes \\
+    Freeze Dance Game! & yes & yes & yes & yes \\
+    Rye Bread Order & yes & yes & yes & yes \\
+    Tower of London! & yes & no & yes & no \\
+    Holiday Movies & no & yes & yes & no \\
+    \bottomrule
+    \end{tabularx}
+
+    Stats of whole dataset:
+
+    \begin{tabularx}{0.9\textwidth}{X|X|X|X}
+    \toprule
+     & Correct (Yes) & Incorrect (Partially/No) & Percentage of correct \\
+    \midrule
+    The exercise description matched the selected theme (Yes/Partially/No) & 31 & 2 & 0.939394 \\
+    \midrule
+    The exercise description matched the selected topic (Yes/Partially/No) & 28 & 5 & 0.848485 \\
+    \midrule
+    The exercise description matched the selected concept (Yes/No) & 29 & 4 & 0.878788 \\
+    \midrule
+    All metrics are correct (Yes/No) & 24 & 9 & 0.727273 \\
+    \bottomrule
+    \end{tabularx}
+
+    \item Created a script that generates explanations / evaluations for a tuple (topic, theme, concept, problem description, example solution)
+    \item Can be used for generating CoT explanations for ICL and as an AI judge.
+    \item result JSON:
+        \{ \\
+        "correct": Yes/No \\
+        "explanation": CoT explanation \\
+        \}
+        \item Generated explanations for whole dataset
+        \item Problem: LLM tends to disagree with human evaluations (Qwen-Instruct 14B).
+        \item One reason may arise from data itself: e.g. evaluations where 4/5 are yes and 1/5 partially => "No" label
+        \item Should the labeling be done differently?
+        
+        
     \end{itemize}
+
+
+
+    \subsection{Next steps?}
+
+\begin{itemize}
+    \item Start experimenting on generating exercises
+    \item Can the prompt templates in \textcite{10.1145/3632620.3671103} be used here with modifications?
+    \item In the prompt \\
+    
+    \textit{Please generate a short programming exercise in Dart
+based on the example that I will provide. It should
+be about \$THEME\$, specifically \$TOPIC\$. It should be at
+the same difficulty level as the example /or It should
+be slightly more complex than the example. It should
+mainly cover \$CONCEPT2\$ but can also include \$CONCEPT2\$.
+Please follow the structure of the example and
+stay within its scope. You are allowed to include the
+following concepts in the new exercise: \$CONCEPTS\$. Do
+not use loops. Your response should be a JSON string.
+Here is the example: \$EXAMPLE\_EXERCISE\$} \\
+
+Is \$EXAMPLE\_EXERCISE\$ a tuple (description, code)?
+
+\item What was \$CONCEPTS\$ in the prompt? The previously learned concepts on the course?
+
+\item I think that a comparison of zero-shot prompting, few-shot prompting, explicit ICL and implicit ICL could be done using the LLM generated explanations if they are of high enough quality.
+
 \end{itemize}
+
+
 
 
 \clearpage
