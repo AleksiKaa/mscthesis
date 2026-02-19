@@ -1,4 +1,4 @@
-SYSTEM_PROMPT = """I want you to act as a programming teacher for an in-
+JUDGE_SYSTEM_PROMPT = """I want you to act as a programming teacher for an in-
 troductory Dart course. Your students are programming
 novices. I will provide some coding example exercises,
 and it will be your job to critique them. Your responses 
@@ -7,7 +7,7 @@ lyrics or books. Do not include any greetings, be concise.
 Do not mention trigger words associated with mental or 
 physical disorders, for example, weight loss or diet."""
 
-CRITIQUE_TEMPLATE = """You are evaluating a programming exercise.
+JUDGE_TEMPLATE = """You are evaluating a programming exercise.
 
 Intended theme: $THEME$
 Intended topic: $TOPIC$
@@ -31,5 +31,74 @@ Return a JSON of form
 {
     "Correct" : "yes" or "no"
     "Explanation": reasoning
-}
-"""
+}"""
+
+GENERATE_EXERCISES_SYSTEM_PROMPT = """I want you to act as a programming teacher for an 
+introductory Dart course. Your students are programming
+novices. I will provide some coding example exercises,
+and it will be your job to invent new ones. They should
+contain the following name-value pairs in JSON: ti-
+tle, problemDescription, exampleSolution, starterCode,
+tests. Your responses should be written in simple English.
+Do not cite music lyrics or books. Do not include any
+greetings, be concise. Do not mention trigger words associated
+ with mental or physical disorders, for example,
+weight loss or diet."""
+
+GENERATE_EXERCISES_TEMPLATE_ZEROSHOT = """Please generate a short programming exercise in Dart
+based on the example that I will provide. It should
+be about $theme, specifically $topic. It should be at
+the same difficulty level as the example /or It should
+be slightly more complex than the example. It should
+mainly cover $concept1 but can also include $concept2.
+Please follow the structure of the example and
+stay within its scope. You are allowed to include the
+following concepts in the new exercise: $concepts. Do
+not use loops. Your response should be a JSON string.
+Here is the example: $example_exercise
+"""  # MODIFY!!
+
+GENERATE_EXERCISES_TEMPLATE_FEWSHOT = """Please generate a short programming exercise in Dart
+based on the example that I will provide. It should
+be about $theme, specifically $topic. It should be at
+the same difficulty level as the example /or It should
+be slightly more complex than the example. It should
+mainly cover $concept1 but can also include $concept2.
+Please follow the structure of the example and
+stay within its scope. You are allowed to include the
+following concepts in the new exercise: $concepts. Do
+not use loops. Your response should be a JSON string.
+Here is the example: $example_exercise
+"""  # MODIFY!!
+
+GENERATE_EXERCISES_TEMPLATE_EXPLICIT = ""
+
+GENERATE_EXERCISES_TEMPLATE_IMPLICIT = ""
+
+EXERCISE_CONCEPTS = [
+    "user input",
+    "program output",
+    "variables",
+    "arithmetics",
+    "conditional statements",
+    "logical operators",
+]
+
+EXERCISE_THEMES = [
+    "Christmas",
+    "classical music",
+    "food",
+    "historical landmarks",
+    "literature",
+    "party games",
+    "video games",
+    "outdoor activities",
+    "art",
+    "board games",
+    "cartoons",
+    "handicrafts",
+    "nature destinations",
+    "pets",
+    "pop music",
+    "sports",
+]
