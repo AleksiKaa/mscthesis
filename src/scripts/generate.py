@@ -65,13 +65,13 @@ def make_prompt(row, task_type):
                 .replace("$CODE$", example_solution)
             )
         case "zeroshot":
-            pass
+            return GENERATE_EXERCISES_TEMPLATE_ZEROSHOT
         case "fewshot":
-            pass
+            return GENERATE_EXERCISES_TEMPLATE_FEWSHOT
         case "explicit":
-            pass
+            return GENERATE_EXERCISES_TEMPLATE_EXPLICIT
         case "implicit":
-            pass
+            return GENERATE_EXERCISES_TEMPLATE_IMPLICIT
         case _:
             raise ValueError(f"Task type '{_}' not recognised as valid task type!")
 
