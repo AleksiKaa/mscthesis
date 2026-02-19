@@ -777,7 +777,8 @@ Randomly selecting 120 generated exercises from a total of 240, 75.0\% were sens
 \begin{itemize}
     \item Compare different methods in generating programming exercises
     \item goal is to reduce faithfulness hallucinations and obtain functional programming exercises
-    \subsubsection{Method 1: implicit vs explicit}
+\end{itemize}
+    \subsubsection{}
     \begin{itemize}
         \item Feed model a prompt with demonstration example(s) of form (instruction, solution, label, (reasoning)) and instruction for model to complete
     \begin{itemize}
@@ -789,24 +790,6 @@ Randomly selecting 120 generated exercises from a total of 240, 75.0\% were sens
             \item selecting demonstrations, strategy -> random/learned?, number of demonstrations?
             \item model settings? decoding, temperature, etc.
         \end{itemize}
-    \end{itemize}
-    \item Run same prompts with and without reasonings
-    \item Evaluation? Manual/automated pipeline? (AI judge)
-    \end{itemize}
-
-    \subsubsection{Method 2: Standard vs icl}
-    \begin{itemize}
-    \item Generating regularly, use instruction and feed to prompt
-    \item For ICL: feed model a prompt with demonstration example(s) of form (instruction, solution) and instruction for model to complete
-    \begin{itemize}
-        \item Considerations:
-        \item Model?
-        \item System prompt?
-        \item selecting demonstrations, strategy -> random/learned?, number of demonstrations?
-        \item model settings? decoding, temperature, etc.
-    \end{itemize}
-    \item Run same prompts with and demonstration examples
-    \item Evaluation? Manual(validating and testing functionality?)/automated pipeline? (AI judge?)
     \end{itemize}
 \end{itemize}
 
