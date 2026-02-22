@@ -22,7 +22,7 @@ from utils.prompts import (
     GENERATE_EXERCISES_TEMPLATE_ZEROSHOT,
 )
 
-DEFAULT_DATA = "/home/kaariaa3/mscthesis/data/cleaned.csv"
+DEFAULT_DATA = "/home/kaariaa3/mscthesis/data/complete_dataset.csv"
 DEFAULT_MODEL = "Qwen/Qwen2.5-14B-Instruct"
 
 # Task type to system prompt
@@ -53,7 +53,7 @@ def get_task_type(tasktype):
 
 # Functions
 def make_prompt(row, task_type):
-    _, topic, theme, concept, problem_description, example_solution, *_ = row
+    _, problem_description, example_solution, _, _, theme, topic, concept, *_ = row
 
     match task_type:
         case "judge":
@@ -108,6 +108,7 @@ def main():
     parser.add_argument("-s", "--skipgen", type=bool, default=False)
     parser.add_argument("-c", "--csv", type=bool, default=True)
     parser.add_argument("-a", "--append_result", type=bool, default=True)
+    parser.add_argument("-n", "--n_rows", type=int, default=1)
     parser.add_argument(
         "-t",
         "--type",
@@ -153,7 +154,8 @@ def main():
 
     print("Reading input data...")
     # Read CSV
-    eval_df = pd.read_csv(args.file, sep=";")
+    df = pd.read_csv(args.file, sep=";")
+    eval_df = df.loc[0 : args.n_rows - 1]
 
     print("Creating prompts...")
     eval_df["prompt"] = eval_df.apply(lambda row: make_prompt(row, task), axis=1)
