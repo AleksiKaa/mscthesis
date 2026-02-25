@@ -1,9 +1,10 @@
 import os
 import sys
 import argparse
-import json
+from collections import defaultdict
 import pandas as pd
 import transformers
+from datasets import Dataset, load_dataset
 
 print("Libraries imported")
 
@@ -23,7 +24,10 @@ from utils.constants import (
     PIPE_RETURN_FULL_TEXT,
     PIPE_MAX_NEW_TOKENS,
     MODEL_TEMPERATURE,
+    BATCH_SIZE,
 )
+
+from utils.helpers import parse_output
 
 # Task type to system prompt
 system_prompts = {
@@ -64,35 +68,6 @@ def make_prompt(row, task_type):
             raise ValueError(f"Task type '{_}' not recognised as valid task type!")
 
 
-def run_model(pipe, data, task_type):
-    system_prompt = system_prompts.get(task_type, None)
-
-    if system_prompt is None:
-        raise ValueError(f"Task type '{task_type}' not recognised as valid task type!")
-
-    response = pipe(
-        [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": data["prompt"]},
-        ],
-        return_full_text=PIPE_RETURN_FULL_TEXT,
-    )
-
-    print(response)
-
-    result = response[0]["generated_text"]
-    result = result.replace("```json", "").replace(
-        "```", ""
-    )  # Strip markdown around actual content
-
-    result_dict = json.loads(result)
-
-    for k, v in result_dict.items():
-        data[k] = v
-
-    return data
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("jobid")
@@ -113,7 +88,17 @@ def main():
     # Print CL arguments
     print(args)
 
+    # Load Data
+    print("Reading input data...")
     task = get_task_type(args.type)
+    dataset = load_dataset("csv", data_files=DEFAULT_DATA, split="train", sep=";")
+
+    if args.n_rows is not None and args.n_rows > 0:
+        dataset = dataset.select(range(args.n_rows))
+
+    # Make prompts
+    print("Forming prompts...")
+    dataset = dataset.map(lambda row: {"prompt": make_prompt(row, task)})
 
     # Model parameters
     params = {
@@ -128,20 +113,33 @@ def main():
     # Initialize the pipeline
     pipeline = transformers.pipeline("text-generation", **params)
 
-    print("Reading input data...")
-    # Read CSV
-    df = pd.read_csv(args.file, sep=";")
-    eval_df = df.loc[0 : args.n_rows - 1 if args.n_rows is not None else None]
-
-    print("Creating prompts...")
-    eval_df["prompt"] = eval_df.apply(lambda row: make_prompt(row, task), axis=1)
-
     print("Generating responses...\n")
-    result = eval_df.apply(lambda row: run_model(pipeline, row, task), axis=1)
+    outputs = pipeline(
+        (
+            [
+                {"role": "system", "content": system_prompts.get(task)},
+                {"role": "user", "content": x},
+            ]
+            for x in dataset["prompt"]
+        ),
+        batch_size=BATCH_SIZE,
+        return_full_text=PIPE_RETURN_FULL_TEXT,
+        do_sample=False,
+    )
+
+    results = defaultdict(list)
+    for out in outputs:  # Map to named lists
+        text = out[0]["generated_text"]
+        parsed = parse_output(text)
+        for k, v in parsed.items():
+            results[k].append(v)
+
+    for k, v in results.items():  # Add named lists as columns
+        dataset = dataset.add_column(k, v)
 
     if args.csv:
-        result.to_csv(
-            f"../../outputs/results/generate_{task}_result_{args.jobid}.csv",
+        dataset.to_pandas().to_csv(
+            f"../../outputs/results/batch_{args.jobid}_result.csv",
             sep=";",
             index=False,
         )

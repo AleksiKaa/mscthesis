@@ -9,8 +9,10 @@ PIPE_MAX_NEW_TOKENS = 500
 MODEL_TEMPERATURE = 0.3
 
 DEFAULT_RESULT = {
-    "ThemeCorrect" :"no",
-    "TopicCorrect" : "no",
-    "ConceptCorrect" : "no",
-    "Explanation": "PARSE ERROR"
+    "ThemeCorrect": "no",
+    "TopicCorrect": "no",
+    "ConceptCorrect": "no",
+    "Explanation": "PARSE ERROR",
 }
+
+BATCH_SIZE = 8
