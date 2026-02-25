@@ -15,23 +15,19 @@ sys.path.append(
 from utils.prompts import (
     JUDGE_SYSTEM_PROMPT,
     JUDGE_TEMPLATE,
-    GENERATE_EXERCISES_SYSTEM_PROMPT,
-    GENERATE_EXERCISES_TEMPLATE_EXPLICIT,
-    GENERATE_EXERCISES_TEMPLATE_FEWSHOT,
-    GENERATE_EXERCISES_TEMPLATE_IMPLICIT,
-    GENERATE_EXERCISES_TEMPLATE_ZEROSHOT,
 )
 
-DEFAULT_DATA = "/home/kaariaa3/mscthesis/data/complete_dataset.csv"
-DEFAULT_MODEL = "Qwen/Qwen2.5-14B-Instruct"
+from utils.constants import (
+    DEFAULT_DATA,
+    DEFAULT_MODEL,
+    PIPE_RETURN_FULL_TEXT,
+    PIPE_MAX_NEW_TOKENS,
+    MODEL_TEMPERATURE,
+)
 
 # Task type to system prompt
 system_prompts = {
     "judge": JUDGE_SYSTEM_PROMPT,
-    "zeroshot": GENERATE_EXERCISES_SYSTEM_PROMPT,
-    "fewshot": GENERATE_EXERCISES_SYSTEM_PROMPT,
-    "explicit": GENERATE_EXERCISES_SYSTEM_PROMPT,
-    "implicit": GENERATE_EXERCISES_SYSTEM_PROMPT,
 }
 
 
@@ -65,13 +61,13 @@ def make_prompt(row, task_type):
                 .replace("$CODE$", example_solution)
             )
         case "zeroshot":
-            return GENERATE_EXERCISES_TEMPLATE_ZEROSHOT
+            pass
         case "fewshot":
-            return GENERATE_EXERCISES_TEMPLATE_FEWSHOT
+            pass
         case "explicit":
-            return GENERATE_EXERCISES_TEMPLATE_EXPLICIT
+            pass
         case "implicit":
-            return GENERATE_EXERCISES_TEMPLATE_IMPLICIT
+            pass
         case _:
             raise ValueError(f"Task type '{_}' not recognised as valid task type!")
 
@@ -87,11 +83,14 @@ def run_model(pipe, data, task_type):
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": data["prompt"]},
         ],
-        return_full_text=False,
-        max_new_tokens=500,
+        return_full_text=PIPE_RETURN_FULL_TEXT,
     )
 
     result = response[0]["generated_text"]
+    result = result.replace("```json", "").replace(
+        "```", ""
+    )  # Strip markdown around actual content
+
     result_dict = json.loads(result)
 
     for k, v in result_dict.items():
@@ -143,8 +142,8 @@ def main():
     params = {
         "model": args.model,
         "device_map": 0,  # Force GPU
-        "max_new_tokens": 500,
-        "temperature": 0.3,
+        "max_new_tokens": PIPE_MAX_NEW_TOKENS,
+        "temperature": MODEL_TEMPERATURE,
     }
     print(f"Model parameters: {params}")
 
@@ -155,7 +154,8 @@ def main():
     print("Reading input data...")
     # Read CSV
     df = pd.read_csv(args.file, sep=";")
-    eval_df = df.loc[0 : args.n_rows - 1]
+    # eval_df = df.loc[0 : args.n_rows - 1]
+    eval_df = df.iloc[[83, 121, 158, 220]]
 
     print("Creating prompts...")
     eval_df["prompt"] = eval_df.apply(lambda row: make_prompt(row, task), axis=1)

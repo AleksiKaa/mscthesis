@@ -29,7 +29,7 @@ Return only a raw JSON text of form:
     "ThemeCorrect" : "yes" / "partially"/ "no",
     "TopicCorrect" : "yes" / "partially"/ "no",
     "ConceptCorrect" : "yes" / "partially"/ "no",
-    "Explanation": reasoning
+    "Explanation": your reasoning
 }"""
 
 GENERATE_EXERCISES_SYSTEM_PROMPT = """I want you to act as a programming teacher for an
