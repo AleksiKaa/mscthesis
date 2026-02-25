@@ -2,9 +2,8 @@ import os
 import sys
 import argparse
 from collections import defaultdict
-import pandas as pd
 import transformers
-from datasets import Dataset, load_dataset
+from datasets import load_dataset
 
 print("Libraries imported")
 
