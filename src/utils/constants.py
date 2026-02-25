@@ -1,6 +1,6 @@
 DEFAULT_DATA = "/home/kaariaa3/mscthesis/data/complete_dataset.csv"
 
-DEFAULT_MODEL = "Qwen/Qwen2.5-14B-Instruct"
+DEFAULT_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"
 
 PIPE_RETURN_FULL_TEXT = False
 

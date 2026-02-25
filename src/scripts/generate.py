@@ -116,13 +116,13 @@ def main():
 
     print("Generating responses...\n")
     outputs = pipeline(
-        (
+        [
             [
                 {"role": "system", "content": system_prompts.get(task)},
                 {"role": "user", "content": x},
             ]
             for x in dataset["prompt"]
-        ),
+        ],
         batch_size=BATCH_SIZE,
         return_full_text=PIPE_RETURN_FULL_TEXT,
         do_sample=False,
