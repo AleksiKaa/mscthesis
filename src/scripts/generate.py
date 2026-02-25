@@ -52,16 +52,14 @@ def get_task_type(tasktype):
 
 # Functions
 def make_prompt(row, task_type):
-    _, problem_description, example_solution, _, _, theme, topic, concept, *_ = row
-
     match task_type:
         case "judge":
             return (
-                JUDGE_TEMPLATE.replace("$THEME$", theme)
-                .replace("$TOPIC$", topic)
-                .replace("$CONCEPT$", concept)
-                .replace("$TEXT$", problem_description)
-                .replace("$CODE$", example_solution)
+                JUDGE_TEMPLATE.replace("$THEME$", row["theme"])
+                .replace("$TOPIC$", row["topic"])
+                .replace("$CONCEPT$", row["concept"])
+                .replace("$TEXT$", row["problemDescription"])
+                .replace("$CODE$", row["exampleSolution"])
             )
         case _:
             raise ValueError(f"Task type '{_}' not recognised as valid task type!")
@@ -115,25 +113,25 @@ def main():
     pipeline.model.config.pad_token_id = pipeline.model.config.eos_token_id
 
     print("Generating responses...\n")
-    outputs = pipeline(
-        [
-            [
-                {"role": "system", "content": system_prompts.get(task)},
-                {"role": "user", "content": x},
-            ]
-            for x in dataset["prompt"]
-        ],
-        batch_size=BATCH_SIZE,
-        return_full_text=PIPE_RETURN_FULL_TEXT,
-        do_sample=False,
-    )
 
     results = defaultdict(list)
-    for out in outputs:  # Map to named lists
-        text = out[0]["generated_text"]
+    for prompt in dataset["prompt"]:
+        print(prompt)
+        output = pipeline(
+            [
+                {"role": "system", "content": system_prompts.get(task)},
+                {"role": "user", "content": prompt},
+            ],
+            batch_size=BATCH_SIZE,
+            return_full_text=PIPE_RETURN_FULL_TEXT,
+            do_sample=False,
+        )
+
+        text = output[0]["generated_text"]
         print(text)
+
         parsed = parse_output(text)
-        for k, v in parsed.items():
+        for k, v in parsed.items():  # Map to named lists
             results[k].append(v)
 
     for k, v in results.items():  # Add named lists as columns
