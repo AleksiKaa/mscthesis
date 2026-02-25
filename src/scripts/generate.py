@@ -111,6 +111,8 @@ def main():
     print("Initializing pipeline...")
     # Initialize the pipeline
     pipeline = transformers.pipeline("text-generation", **params)
+    pipeline.tokenizer.pad_token = pipeline.tokenizer.eos_token
+    pipeline.model.config.pad_token_id = pipeline.model.config.eos_token_id
 
     print("Generating responses...\n")
     outputs = pipeline(
@@ -129,6 +131,7 @@ def main():
     results = defaultdict(list)
     for out in outputs:  # Map to named lists
         text = out[0]["generated_text"]
+        print(text)
         parsed = parse_output(text)
         for k, v in parsed.items():
             results[k].append(v)
