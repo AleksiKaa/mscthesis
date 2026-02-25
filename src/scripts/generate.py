@@ -60,14 +60,6 @@ def make_prompt(row, task_type):
                 .replace("$TEXT$", problem_description)
                 .replace("$CODE$", example_solution)
             )
-        case "zeroshot":
-            pass
-        case "fewshot":
-            pass
-        case "explicit":
-            pass
-        case "implicit":
-            pass
         case _:
             raise ValueError(f"Task type '{_}' not recognised as valid task type!")
 
@@ -85,6 +77,8 @@ def run_model(pipe, data, task_type):
         ],
         return_full_text=PIPE_RETURN_FULL_TEXT,
     )
+
+    print(response)
 
     result = response[0]["generated_text"]
     result = result.replace("```json", "").replace(
@@ -104,26 +98,13 @@ def main():
     parser.add_argument("jobid")
     parser.add_argument("-f", "--file", type=str, default=DEFAULT_DATA)
     parser.add_argument("-m", "--model", type=str, default=DEFAULT_MODEL)
-    parser.add_argument("-s", "--skipgen", type=bool, default=False)
     parser.add_argument("-c", "--csv", type=bool, default=True)
-    parser.add_argument("-a", "--append_result", type=bool, default=True)
-    parser.add_argument("-n", "--n_rows", type=int, default=1)
+    parser.add_argument("-n", "--n_rows", type=int, default=None)
     parser.add_argument(
         "-t",
         "--type",
         type=str,
-        choices=[
-            "judge",
-            "j",
-            "zeroshot",
-            "z",
-            "fewshot",  # Not implemented
-            "f",
-            "explicit",  # Not implemented
-            "e",
-            "implicit",  # Not implemented
-            "i",
-        ],
+        choices=["judge", "j"],
         required=True,
     )
 
@@ -131,10 +112,6 @@ def main():
 
     # Print CL arguments
     print(args)
-
-    # Skip flag
-    if args.skipgen:
-        return
 
     task = get_task_type(args.type)
 
@@ -154,8 +131,7 @@ def main():
     print("Reading input data...")
     # Read CSV
     df = pd.read_csv(args.file, sep=";")
-    # eval_df = df.loc[0 : args.n_rows - 1]
-    eval_df = df.iloc[[83, 121, 158, 220]]
+    eval_df = df.loc[0 : args.n_rows - 1 if args.n_rows is not None else None]
 
     print("Creating prompts...")
     eval_df["prompt"] = eval_df.apply(lambda row: make_prompt(row, task), axis=1)
