@@ -28,7 +28,7 @@ Return only a raw JSON text of form:
 {
     "ThemeCorrect" : "yes" / "partially"/ "no",
     "TopicCorrect" : "yes" / "partially"/ "no",
-    "ConceptCorrect" : "yes" / "partially"/ "no",
+    "ConceptCorrect" : "yes" / "no",
     "Explanation": your reasoning
 }"""
 
