@@ -124,7 +124,6 @@ def main():
             ],
             batch_size=BATCH_SIZE,
             return_full_text=PIPE_RETURN_FULL_TEXT,
-            do_sample=False,
         )
 
         text = output[0]["generated_text"]
