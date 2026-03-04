@@ -9,19 +9,17 @@ PIPE_MAX_NEW_TOKENS = 500
 MODEL_TEMPERATURE = 0.3
 
 DEFAULT_JUDGE_RESULT = {
-    "ThemeCorrect": "no",
-    "TopicCorrect": "no",
-    "ConceptCorrect": "no",
-    "Explanation": "PARSE ERROR",
+    "themeCorrect": "no",
+    "topicCorrect": "no",
+    "conceptCorrect": "no",
+    "explanation": "PARSE ERROR",
 }
 
 DEFAULT_AUGMENT_RESULT = {
     "AugmentedDescription": "PARSE ERROR",
-    "AugmentedSolution": "PARSE ERROR"
+    "AugmentedSolution": "PARSE ERROR",
 }
 
-ERROR_RESULT = {
-    "Error": "PARSE ERROR"
-}
+ERROR_RESULT = {"Error": "PARSE ERROR"}
 
 BATCH_SIZE = 8

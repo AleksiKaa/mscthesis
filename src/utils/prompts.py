@@ -26,57 +26,27 @@ Step 5 — Provide a final explanation of evaluation.
 
 Return only a raw JSON text of form:
 {
-    "ThemeCorrect" : "yes" / "partially"/ "no",
-    "TopicCorrect" : "yes" / "partially"/ "no",
-    "ConceptCorrect" : "yes" / "no",
-    "Explanation": your reasoning
+    "themeCorrect" : "yes" / "partially"/ "no",
+    "topicCorrect" : "yes" / "partially"/ "no",
+    "conceptCorrect" : "yes" / "no",
+    "explanation": your reasoning
 }"""
 
-GENERATE_EXERCISES_SYSTEM_PROMPT = """I want you to act as a programming teacher for an
-introductory Dart course. Your students are programming
-novices. I will provide some coding example exercises,
-and it will be your job to invent new ones. They should
-contain the following name-value pairs in JSON: ti-
-tle, problemDescription, exampleSolution, starterCode,
-tests. Your responses should be written in simple English.
-Do not cite music lyrics or books. Do not include any
-greetings, be concise. Do not mention trigger words associated
-with mental or physical disorders, for example,
-weight loss or diet."""
-
-GENERATE_EXERCISES_TEMPLATE_ZEROSHOT = """Please generate a short programming exercise in Dart
-based on the example that I will provide. It should
-be about $THEME$, specifically $TOPIC$. It should be at
-the same difficulty level as the example /or It should
-be slightly more complex than the example. It should
-mainly cover $CONCEPT2$ but can also include $CONCEPT2$.
-Please follow the structure of the example and
-stay within its scope. You are allowed to include the
-following concepts in the new exercise: $CONCEPTS$. Do
-not use loops. Your response should be a JSON of form
-{
-    ???
-}.
-"""  # MODIFY!!
-
-GENERATE_EXERCISES_TEMPLATE_FEWSHOT = """Please generate a short programming exercise in Dart
-based on the example that I will provide. It should
-be about $THEME$, specifically $TOPIC$. It should be at
-the same difficulty level as the example /or It should
-be slightly more complex than the example. It should
-mainly cover $CONCEPT2$ but can also include $CONCEPT2$.
-Please follow the structure of the example and
-stay within its scope. You are allowed to include the
-following concepts in the new exercise: $CONCEPTS$. Do
-not use loops. Your response should be a JSON string.
-Here is the example: $EXAMPLE_EXERCISE$
-"""  # MODIFY!!
-
-AUGMENT_SYSTEM_PROMPT = """You will be provided with a theme, a topic, a concept, and a programming exercise consisting of a problem description and an example solution. Your goal is to modify the exercise so that it no longer corresponds to the provided theme, topic, and concept. The modified exercises should have the same format as the original one. Remember to escape all newlines and
+AUGMENT_SYSTEM_PROMPT = """
+You will be provided with a theme, a topic, 
+a concept, and a programming exercise consisting
+of a problem description and an example solution.
+Your goal is to modify the exercise so that it no
+longer corresponds to the provided theme, topic,
+and concept. The modified exercises should have
+the same format as the original one.
 
 You will output only a JSON object containing the
 following information: 
-{{AugmentedDescription: modifiedDescription, AugmentedSolution: {'code': modifiedSolution}}}"""
+{
+    augmentedProblemDescription: modifiedDescription,
+    augmentedExampleSolution: {'code': modifiedSolution}}
+}"""
 
 AUGMENT_TEMPLATE = """
 Theme: $THEME$
@@ -119,5 +89,3 @@ EXERCISE_THEMES = [
     "pop music",
     "sports",
 ]
-
-
