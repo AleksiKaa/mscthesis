@@ -16,8 +16,8 @@ DEFAULT_JUDGE_RESULT = {
 }
 
 DEFAULT_AUGMENT_RESULT = {
-    "AugmentedDescription": "PARSE ERROR",
-    "AugmentedSolution": "PARSE ERROR",
+    "augmentedProblemDescription": "PARSE ERROR",
+    "augmentedExampleSolution": "PARSE ERROR",
 }
 
 ERROR_RESULT = {"Error": "PARSE ERROR"}
