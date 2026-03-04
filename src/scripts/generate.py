@@ -15,6 +15,8 @@ sys.path.append(
 from utils.prompts import (
     JUDGE_SYSTEM_PROMPT,
     JUDGE_TEMPLATE,
+    AUGMENT_SYSTEM_PROMPT,
+    AUGMENT_TEMPLATE
 )
 
 from utils.constants import (
@@ -24,6 +26,8 @@ from utils.constants import (
     PIPE_MAX_NEW_TOKENS,
     MODEL_TEMPERATURE,
     BATCH_SIZE,
+    DEFAULT_AUGMENT_RESULT,
+    DEFAULT_JUDGE_RESULT
 )
 
 from utils.helpers import parse_output
@@ -31,31 +35,42 @@ from utils.helpers import parse_output
 # Task type to system prompt
 system_prompts = {
     "judge": JUDGE_SYSTEM_PROMPT,
+    "augment": AUGMENT_SYSTEM_PROMPT
 }
 
 
+# Functions
 def get_task_type(tasktype):
     match tasktype:
         case "judge" | "j":
             task = "judge"
-        case "zeroshot" | "z":
-            task = "zeroshot"
-        case "fewshot" | "f":
-            task = "fewshot"
-        case "explicit" | "e":
-            task = "explicit"
-        case "implicit" | "i":
-            task = "implicit"
+        case "augment" | "a":
+            task = "augment"
 
     return task
 
 
-# Functions
+def get_default_response(tasktype):
+    match tasktype:
+        case "judge":
+            return DEFAULT_JUDGE_RESULT
+        case "augment":
+            return DEFAULT_AUGMENT_RESULT
+
+
 def make_prompt(row, task_type):
     match task_type:
         case "judge":
             return (
                 JUDGE_TEMPLATE.replace("$THEME$", row["theme"])
+                .replace("$TOPIC$", row["topic"])
+                .replace("$CONCEPT$", row["concept"])
+                .replace("$TEXT$", row["problemDescription"])
+                .replace("$CODE$", row["exampleSolution"])
+            )
+        case "augment":
+            return (
+                AUGMENT_TEMPLATE.replace("$THEME$", row["theme"])
                 .replace("$TOPIC$", row["topic"])
                 .replace("$CONCEPT$", row["concept"])
                 .replace("$TEXT$", row["problemDescription"])
@@ -76,7 +91,7 @@ def main():
         "-t",
         "--type",
         type=str,
-        choices=["judge", "j"],
+        choices=["judge", "j", "augment", "a"],
         required=True,
     )
 
@@ -88,7 +103,7 @@ def main():
     # Load Data
     print("Reading input data...")
     task = get_task_type(args.type)
-    dataset = load_dataset("csv", data_files=DEFAULT_DATA, split="train", sep=";")
+    dataset = load_dataset("csv", data_files=args.file, split="train", sep=";")
 
     if args.n_rows is not None and args.n_rows > 0:
         dataset = dataset.select(range(args.n_rows))
@@ -115,11 +130,12 @@ def main():
     print("Generating responses...\n")
 
     results = defaultdict(list)
+    system_prompt = system_prompts.get(task)
     for prompt in dataset["prompt"]:
         print(prompt)
         output = pipeline(
             [
-                {"role": "system", "content": system_prompts.get(task)},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt},
             ],
             batch_size=BATCH_SIZE,
@@ -130,11 +146,13 @@ def main():
         print(text)
 
         parsed = parse_output(text)
-        for k, v in parsed.items():  # Map to named lists
-            results[k].append(v)
+        default_response = get_default_response(task)           
+        
+        for key, value in default_response.items():  # Map to named lists
+            results[key].append(parsed.get(key, value))
 
-    for k, v in results.items():  # Add named lists as columns
-        dataset = dataset.add_column(k, v)
+    for column_name, column_data in results.items():  # Add named lists as columns
+        dataset = dataset.add_column(column_name, column_data)
 
     if args.csv:
         dataset.to_pandas().to_csv(
