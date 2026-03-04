@@ -772,96 +772,67 @@ Randomly selecting 120 generated exercises from a total of 240, 75.0\% were sens
 
 \clearpage
 
-\section{Research material and methods}
+\section{Methods}
 
 %This part is the core of your work, where you explain the methodological choices you made, its limitations, how you pick your research material or subjects, the implementation of your study and the methods used. This section determines the methodological strengths and weaknesses of your thesis. Any earlier description of the method should limit itself to work done earlier by others. Here you tell your reader what you have done.
 
-\begin{itemize}
-    \item Compare different methods in generating programming exercises
-    \item goal is to reduce faithfulness hallucinations and obtain functional programming exercises
-\end{itemize}
-\subsection{Practical part formulation/ideas}
-   \subsubsection{What has been done} 
-    \begin{itemize}
-        \item Used existing dataset. The dataset contains 5 sheets with identical data, but containing different (yes/partially/no) evaluations for each datapoint. Evaluation metrics: 
+\subsection{Research design}
 
-        \begin{itemize}
-            \item The exercise description matched the selected theme (Yes/Partially/No)
-            \item The exercise description matched the selected topic (Yes/Partially/No)
-            \item The exercise description matched the selected concept (Yes/No)
-        \end{itemize}
-        \item Combined the evaluations, if all 5 evaluations are Yes => Yes, else No. No indicates that point contains hallucinations. Example of evaluations after combining:
+This thesis focuses on using general-purpose LLMs to detect faithfulness hallucinations in LLM generated contextualized programming exercises. In this study, failures and shortcomings in the exercise contextualizations are treated as faithfulness hallucinations. The purpose of the thesis is to investigate and study the capabilities of LLMs with no task-specific fine-tuning in acting as an AI-judge. The study also utilizes a novel prompt engineering strategy to elicit the judging capabilities of the models. Much effort was put into the engineering of the prompts. By experimenting with various configurations, prompt structures, writing styles, system prompts, promising templates were obtained and used in the actual empirical part of the study.
+
+The experiment utilizes a dataset produced by \textcite{10.1145/3632620.3671103}. It consists of LLM generated contextualized programming exercises, as well as human graded labels on the level of contextualization. Data from the dataset were injected into a prompt template and fed to a model, with the task of evaluating the level of contextualization in the original data. These output predictions of the model are then compared and analysed with the human-graded ground-truth labels to obtain a clear picture of the model's capabilities in detecting hallucinations.
+
+Models: which models, why, etc
     
-    \begin{tabularx}{\textwidth}{X|X|X|X|X}
-    \toprule
-    Title & Theme matching & Topic matching & Concept matching & All matching \\
-    \midrule
-    Wildlife Spotting & yes & yes & yes & yes \\
-    Freeze Dance Game! & yes & yes & yes & yes \\
-    Rye Bread Order & yes & yes & yes & yes \\
-    Tower of London! & yes & no & yes & no \\
-    Holiday Movies & no & yes & yes & no \\
-    \bottomrule
-    \end{tabularx}
 
-    Stats of whole dataset:
+\begin{itemize}
+    \item Evaluate the capabilities of LLMs as AI Judges in detecting faithfulness hallucinations in LLM generated coding exercises
+    \item Goal is to reduce faithfulness hallucinations and obtain functional programming exercises (Detection, not mitigation)
+\end{itemize}
+\subsection{Practical part}
+    \begin{itemize}
+        \item Used existing dataset. Consisting of 283 rows of data. 33 of the rows are inter-rated, and for those rows, evaluations are obtained via majority vote. Labels in data:
+        \begin{itemize}
+            \item The exercise description matched the selected theme (Yes / Partially / No)
+            \item The exercise description matched the selected topic (Yes / Partially / No)
+            \item The exercise description matched the selected concept (Yes/No)
+        \end{itemize} 
+        
+        \begin{tabularx}{\textwidth}{X|cccccc}
+        \toprule
+         & \multicolumn{2}{r}{yes} & \multicolumn{2}{r}{partially} & \multicolumn{2}{r}{no} \\
+         & Count & Percentage & Count & Percentage & Count & Percentage \\
+        \midrule
+        The exercise description matched the selected theme & 272 & 96.1 & 7 & 2.5 & 4 & 1.4 \\
+        \midrule
+        The exercise description matched the selected topic & 270 & 95.4 & 9 & 3.2 & 4 & 1.4 \\
+        \midrule
+        The exercise description matched the selected concept & 248 & 87.6 & 0 & 0.0 & 35 & 12.4 \\
+        \bottomrule
+        \end{tabularx}
 
-    \begin{tabularx}{0.9\textwidth}{X|X|X|X}
-    \toprule
-     & Correct (Yes) & Incorrect (Partially/No) & Percentage of correct \\
-    \midrule
-    The exercise description matched the selected theme (Yes/Partially/No) & 31 & 2 & 0.939394 \\
-    \midrule
-    The exercise description matched the selected topic (Yes/Partially/No) & 28 & 5 & 0.848485 \\
-    \midrule
-    The exercise description matched the selected concept (Yes/No) & 29 & 4 & 0.878788 \\
-    \midrule
-    All metrics are correct (Yes/No) & 24 & 9 & 0.727273 \\
-    \bottomrule
-    \end{tabularx}
 
     \item Created a script that generates explanations / evaluations for a tuple (topic, theme, concept, problem description, example solution)
     \item Can be used for generating CoT explanations for ICL and as an AI judge.
     \item result JSON:
         \{ \\
-        "correct": Yes/No \\
-        "explanation": CoT explanation \\
+            "ThemeCorrect" : "yes" / "partially"/ "no", \\
+            "TopicCorrect" : "yes" / "partially"/ "no", \\
+            "ConceptCorrect" : "yes" / "no", \\
+            "Explanation": model reasoning \\
         \}
-        \item Generated explanations for whole dataset
-        \item Problem: LLM tends to disagree with human evaluations (Qwen-Instruct 14B).
-        \item One reason may arise from data itself: e.g. evaluations where 4/5 are yes and 1/5 partially => "No" label
-        \item Should the labeling be done differently?
-        
-        
+        \item Generated explanations for a subset of data with negative lables, see \\ https://github.com/AleksiKaa/mscthesis/tree/main/src/notebooks
+        \item Tested with following instruction tuned models in Jupyter: Mistral-7B, Qwen-14B, Gemma12B
+        \item Tested Meta-Llama-3.1-70B-Instruct in a batch job, results in a notebook
+        \item Problem: LLM tends to disagree with human evaluations on negative labels, outputting yes on every input.
     \end{itemize}
-
-
-
+    
     \subsection{Next steps?}
 
 \begin{itemize}
-    \item Start experimenting on generating exercises
-    \item Can the prompt templates in \textcite{10.1145/3632620.3671103} be used here with modifications?
-    \item In the prompt \\
-    
-    \textit{Please generate a short programming exercise in Dart
-based on the example that I will provide. It should
-be about \$THEME\$, specifically \$TOPIC\$. It should be at
-the same difficulty level as the example /or It should
-be slightly more complex than the example. It should
-mainly cover \$CONCEPT2\$ but can also include \$CONCEPT2\$.
-Please follow the structure of the example and
-stay within its scope. You are allowed to include the
-following concepts in the new exercise: \$CONCEPTS\$. Do
-not use loops. Your response should be a JSON string.
-Here is the example: \$EXAMPLE\_EXERCISE\$} \\
-
-Is \$EXAMPLE\_EXERCISE\$ a tuple (description, code)?
-
-\item What was \$CONCEPTS\$ in the prompt? The previously learned concepts on the course?
-
-\item I think that a comparison of zero-shot prompting, few-shot prompting, explicit ICL and implicit ICL could be done using the LLM generated explanations if they are of high enough quality.
-
+    \item Augment data, introduce more no and partially labels in data
+    \item Study ICL -> does including a demonstration affect the model output in juding the faithfulness
+    \item Study the effect of positive/negative demonstration.
 \end{itemize}
 
 
