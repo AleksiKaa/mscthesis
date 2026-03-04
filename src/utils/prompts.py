@@ -72,6 +72,22 @@ not use loops. Your response should be a JSON string.
 Here is the example: $EXAMPLE_EXERCISE$
 """  # MODIFY!!
 
+AUGMENT_SYSTEM_PROMPT = """You will be provided with a theme, a topic, a concept, and a programming exercise consisting of a problem description and an example solution. Your goal is to modify the exercise so that it no longer corresponds to the provided theme, topic, and concept. The modified exercises should have the same format as the original one. Remember to escape all newlines and
+
+You will output only a JSON object containing the
+following information: 
+{{AugmentedDescription: modifiedDescription, AugmentedSolution: {'code': modifiedSolution}}}"""
+
+AUGMENT_TEMPLATE = """
+Theme: $THEME$
+Topic: $TOPIC$
+Concept: $CONCEPT$
+
+Problem description: $TEXT$
+
+Example solution: $CODE$
+"""
+
 GENERATE_EXERCISES_TEMPLATE_EXPLICIT = ""
 
 GENERATE_EXERCISES_TEMPLATE_IMPLICIT = ""
@@ -103,3 +119,5 @@ EXERCISE_THEMES = [
     "pop music",
     "sports",
 ]
+
+
