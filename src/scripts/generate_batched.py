@@ -1,9 +1,9 @@
 import os
 import sys
 import argparse
-from collections import defaultdict
 import transformers
 from datasets import load_dataset
+import json
 
 print("Libraries imported")
 
@@ -129,29 +129,40 @@ def main():
 
     print("Generating responses...\n")
 
-    results = defaultdict(list)
     system_prompt = system_prompts.get(task)
-    for prompt in dataset["prompt"]:
-        print(prompt)
-        output = pipeline(
+    results = {key: [] for key in get_default_response(task).keys()}
+    default_response = get_default_response(task)
+
+    batch_size = BATCH_SIZE
+    prompts = dataset["prompt"]
+    for i in range(0, len(prompts), batch_size):
+        batch_prompts = prompts[i:i + batch_size]
+
+        # Build batched conversation inputs
+        batch_inputs = [
             [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt},
-            ],
-            batch_size=BATCH_SIZE,
+            ]
+            for prompt in batch_prompts
+        ]
+
+        # Single batched forward pass
+        outputs = pipeline(
+            batch_inputs,
             return_full_text=PIPE_RETURN_FULL_TEXT,
         )
 
-        text = output[0]["generated_text"]
-        print(text)
+        # Process each output in the batch
+        for output in outputs:
+            text = output[0]["generated_text"]
+            parsed = parse_output(text)
 
-        parsed = parse_output(text)
-        default_response = get_default_response(task)           
-        
-        for key, value in default_response.items():  # Map to named lists
-            results[key].append(str(parsed.get(key, value)))
+            for key, value in default_response.items():
+                results[key].append(str(parsed.get(key, value)))
 
-    for column_name, column_data in results.items():  # Add named lists as columns
+    # Add named lists as columns
+    for column_name, column_data in results.items():
         dataset = dataset.add_column(column_name, column_data)
 
     if args.csv:

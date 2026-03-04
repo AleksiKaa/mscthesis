@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=02:00:00
+#SBATCH --time=01:00:00
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16GB # This is system memory, not GPU memory.
 #SBATCH --gpus=1
@@ -13,4 +13,4 @@ module load model-huggingface
 # Load a ready to use conda environment to use HuggingFace Transformers
 module load scicomp-llm-env
 
-python ../scripts/generate.py $SLURM_JOB_ID "$@" -t augment
+python ../scripts/generate_batched.py $SLURM_JOB_ID "$@" -t augment
