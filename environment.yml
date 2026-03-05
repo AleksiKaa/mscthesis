@@ -2,8 +2,10 @@ name: thesis
 channels:
   - conda-forge
 dependencies:
+  - python=3.13 
   - numpy
   - pandas
   - ipykernel
-  - torch
+  - pytorch
   - transformers==5.1.0
+  - datasets

@@ -3,7 +3,6 @@ import sys
 import argparse
 import transformers
 from datasets import load_dataset
-import json
 
 print("Libraries imported")
 
@@ -12,13 +11,6 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 )  # Add parent directory to path
 
-from utils.prompts import (
-    JUDGE_SYSTEM_PROMPT,
-    JUDGE_TEMPLATE,
-    AUGMENT_SYSTEM_PROMPT,
-    AUGMENT_TEMPLATE
-)
-
 from utils.constants import (
     DEFAULT_DATA,
     DEFAULT_MODEL,
@@ -26,58 +18,15 @@ from utils.constants import (
     PIPE_MAX_NEW_TOKENS,
     MODEL_TEMPERATURE,
     BATCH_SIZE,
-    DEFAULT_AUGMENT_RESULT,
-    DEFAULT_JUDGE_RESULT
 )
 
-from utils.helpers import parse_output
-
-# Task type to system prompt
-system_prompts = {
-    "judge": JUDGE_SYSTEM_PROMPT,
-    "augment": AUGMENT_SYSTEM_PROMPT
-}
-
-
-# Functions
-def get_task_type(tasktype):
-    match tasktype:
-        case "judge" | "j":
-            task = "judge"
-        case "augment" | "a":
-            task = "augment"
-
-    return task
-
-
-def get_default_response(tasktype):
-    match tasktype:
-        case "judge":
-            return DEFAULT_JUDGE_RESULT
-        case "augment":
-            return DEFAULT_AUGMENT_RESULT
-
-
-def make_prompt(row, task_type):
-    match task_type:
-        case "judge":
-            return (
-                JUDGE_TEMPLATE.replace("$THEME$", row["theme"])
-                .replace("$TOPIC$", row["topic"])
-                .replace("$CONCEPT$", row["concept"])
-                .replace("$TEXT$", row["problemDescription"])
-                .replace("$CODE$", row["exampleSolution"])
-            )
-        case "augment":
-            return (
-                AUGMENT_TEMPLATE.replace("$THEME$", row["theme"])
-                .replace("$TOPIC$", row["topic"])
-                .replace("$CONCEPT$", row["concept"])
-                .replace("$TEXT$", row["problemDescription"])
-                .replace("$CODE$", row["exampleSolution"])
-            )
-        case _:
-            raise ValueError(f"Task type '{_}' not recognised as valid task type!")
+from utils.helpers import (
+    parse_output,
+    get_task_type,
+    get_default_response,
+    get_system_prompt,
+    make_prompt,
+)
 
 
 def main():
@@ -129,14 +78,14 @@ def main():
 
     print("Generating responses...\n")
 
-    system_prompt = system_prompts.get(task)
+    system_prompt = get_system_prompt(task)
     results = {key: [] for key in get_default_response(task).keys()}
     default_response = get_default_response(task)
 
     batch_size = BATCH_SIZE
     prompts = dataset["prompt"]
     for i in range(0, len(prompts), batch_size):
-        batch_prompts = prompts[i:i + batch_size]
+        batch_prompts = prompts[i : i + batch_size]
 
         # Build batched conversation inputs
         batch_inputs = [
