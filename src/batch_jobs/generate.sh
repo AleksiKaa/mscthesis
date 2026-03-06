@@ -1,11 +1,9 @@
-#!/bin/bash
+#!/bin/bash -l
 
-echo "JOB START"
-echo "JOB ID: $SLURM_JOB_ID"
-echo "NODE: $(hostname)"
-echo "PWD: $(pwd)"
-echo "DATE: $(date)"
+echo "Job $SLURM_JOB_ID running on $(hostname)"
+echo "Working dir: $(pwd)"
 
+module purge
 module load model-huggingface
 module load scicomp-llm-env
 
