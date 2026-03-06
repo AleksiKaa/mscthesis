@@ -54,31 +54,3 @@ Problem description: $TEXT$
 
 Example solution: $CODE$
 """
-
-EXERCISE_CONCEPTS = [
-    "user input",
-    "program output",
-    "variables",
-    "arithmetics",
-    "conditional statements",
-    "logical operators",
-]
-
-EXERCISE_THEMES = [
-    "Christmas",
-    "classical music",
-    "food",
-    "historical landmarks",
-    "literature",
-    "party games",
-    "video games",
-    "outdoor activities",
-    "art",
-    "board games",
-    "cartoons",
-    "handicrafts",
-    "nature destinations",
-    "pets",
-    "pop music",
-    "sports",
-]
