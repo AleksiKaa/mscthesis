@@ -3,6 +3,7 @@ import sys
 import argparse
 import transformers
 from datasets import load_dataset
+import json
 
 print("Libraries imported")
 
@@ -108,7 +109,7 @@ def main():
             parsed = parse_output(text)
 
             for key, value in default_response.items():
-                results[key].append(str(parsed.get(key, value)))
+                results[key].append(json.dumps(parsed.get(key, value)))
 
     # Add named lists as columns
     for column_name, column_data in results.items():
