@@ -42,8 +42,8 @@ as the original one.
 You will output only a JSON object containing the
 following information: 
 {
-    augmentedProblemDescription: modifiedDescription,
-    augmentedExampleSolution: {'code': modifiedSolution}}
+    "augmentedProblemDescription": $modifiedDescription,
+    "augmentedExampleSolution": {"code": $modifiedSolution}
 }"""
 
 AUGMENT_TEMPLATE = """Theme: $THEME$

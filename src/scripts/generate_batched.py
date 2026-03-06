@@ -117,7 +117,7 @@ def main():
 
     if args.csv:
         dataset.to_pandas().to_csv(
-            f"../../outputs/results/batch_{args.jobid}_result.csv",
+            f"./outputs/results/batch_{args.jobid}_result.csv",
             sep=";",
             index=False,
         )
