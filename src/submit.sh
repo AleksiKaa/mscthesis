@@ -7,8 +7,8 @@ MEM="16GB"
 GPUS=1
 VRAM="32g"
 DIR=/home/kaariaa3/mscthesis
-OUTDIR=./outputs/jobs/batch.%J.out
-ERRDIR=./outputs/errs/batch.%J.err
+OUTDIR=./outputs/jobs/batch.%j.out
+ERRDIR=./outputs/errs/batch.%j.err
 MODEL=Qwen/Qwen2.5-14B-Instruct
 NROWS=-1
 CASE="augment"
@@ -53,8 +53,8 @@ sbatch \
     --output="$OUTDIR" \
     --error="$ERRDIR" \
     ./src/batch_jobs/generate.sh \
+    -f "$FILE" \
     -m "$MODEL" \
-    -n "$NROWS" \
+    -c "$SAVE"  \
     -t "$CASE" \
-    -s "$SAVE" \
-    -f "$FILE"
+    -n "$NROWS" \

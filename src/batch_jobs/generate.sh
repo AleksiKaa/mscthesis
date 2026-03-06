@@ -1,9 +1,16 @@
 #!/bin/bash
 
-# By loading the model-huggingface module, models will be loaded from /scratch/shareddata/dldata/huggingface-hub-cache which is a shared scratch space.
-module load model-huggingface
+echo "JOB START"
+echo "JOB ID: $SLURM_JOB_ID"
+echo "NODE: $(hostname)"
+echo "PWD: $(pwd)"
+echo "DATE: $(date)"
 
-# Load a ready to use conda environment to use HuggingFace Transformers
+module load model-huggingface
 module load scicomp-llm-env
 
-python ../scripts/generate_batched.py $SLURM_JOB_ID "$@"
+echo "Modules loaded"
+
+python -u src/scripts/generate_batched.py "$@"
+
+echo "JOB END"
