@@ -111,6 +111,9 @@ def main():
             for key, value in default_response.items():
                 results[key].append(json.dumps(parsed.get(key, value)))
 
+    # For debugging purposes
+    print(results)
+
     # Add named lists as columns
     for column_name, column_data in results.items():
         dataset = dataset.add_column(column_name, column_data)
