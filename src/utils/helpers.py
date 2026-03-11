@@ -5,7 +5,8 @@ from .constants import (
     ERROR_RESULT,
     DEFAULT_JUDGE_RESULT,
     DEFAULT_AUGMENT_RESULT,
-    EXERCISE_CONCEPTS,
+    CONCEPT_TO_CHAPTER_MAPPING,
+    THEME_TO_TOPICS_MAPPING
 )
 from .prompts import (
     JUDGE_SYSTEM_PROMPT,
@@ -41,7 +42,7 @@ def get_default_response(tasktype):
             return DEFAULT_AUGMENT_RESULT
 
 
-def make_prompt(row, task_type, seed=42):
+def make_prompt(row, task_type):
     match task_type:
         case "judge":
             return (
@@ -52,23 +53,31 @@ def make_prompt(row, task_type, seed=42):
                 .replace("$CODE$", row["exampleSolution"])
             )
         case "augment":
-            random.seed(seed)
+            new_theme = random.choice(list(THEME_TO_TOPICS_MAPPING.keys()))
+            # Ensure topic is not the same
+            new_topic = random.choice(
+                list(filter(lambda x: x != row["topic"], THEME_TO_TOPICS_MAPPING.get(new_theme)))
+            )
+            
             concept = row["concept"]
-            advanced_concept = EXERCISE_CONCEPTS[
-                random.randint(  # Randomly select one of the more advanced concepts
-                    EXERCISE_CONCEPTS.index(concept) + 1, len(EXERCISE_CONCEPTS) - 1
-                )
-            ]
-
+            concept_chapter = CONCEPT_TO_CHAPTER_MAPPING.get(concept)
+            num_chapters = len(set(CONCEPT_TO_CHAPTER_MAPPING.values()))
+            next_chapter = random.randint(concept_chapter + 1, num_chapters)
+            
+            advanced_concept = random.choice(
+                list(filter(
+                    lambda v: v[1] == next_chapter , CONCEPT_TO_CHAPTER_MAPPING.items())
+                ))[0]
+            
             return (
-                AUGMENT_TEMPLATE.replace("$THEME$", row["theme"])
-                .replace("$TOPIC$", row["topic"])
+                AUGMENT_TEMPLATE.replace("$THEME$", new_theme)
+                .replace("$TOPIC$", new_topic)
                 .replace("$CONCEPT$", advanced_concept)
                 .replace("$TEXT$", row["problemDescription"])
                 .replace("$CODE$", row["exampleSolution"])
             )
         case _:
-            raise ValueError("Task type not recognised as valid task type!")
+            raise ValueError(f"Task type '{_}' not recognised as valid task type!")
 
 
 def parse_output(text):

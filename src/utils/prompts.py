@@ -39,8 +39,8 @@ You will receive:
 - a programming exercise consisting of a problem description and an example solution.
 
 Your task:
-Modify the exercise so that it no longer corresponds to the provided theme and topic.
-Modify the program code in a way that it utilizes the programming concept in a non-trivial
+Modify the exercise so that it follows the provided theme and topic and 
+the program code in a way that it utilizes the programming concept in a non-trivial
 way. The modified exercise must keep the same style as the original.
 
 CRITICAL OUTPUT RULES:
