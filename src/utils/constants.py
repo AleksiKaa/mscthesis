@@ -22,4 +22,15 @@ DEFAULT_AUGMENT_RESULT = {
 
 ERROR_RESULT = {"Error": "PARSE ERROR"}
 
+EXERCISE_CONCEPTS = [  # Order of elements = hierarchy of concepts
+    "user input",
+    "program output",
+    "variables",
+    "arithmetics",
+    "conditional statements",
+    "logical operators",
+    "for loops",
+    "while loops"
+]
+
 BATCH_SIZE = 4
