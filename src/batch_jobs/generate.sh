@@ -9,6 +9,6 @@ module load scicomp-llm-env
 
 echo "Modules loaded"
 
-python -u src/scripts/generate_batched.py "$@"
+python -u src/scripts/generate_batched.py $SLURM_JOB_ID "$@"
 
 echo "JOB END"
