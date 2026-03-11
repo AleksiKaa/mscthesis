@@ -6,7 +6,7 @@ from .constants import (
     DEFAULT_JUDGE_RESULT,
     DEFAULT_AUGMENT_RESULT,
     CONCEPT_TO_CHAPTER_MAPPING,
-    THEME_TO_TOPICS_MAPPING
+    THEME_TO_TOPICS_MAPPING,
 )
 from .prompts import (
     JUDGE_SYSTEM_PROMPT,
@@ -56,19 +56,28 @@ def make_prompt(row, task_type):
             new_theme = random.choice(list(THEME_TO_TOPICS_MAPPING.keys()))
             # Ensure topic is not the same
             new_topic = random.choice(
-                list(filter(lambda x: x != row["topic"], THEME_TO_TOPICS_MAPPING.get(new_theme)))
+                list(
+                    filter(
+                        lambda x: x != row["topic"],
+                        THEME_TO_TOPICS_MAPPING.get(new_theme),
+                    )
+                )
             )
-            
+
             concept = row["concept"]
             concept_chapter = CONCEPT_TO_CHAPTER_MAPPING.get(concept)
             num_chapters = len(set(CONCEPT_TO_CHAPTER_MAPPING.values()))
             next_chapter = random.randint(concept_chapter + 1, num_chapters)
-            
+
             advanced_concept = random.choice(
-                list(filter(
-                    lambda v: v[1] == next_chapter , CONCEPT_TO_CHAPTER_MAPPING.items())
-                ))[0]
-            
+                list(
+                    filter(
+                        lambda v: v[1] == next_chapter,
+                        CONCEPT_TO_CHAPTER_MAPPING.items(),
+                    )
+                )
+            )[0]
+
             return (
                 AUGMENT_TEMPLATE.replace("$THEME$", new_theme)
                 .replace("$TOPIC$", new_topic)
