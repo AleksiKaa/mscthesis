@@ -35,11 +35,13 @@ AUGMENT_SYSTEM_PROMPT = """You are a system that rewrites programming exercises.
 You will receive:
 - a theme
 - a topic
+- a programming concept
 - a programming exercise consisting of a problem description and an example solution.
 
 Your task:
 Modify the exercise so that it no longer corresponds to the provided theme and topic.
-The modified exercise must keep the same structure and style as the original.
+Modify the program code in a way that it utilizes the programming concept in a non-trivial
+way. The modified exercise must keep the same style as the original.
 
 CRITICAL OUTPUT RULES:
 - You must output ONLY a valid JSON object.
@@ -64,6 +66,7 @@ AUGMENT_TEMPLATE = """Rewrite the following programming exercise.
 
 Theme: $THEME$
 Topic: $TOPIC$
+Concept: $CONCEPT$
 
 --- ORIGINAL PROBLEM DESCRIPTION ---
 $TEXT$
