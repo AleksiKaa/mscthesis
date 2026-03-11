@@ -1,4 +1,4 @@
-#!/bin/bash -l
+#!/bin/bash
 
 echo "Job $SLURM_JOB_ID running on $(hostname)"
 echo "Working dir: $(pwd)"

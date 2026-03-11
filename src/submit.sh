@@ -1,4 +1,4 @@
-#!/bin/bash -l
+#!/bin/bash
 
 # Default values
 TIME="01:00:00"

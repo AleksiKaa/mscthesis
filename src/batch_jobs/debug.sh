@@ -1,4 +1,4 @@
-#!/bin/bash -l
+#!/bin/bash
 
 echo "HOST: $(hostname)"
 echo "PWD: $(pwd)"
@@ -12,8 +12,8 @@ echo $MODULEPATH
 echo "Available modules:"
 module avail
 
-echo "Load Core"
-module load Core                # optional, if required by cluster
+#echo "Load Core"
+#module load Core                # optional, if required by cluster
 
 echo "Loading modules..."
 module load model-huggingface
