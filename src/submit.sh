@@ -22,10 +22,11 @@ usage() {
     exit 1
 }
 
-while getopts "t:v:m:n:c:s:d:h" opt; do
+while getopts "t:v:r:m:n:c:s:d:h" opt; do
     case $opt in
         t) TIME=$OPTARG ;;
         v) VRAM=$OPTARG ;;
+        r) MEM=$OPTARG ;;
         m) MODEL=$OPTARG ;;
         n) NROWS=$OPTARG ;;
         c) CASE=$OPTARG ;;
