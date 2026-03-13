@@ -783,6 +783,8 @@ Randomly selecting 120 generated exercises from a total of 240, 75.0\% were sens
 
 \subsection{Research design}
 
+CITE \cite{ming2025faithevallanguagemodelstay}
+
 This thesis focuses on using general-purpose LLMs to detect faithfulness hallucinations in LLM generated contextualized programming exercises. In this study, failures and shortcomings in the exercise contextualizations are treated as faithfulness hallucinations. The purpose of the thesis is to investigate and study the capabilities of LLMs with no task-specific fine-tuning in acting as an AI-judge. The study also utilizes a novel prompt engineering strategy to elicit the judging capabilities of the models. Much effort was put into the engineering of the prompts. By experimenting with various configurations, prompt structures, writing styles, system prompts, promising templates were obtained and used in the actual empirical part of the study.
 
 The experiment utilizes a dataset produced by \textcite{10.1145/3632620.3671103}. It consists of LLM generated contextualized programming exercises, as well as human graded labels on the level of contextualization. Data from the dataset were injected into a prompt template and fed to a model, with the task of evaluating the level of contextualization in the original data. These output predictions of the model are then compared and analysed with the human-graded ground-truth labels to obtain a clear picture of the model's capabilities in detecting hallucinations.
@@ -919,6 +921,8 @@ schema.
         \bottomrule
     \end{tabularx}
 \end{table}
+
+TODO: READ \cite{alazraki-etal-2025-need, cobbina2025demospromptpositionalbias, chen-etal-2023-many, chen-etal-2023-relation}
 
 \clearpage
 
