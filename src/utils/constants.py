@@ -8,10 +8,10 @@ PIPE_MAX_NEW_TOKENS = 1000
 
 MODEL_TEMPERATURE = 0.3
 
-DEFAULT_JUDGE_RESULT = {
+DEFAULT_DETECT_RESULT = {
     "themeCorrect": "no",
     "topicCorrect": "no",
-    "conceptCorrect": "no",
+    "usesAdditionalConcepts": "yes",
     "explanation": "PARSE ERROR",
 }
 

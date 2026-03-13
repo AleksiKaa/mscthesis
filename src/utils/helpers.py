@@ -3,31 +3,31 @@ import random
 
 from .constants import (
     ERROR_RESULT,
-    DEFAULT_JUDGE_RESULT,
+    DEFAULT_DETECT_RESULT,
     DEFAULT_AUGMENT_RESULT,
     CONCEPT_TO_CHAPTER_MAPPING,
     THEME_TO_TOPICS_MAPPING,
 )
 from .prompts import (
-    JUDGE_SYSTEM_PROMPT,
+    DETECT_SYSTEM_PROMPT,
     AUGMENT_SYSTEM_PROMPT,
-    JUDGE_TEMPLATE,
+    DETECT_TEMPLATE,
     AUGMENT_TEMPLATE,
 )
 
 
 def get_system_prompt(task):
     match task:
-        case "judge":
-            return JUDGE_SYSTEM_PROMPT
+        case "detect":
+            return DETECT_SYSTEM_PROMPT
         case "augment":
             return AUGMENT_SYSTEM_PROMPT
 
 
 def get_task_type(tasktype):
     match tasktype:
-        case "judge" | "j":
-            task = "judge"
+        case "detect" | "d":
+            task = "detect"
         case "augment" | "a":
             task = "augment"
 
@@ -36,19 +36,34 @@ def get_task_type(tasktype):
 
 def get_default_response(tasktype):
     match tasktype:
-        case "judge":
-            return DEFAULT_JUDGE_RESULT
+        case "detect":
+            return DEFAULT_DETECT_RESULT
         case "augment":
             return DEFAULT_AUGMENT_RESULT
 
 
 def make_prompt(row, task_type):
     match task_type:
-        case "judge":
+        case "detect":
+            concept = row["concept"]
+            concept_chapter = CONCEPT_TO_CHAPTER_MAPPING.get(concept)
+            allowed_concepts = ", ".join(  # Form comma separated string
+                list(
+                    map(
+                        lambda t: t[0],  # Drop chapter number, use only concept value
+                        filter(
+                            lambda v: v[1]
+                            <= concept_chapter,  # Only include concepts from current or earlier chapters
+                            CONCEPT_TO_CHAPTER_MAPPING.items(),
+                        ),
+                    )
+                )
+            )
+
             return (
-                JUDGE_TEMPLATE.replace("$THEME$", row["theme"])
+                DETECT_TEMPLATE.replace("$THEME$", row["theme"])
                 .replace("$TOPIC$", row["topic"])
-                .replace("$CONCEPT$", row["concept"])
+                .replace("$CONCEPTS$", allowed_concepts)
                 .replace("$TEXT$", row["problemDescription"])
                 .replace("$CODE$", row["exampleSolution"])
             )
@@ -66,13 +81,11 @@ def make_prompt(row, task_type):
 
             concept = row["concept"]
             concept_chapter = CONCEPT_TO_CHAPTER_MAPPING.get(concept)
-            num_chapters = len(set(CONCEPT_TO_CHAPTER_MAPPING.values()))
-            next_chapter = random.randint(concept_chapter + 1, num_chapters)
 
             advanced_concept = random.choice(
                 list(
                     filter(
-                        lambda v: v[1] == next_chapter,
+                        lambda v: v[1] > concept_chapter,
                         CONCEPT_TO_CHAPTER_MAPPING.items(),
                     )
                 )

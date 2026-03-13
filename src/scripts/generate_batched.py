@@ -41,7 +41,7 @@ def main():
         "-t",
         "--type",
         type=str,
-        choices=["judge", "j", "augment", "a"],
+        choices=["detect", "d", "augment", "a"],
         required=True,
     )
 
