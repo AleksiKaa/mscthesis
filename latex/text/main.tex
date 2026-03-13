@@ -141,6 +141,11 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{tabularx}
+\usepackage{listings}
+\lstset{columns=fullflexible, basicstyle=\ttfamily,
+backgroundcolor=\color{lightgray},xleftmargin=0.5cm,frame=lr,framesep=8pt,framerule=0pt}
+
+\usepackage{diagbox}
 
 
 %% For tables that span multiple pages; used to split a paraphrasing example in
@@ -795,48 +800,125 @@ Models: which models, why, etc
         \begin{itemize}
             \item The exercise description matched the selected theme (Yes / Partially / No)
             \item The exercise description matched the selected topic (Yes / Partially / No)
-            \item The exercise description matched the selected concept (Yes/No)
+            \item Included concepts that were too advanced (Yes/No)
         \end{itemize} 
-        
-        \begin{tabularx}{\textwidth}{X|cccccc}
+    \end{itemize}
+
+    
+    \begin{table}
+        \centering
+        \caption{Original data}
+        \label{tb:original_data}
+        \begin{tabularx}{\textwidth}{|X|cc|cc|cc|}
         \toprule
-         & \multicolumn{2}{r}{yes} & \multicolumn{2}{r}{partially} & \multicolumn{2}{r}{no} \\
-         & Count & Percentage & Count & Percentage & Count & Percentage \\
+             \backslashbox[\dimexpr\linewidth+2\tabcolsep]{Feature}{Label} & \multicolumn{2}{c}{Yes} & \multicolumn{2}{c}{Partially} & \multicolumn{2}{c}{No} \\
+         & N & \% & N & \% & N & \% \\
         \midrule
         The exercise description matched the selected theme & 272 & 96.1 & 7 & 2.5 & 4 & 1.4 \\
         \midrule
         The exercise description matched the selected topic & 270 & 95.4 & 9 & 3.2 & 4 & 1.4 \\
         \midrule
-        The exercise description matched the selected concept & 248 & 87.6 & 0 & 0.0 & 35 & 12.4 \\
+        Included concepts that were too advanced & 13 & 4.6 & & & 270 & 95.4 \\
         \bottomrule
         \end{tabularx}
+    \end{table}
 
-
-    \item Created a script that generates explanations / evaluations for a tuple (topic, theme, concept, problem description, example solution)
-    \item Can be used for generating CoT explanations for ICL and as an AI judge.
-    \item result JSON:
-        \{ \\
-            "ThemeCorrect" : "yes" / "partially"/ "no", \\
-            "TopicCorrect" : "yes" / "partially"/ "no", \\
-            "ConceptCorrect" : "yes" / "no", \\
-            "Explanation": model reasoning \\
-        \}
-        \item Generated explanations for a subset of data with negative lables, see \\ https://github.com/AleksiKaa/mscthesis/tree/main/src/notebooks
-        \item Tested with following instruction tuned models in Jupyter: Mistral-7B, Qwen-14B, Gemma12B
-        \item Tested Meta-Llama-3.1-70B-Instruct in a batch job, results in a notebook
-        \item Problem: LLM tends to disagree with human evaluations on negative labels, outputting yes on every input.
-    \end{itemize}
     
-    \subsection{Next steps?}
+    The count of examples with negative labels ("partially" or "no") is low, so the number had to be artificially increased to balance the dataset.  Due to the ambiguity of "partially" labels, the exclusion of rows including such labels was decided. This preprocessing filter removed 10 rows from the dataset.        
+    
+    Using LLMs to implant faithfulness hallucinations in the data proved to be a viable option. The model that was selected for planting the hallucinations was Qwen's Qwen2.5-72B-Instruct, since it was one of the largest models available and seemed to perform better than other model's of the same scale. Iterations of testing different prompting techniques resulted in the prompts shown in listings \ref{lst:augment_system_prompt} and \ref{lst:augment_user_prompt}. The prompt in \ref{lst:augment_user_prompt} was used as a template, where the tags surrounded by dollar signs (\$) were programmematically replaced. The tags were replaced in the following fashion:
 
-\begin{itemize}
-    \item Augment data, introduce more no and partially labels in data
-    \item Study ICL -> does including a demonstration affect the model output in juding the faithfulness
-    \item Study the effect of positive/negative demonstration.
-\end{itemize}
+    \begin{itemize}
+        \item \$THEME\$: A theme from a list of usable themes was selected at random.
+        \item \$TOPIC\$: A topic that is not the original topic was selected from a list of topics corresponding to the theme.
+        \item \$CONCEPT\$: A more advanced concept than the current one was inserted. TODO: EXPLAIN SELECTION LOGIC!
+        \item \$TEXT\$: The value of 'problemDescription' was inserted.
+        \item \$CODE\$: The value of 'exampleSolution' was inserted.
+    \end{itemize}
 
+    The complete dataset was run through the model, producing 273 more rows. The results, which were not valid JSON, were removed from the processing. A total of 11 rows were removed due to parsing errors, resulting in a total of 262 valid generated rows. After this, only the rows labeled (yes, yes) were included, since the prompt explicitly instructed to modify the input in such a way that both topic and theme are inconsistent. Then, the labels were flipped to be (no/no) and used as ground-truth data. The final dataset consists of 
+    
 
+    \newpage
+    \begin{lstlisting}[caption=System prompt used for planting hallucinations, label=lst:augment_system_prompt]
 
+You are a system that rewrites programming exercises.
+
+You will receive:
+- a theme
+- a topic
+- a programming concept
+- a programming exercise consisting of a problem description
+    and an example solution.
+
+Your task:
+Modify the exercise so that it follows the provided theme and
+topic and  the program code in a way that it utilizes the 
+programming concept in a non-trivial way. The modified 
+exercise must keep the same style as the original.
+
+CRITICAL OUTPUT RULES:
+- You must output ONLY a valid JSON object.
+- Do not include explanations, comments, markdown, or code
+    fences.
+- The output must be valid JSON that can be parsed with a
+    standard JSON parser.
+- All strings must be properly escaped.
+- The "code" field must be a JSON string containing the
+    solution code.
+
+JSON schema:
+
+{
+  "augmentedProblemDescription": "string",
+  "augmentedExampleSolution": {
+    "code": "string"
+  }
+}
+
+Before finishing, verify that the output is valid JSON and 
+follows the schema exactly.
+
+\end{lstlisting}
+
+\newpage
+\begin{lstlisting}[caption=User prompt used for planting hallucinations, label=lst:augment_user_prompt]
+Rewrite the following programming exercise.
+
+Rewrite the following programming exercise.
+
+Theme: $THEME$
+Topic: $TOPIC$
+Concept: $CONCEPT$
+
+--- ORIGINAL PROBLEM DESCRIPTION ---
+$TEXT$
+
+--- ORIGINAL EXAMPLE SOLUTION ---
+$CODE$
+
+Return the modified exercise as JSON following the required
+schema.
+"""
+\end{lstlisting}
+
+\begin{table}
+    \centering
+    \caption{Augmented data}
+    \label{tb:augmented_data}
+    \begin{tabularx}{\textwidth}{|X|cc|cc|}
+        \toprule
+        \backslashbox[\dimexpr\linewidth+2\tabcolsep]{Feature}{Label} & \multicolumn{2}{c}{Yes} & \multicolumn{2}{c}{No} \\
+                 & N & \% & N & \% \\
+        \midrule
+        The exercise description matched the selected theme & 285 & 53.3 & 250 & 46.7 \\
+        \midrule
+        The exercise description matched the selected topic & 269 & 50.3 & 266 & 49.7 \\
+        \midrule
+        Included concepts that were too advanced & 275 & 51.4 & 260 & 48.6 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
 
 \clearpage
 
