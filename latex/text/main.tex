@@ -145,6 +145,7 @@
 \lstset{columns=fullflexible, basicstyle=\ttfamily,
 backgroundcolor=\color{lightgray},xleftmargin=0.5cm,frame=lr,framesep=8pt,framerule=0pt}
 
+\usepackage[margin=1in]{geometry}
 \usepackage{diagbox}
 
 
@@ -783,33 +784,21 @@ Randomly selecting 120 generated exercises from a total of 240, 75.0\% were sens
 
 \subsection{Research design}
 
-CITE \cite{ming2025faithevallanguagemodelstay}
-
-This thesis focuses on using general-purpose LLMs to detect faithfulness hallucinations in LLM generated contextualized programming exercises. In this study, failures and shortcomings in the exercise contextualizations are treated as faithfulness hallucinations. The purpose of the thesis is to investigate and study the capabilities of LLMs with no task-specific fine-tuning in acting as an AI-judge. The study also utilizes a novel prompt engineering strategy to elicit the judging capabilities of the models. Much effort was put into the engineering of the prompts. By experimenting with various configurations, prompt structures, writing styles, system prompts, promising templates were obtained and used in the actual empirical part of the study.
+This thesis focuses on using general-purpose LLMs to detect faithfulness hallucinations in LLM generated contextualized programming exercises. In this study, failures and shortcomings in the exercise contextualizations are treated as faithfulness hallucinations. The purpose of the thesis is to investigate and study the capabilities of LLMs with no task-specific fine-tuning in acting as an AI-judge. The study also utilizes a novel prompt engineering strategy to elicit the judging capabilities of the models. Much effort was put into the engineering of the prompt and by experimenting with various configurations, prompt structures, writing styles, and system prompts, promising templates were obtained and used in the actual empirical part of the study.
 
 The experiment utilizes a dataset produced by \textcite{10.1145/3632620.3671103}. It consists of LLM generated contextualized programming exercises, as well as human graded labels on the level of contextualization. Data from the dataset were injected into a prompt template and fed to a model, with the task of evaluating the level of contextualization in the original data. These output predictions of the model are then compared and analysed with the human-graded ground-truth labels to obtain a clear picture of the model's capabilities in detecting hallucinations.
 
 Models: which models, why, etc
-    
 
-\begin{itemize}
-    \item Evaluate the capabilities of LLMs as AI Judges in detecting faithfulness hallucinations in LLM generated coding exercises
-    \item Goal is to reduce faithfulness hallucinations and obtain functional programming exercises (Detection, not mitigation)
-\end{itemize}
-\subsection{Practical part}
-    \begin{itemize}
-        \item Used existing dataset. Consisting of 283 rows of data. 33 of the rows are inter-rated, and for those rows, evaluations are obtained via majority vote. Labels in data:
-        \begin{itemize}
-            \item The exercise description matched the selected theme (Yes / Partially / No)
-            \item The exercise description matched the selected topic (Yes / Partially / No)
-            \item Included concepts that were too advanced (Yes/No)
-        \end{itemize} 
-    \end{itemize}
+\subsection{Data}
 
+    As stated in the previous section, this thesis utilizes a dataset produced by \textcite{10.1145/3632620.3671103}. In total, the dataset consists of 283 rows and 18 columns. Only a subset of these columns is relevant to this study, namely 'problemDescription', 'exampleSolution', 'theme', 'topic', and 'concept', which are used as features, and labels 'The exercise description matched the selected theme (Yes/Partially/No)', 'The exercise description matched the selected topic (Yes/Partially/No)', and 'Included concepts that were too advanced (Yes/No)'.
+
+    Simple data transformations were done in order for the data to better align with the experiment. The label columns of the dataset are human-graded, but 33 of the rows are inter-rated by a group of 5 researchers. For these rows, a majority vote was held to decide the final label. Table \ref{tb:original_data} shows the distribution of the original dataset.
     
     \begin{table}
         \centering
-        \caption{Original data}
+        \caption{Original data label distribution}
         \label{tb:original_data}
         \begin{tabularx}{\textwidth}{|X|cc|cc|cc|}
         \toprule
@@ -826,22 +815,24 @@ Models: which models, why, etc
     \end{table}
 
     
-    The count of examples with negative labels ("partially" or "no") is low, so the number had to be artificially increased to balance the dataset.  Due to the ambiguity of "partially" labels, the exclusion of rows including such labels was decided. This preprocessing filter removed 10 rows from the dataset.        
+    The count of examples with negative labels ("partially" or "no") is low, so the number had to be artificially increased to balance the dataset.  Due to the ambiguity of "partially" labels, the exclusion of rows including such labels was decided. This preprocessing filter removed 10 rows from the dataset.
     
-    Using LLMs to implant faithfulness hallucinations in the data proved to be a viable option. The model that was selected for planting the hallucinations was Qwen's Qwen2.5-72B-Instruct, since it was one of the largest models available and seemed to perform better than other model's of the same scale. Iterations of testing different prompting techniques resulted in the prompts shown in listings \ref{lst:augment_system_prompt} and \ref{lst:augment_user_prompt}. The prompt in \ref{lst:augment_user_prompt} was used as a template, where the tags surrounded by dollar signs (\$) were programmematically replaced. The tags were replaced in the following fashion:
-
+    Using LLMs to implant faithfulness hallucinations in the data proved to be a viable option. The model that was selected for planting the hallucinations was Qwen's Qwen2.5-72B-Instruct \cite{yang2024qwen2technicalreport}, since it was one of the largest models available and based on results of small scale tests performed better than some other models of the same scale. Iterations of testing different prompting techniques resulted in the prompts shown in listings \ref{lst:augment_system_prompt} and \ref{lst:augment_user_prompt}. The system prompt shown in listing \ref{lst:augment_system_prompt} contains the task instruction and the user prompt in listing \ref{lst:augment_user_prompt} was used to provide the context to the model in order to plant faithfulness hallucinations to the data. The user prompt was used as a template, where the tags surrounded by dollar signs (\$) were programmematically replaced. The tags were replaced in the following fashion:
     \begin{itemize}
-        \item \$THEME\$: A theme from a list of usable themes was selected at random.
-        \item \$TOPIC\$: A topic that is not the original topic was selected from a list of topics corresponding to the theme.
-        \item \$CONCEPT\$: A more advanced concept than the current one was inserted. TODO: EXPLAIN SELECTION LOGIC!
+        \item \$THEME\$: A theme was selected from a list of usable themes \footnote{literature, handicrafts, food, classical music, board games, pop music, sports, art, pets, historical landmarks, cartoons, video games, outdoor activities, party games, nature destinations, Christmas} at random.
+        \item \$TOPIC\$: A topic that differs from the original topic was randomly selected from a list of topics corresponding to the theme \footnote{Topics were extracted from the existing dataset. Each theme included 7-10 topics.}.
+        \item \$CONCEPT\$: A concept from following chapters was inserted. \footnote{The concepts were assigned to 'chapters', creating an order of intended progression. Chapters and the concepts covered: (1: user input, program output), (2: variables, arithmetics), (3: conditional statements, logical operators), (4: for loops, while loops)}
         \item \$TEXT\$: The value of 'problemDescription' was inserted.
         \item \$CODE\$: The value of 'exampleSolution' was inserted.
     \end{itemize}
+    The prompting techniques used by \textcite{ming2025faithevallanguagemodelstay} heavily influenced the structure of the prompts used in this thesis.
 
-    The complete dataset was run through the model, producing 273 more rows. The results, which were not valid JSON, were removed from the processing. A total of 11 rows were removed due to parsing errors, resulting in a total of 262 valid generated rows. After this, only the rows labeled (yes, yes) were included, since the prompt explicitly instructed to modify the input in such a way that both topic and theme are inconsistent. Then, the labels were flipped to be (no/no) and used as ground-truth data. The final dataset consists of 
+    The complete dataset was run through the model, producing 273 more rows. A comparison of an original exercise with the resulting augmented one is shown in
     
+    
+    A total of 11 rows were removed due to JSON parsing errors, resulting in a total of 262 valid generated rows. To use the generated data as ground-truth data, the augmented problem description and example solution were set as the originals, and the labels were modified. For columns 'The exercise description matched the selected theme' and 'The exercise description matched the selected topic' the label was changed to 'no' if the value injected in the generation prompt differs from the original, and otherwise the label was set as 'yes'. All values in column 'Included concepts that were too advanced' were set to "yes", since an advanced concept was injected into each exercise. The augmented dataset consists of 535 rows, and the distribution of labels is listed in table \ref{tb:augmented_data}.
 
-    \newpage
+    \clearpage
     \begin{lstlisting}[caption=System prompt used for planting hallucinations, label=lst:augment_system_prompt]
 
 You are a system that rewrites programming exercises.
@@ -883,10 +874,8 @@ follows the schema exactly.
 
 \end{lstlisting}
 
-\newpage
+\clearpage
 \begin{lstlisting}[caption=User prompt used for planting hallucinations, label=lst:augment_user_prompt]
-Rewrite the following programming exercise.
-
 Rewrite the following programming exercise.
 
 Theme: $THEME$
@@ -904,9 +893,9 @@ schema.
 """
 \end{lstlisting}
 
-\begin{table}
+\begin{table}[!h]
     \centering
-    \caption{Augmented data}
+    \caption{Label distribution of the augmented dataset}
     \label{tb:augmented_data}
     \begin{tabularx}{\textwidth}{|X|cc|cc|}
         \toprule
@@ -925,6 +914,89 @@ schema.
 TODO: READ \cite{alazraki-etal-2025-need, cobbina2025demospromptpositionalbias, chen-etal-2023-many, chen-etal-2023-relation}
 
 \clearpage
+
+\noindent
+\begin{minipage}[t]{0.48\textwidth}
+\textbf{Original exercise}
+
+Problem description: \\
+
+Write a program that asks the user for their favorite ingredient in Lingonberry sauce. After this, the program prints a message to the user 'Your favorite ingredient in Lingonberry sauce is ingredient!', where ingredient is the ingredient entered by the user. For example, with the input `sugar`, the program output is as follows:
+
+```
+What is your favorite ingredient in Lingonberry sauce?
+sugar
+Your favorite ingredient in Lingonberry sauce is sugar!
+```
+
+Similarly, if the user enters the ingredient `Lingonberries`, the program output is as follows:
+
+```
+What is your favorite ingredient in Lingonberry sauce?
+Lingonberries
+Your favorite ingredient in Lingonberry sauce is Lingonberries!
+``` \\
+
+Example solution: \\
+
+\begin{lstlisting}
+import 'dart:io';
+main() {
+    print('What is your favorite ingredient in Lingonberry sauce?');
+    var ingredient = stdin.readLineSync();
+    print('Your favorite ingredient in Lingonberry sauce is $ingredient!');
+}
+\end{lstlisting}
+
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\textbf{Augmented exercise}
+
+Problem description: \\
+
+Write a program that asks the user for their favorite composition by Claudio Monteverdi. After this, the program prints a message to the user 'Your favorite composition by Claudio Monteverdi is composition!', where composition is the composition entered by the user. The program should continue asking for compositions until the user enters 'quit'. For example, with the input `L'Orfeo`, the program output is as follows:
+
+```
+What is your favorite composition by Claudio Monteverdi?
+L'Orfeo
+Your favorite composition by Claudio Monteverdi is L'Orfeo!
+What is your favorite composition by Claudio Monteverdi?
+quit
+Thank you for sharing your favorites!
+```
+
+Similarly, if the user enters the composition `Vespro della Beata Vergine`, the program output is as follows:
+
+```
+What is your favorite composition by Claudio Monteverdi?
+Vespro della Beata Vergine
+Your favorite composition by Claudio Monteverdi is Vespro della Beata Vergine!
+What is your favorite composition by Claudio Monteverdi?
+quit
+Thank you for sharing your favorites!
+```
+
+ \\
+
+Example solution: \\
+
+\begin{lstlisting}
+import 'dart:io';
+main() {
+	while (true) {
+		print('What is your favorite composition by Claudio Monteverdi?');
+		var composition = stdin.readLineSync();
+		if (composition == 'quit') {
+			print('Thank you for sharing your favorites!');
+			break;
+		}
+		print('Your favorite composition by Claudio Monteverdi is $composition!');
+	}
+}
+\end{lstlisting}
+\end{minipage}
+
 
 \section{Results}
 
