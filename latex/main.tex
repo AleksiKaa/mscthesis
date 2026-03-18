@@ -95,7 +95,7 @@
 %%   margin), or
 %% * the third for two-sided printing.
 %%
-\documentclass[english, 12pt, a4paper, sci, utf8, a-2b, online]{../definitions/aaltothesis}
+\documentclass[english, 12pt, a4paper, sci, utf8, a-2b, online]{latex/definitions/aaltothesis}
 %\documentclass[english, 12pt, a4paper, elec, utf8, a-2b, print]{aaltothesis}
 %\documentclass[english, 12pt, a4paper, elec, utf8, a-2b, print, twoside]{aaltothesis}
 
@@ -187,7 +187,7 @@ sorting=nyt, % references are in alphabetical order sorted in the order name,
 firstinits=true, % show initial of first name in bibliography
 urldate=long % date is expressed as Month dd, yyyy
 ]{biblatex}
-\addbibresource{../references/refs.bib}
+\addbibresource{latex/references/refs.bib}
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END BIBLATEX STUFF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -837,67 +837,14 @@ Simple data transformations were done in order for the data to better align with
     \centering
     \begin{subfigure}[b]{0.5\textwidth}
         \centering
-    \begin{minted}{text}
-You are a system that rewrites programming exercises.
-
-You will receive:
-- a theme
-- a topic
-- a programming concept
-- a programming exercise consisting of a problem 
-    description and an example solution.
-
-Your task:
-Modify the exercise so that it follows the provided theme
-and topic and  the program code in a way that it utilizes
-the programming concept in a non-trivial way. The modified 
-exercise must keep the same style as the original.
-
-CRITICAL OUTPUT RULES:
-- You must output ONLY a valid JSON object.
-- Do not include explanations, comments, markdown, or code
-    fences.
-- The output must be valid JSON that can be parsed with a
-    standard JSON parser.
-- All strings must be properly escaped.
-- The "code" field must be a JSON string containing the
-    solution code.
-
-JSON schema:
-
-{
-  "augmentedProblemDescription": "string",
-  "augmentedExampleSolution": {
-    "code": "string"
-  }
-}
-
-Before finishing, verify that the output is valid JSON and 
-follows the schema exactly.
-\end{minted}
-        \caption{System prompt}
-        \label{lst:augment_system_prompt}
+    \inputminted{text}{./minted_inputs/augment_system_prompt.txt}
+    \caption{System prompt}
+    \label{lst:augment_system_prompt}
     \end{subfigure}%
     ~ 
     \begin{subfigure}[b]{0.5\textwidth}
         \centering
-\begin{minted}{text}
-Rewrite the following programming exercise.
-
-Theme: $THEME$
-Topic: $TOPIC$
-Concept: $CONCEPT$
-
---- ORIGINAL PROBLEM DESCRIPTION ---
-$TEXT$
-
---- ORIGINAL EXAMPLE SOLUTION ---
-$CODE$
-
-Return the modified exercise as JSON following the required
-schema.
-"""
-\end{minted}
+    \inputminted{text}{./minted_inputs/augment_user_prompt.txt}
     \caption{User prompt}
     \label{lst:augment_user_prompt}
     \end{subfigure}
@@ -939,93 +886,15 @@ A total of 11 rows were removed due to JSON parsing errors, resulting in a total
 \begin{figure*}
     \centering
     \begin{subfigure}[b]{0.5\textwidth}
-\begin{minted}{text}
-Write a program that asks the user for their favorite
-ingredient in Lingonberry sauce. After this, the program
-prints a message to the user 'Your favorite ingredient
-in Lingonberry sauce is ingredient!', where ingredient
-is the ingredient entered by the user. For example,
-with the input `sugar`, the program output is as follows:
-
-```
-What is your favorite ingredient in Lingonberry sauce?
-sugar
-Your favorite ingredient in Lingonberry sauce is sugar!
-```
-
-Similarly, if the user enters the ingredient 
-`Lingonberries`, the program output is as follows:
-
-```
-What is your favorite ingredient in Lingonberry sauce?
-Lingonberries
-Your favorite ingredient in Lingonberry sauce is 
-Lingonberries!
-``` 
-\end{minted}
-\begin{minted}{dart}
-import 'dart:io';
-main() {
-  print('What is your favorite ingredient' +
-    ' in Lingonberry sauce?');
-  var ingredient = stdin.readLineSync();
-  print('Your favorite ingredient in Lingonberry sauce' +
-    ' is $ingredient!');
-}
-\end{minted}
+    \inputminted{text}{./minted_inputs/example_original_problem.txt}
+    \inputminted{dart}{./minted_inputs/example_original_solution.txt}
     \caption{An example of an original exercise in the dataset}
     \label{fig:og_ex}
     \end{subfigure}%
     ~ 
     \begin{subfigure}[b]{0.5\textwidth}
-\begin{minted}{text}
-Write a program that asks the user for their favorite
-composition by Claudio Monteverdi. After this, the program
-prints a message to the user 'Your favorite composition by
-Claudio Monteverdi is composition!', where composition is
-the composition entered by the user. The program should 
-continue asking for compositions until the user enters
-'quit'. For example, with the input `L'Orfeo`, the program
-output is as follows:
-
-```
-What is your favorite composition by Claudio Monteverdi?
-L'Orfeo
-Your favorite composition by Claudio Monteverdi is L'Orfeo!
-What is your favorite composition by Claudio Monteverdi?
-quit
-Thank you for sharing your favorites!
-```
-
-Similarly, if the user enters the composition `Vespro della
-Beata Vergine`, the program output is as follows:
-
-```
-What is your favorite composition by Claudio Monteverdi?
-Vespro della Beata Vergine
-Your favorite composition by Claudio Monteverdi is Vespro
-della Beata Vergine!
-What is your favorite composition by Claudio Monteverdi?
-quit
-Thank you for sharing your favorites!
-``` 
-\end{minted}
-\begin{minted}{dart}
-import 'dart:io';
-main() {
-  while (true) {
-    print('What is your favorite composition by Claudio' + 
-      ' Monteverdi?');
-    var composition = stdin.readLineSync();
-	  if (composition == 'quit') {
-	     print('Thank you for sharing your favorites!');
-	     break; 
-    }
-    print('Your favorite composition by Claudio' + 
-      ' Monteverdi is $composition!');
-  }
-}
-\end{minted}
+    \inputminted{text}{./minted_inputs/example_augmented_problem.txt}
+    \inputminted{dart}{./minted_inputs/example_augmented_solution.txt}
     \caption{The augmented exercise generated based on the original exercise on the left}
     \label{fig:ag_ex}
     \end{subfigure}
@@ -1038,8 +907,32 @@ main() {
 
 TODO: READ \cite{alazraki-etal-2025-need, cobbina2025demospromptpositionalbias, chen-etal-2023-many, chen-etal-2023-relation}
 
-\clearpage
+\cite{chen-etal-2023-many} found, that one random demo has only slightly lower accuracy than 7-8 demos. Including one positive demonstration significantly outperforms few-shot prompting. "For an in-depth study of these questions, we categorize all the demos into positive/negative demos for each input query in the one-demo prompting setting, i.e., “positive Demos” enabling the LLMs to produce a correct answer while “negative Demos” results in wrong answers." => Too much work, one random?
 
+From \cite{cobbina2025demospromptpositionalbias}:
+\begin{itemize}
+    \item Start of system prompt = ssp
+    \item End of system prompt = esp
+    \item Start of user prompt = sup
+    \item End of user prompt = eup
+\end{itemize}
+
+The study suggests that placing demonstrations at the beginning of the system prompt yields the largest accuracy gain for classification tasks. ssp type prompt stucture in ChatModel wrapper:
+\begin{minted}[fontsize=\small]{text}
+<system>
+Use the demos below as examples on how
+to answer the question
+<DEMOS_PLACEHOLDER>
+<SYSTEM_PLACEHOLDER>
+<end_of_system>
+<user>
+<QUESTION_PLACEHOLDER>
+<end_of_user>
+\end{minted}
+
+Construct system prompt like above but fitting to this task and no ChatModel:
+
+\clearpage
 \section{Results}
 
 Present the results of your study here and answer the research questions, asked 

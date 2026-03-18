@@ -1,0 +1,14 @@
+Rewrite the following programming exercise.
+
+Theme: $THEME$
+Topic: $TOPIC$
+Concept: $CONCEPT$
+
+--- ORIGINAL PROBLEM DESCRIPTION ---
+$TEXT$
+
+--- ORIGINAL EXAMPLE SOLUTION ---
+$CODE$
+
+Return the modified exercise as JSON following the required
+schema.

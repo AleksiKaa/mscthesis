@@ -1,0 +1,30 @@
+Write a program that asks the user for their favorite
+composition by Claudio Monteverdi. After this, the program
+prints a message to the user 'Your favorite composition by
+Claudio Monteverdi is composition!', where composition is
+the composition entered by the user. The program should 
+continue asking for compositions until the user enters
+'quit'. For example, with the input `L'Orfeo`, the program
+output is as follows:
+
+```
+What is your favorite composition by Claudio Monteverdi?
+L'Orfeo
+Your favorite composition by Claudio Monteverdi is L'Orfeo!
+What is your favorite composition by Claudio Monteverdi?
+quit
+Thank you for sharing your favorites!
+```
+
+Similarly, if the user enters the composition `Vespro della
+Beata Vergine`, the program output is as follows:
+
+```
+What is your favorite composition by Claudio Monteverdi?
+Vespro della Beata Vergine
+Your favorite composition by Claudio Monteverdi is Vespro
+della Beata Vergine!
+What is your favorite composition by Claudio Monteverdi?
+quit
+Thank you for sharing your favorites!
+``` 
