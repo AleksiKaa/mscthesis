@@ -142,11 +142,24 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{listings}
-\lstset{columns=fullflexible, basicstyle=\ttfamily,
-backgroundcolor=\color{lightgray},xleftmargin=0.5cm,frame=lr,framesep=8pt,framerule=0pt}
+\lstset{columns=fullflexible, basicstyle=\small\ttfamily,
+backgroundcolor=\color{white},xleftmargin=0.5cm,frame=lr,framesep=8pt,framerule=0pt}
 
-\usepackage[margin=1in]{geometry}
+\definecolor{LightGray}{gray}{0.9}
+\usepackage{minted}
+\setminted{
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+bgcolor=LightGray,
+fontsize=\footnotesize,
+linenos=true
+}
+
+\usepackage{parcolumns}
+\usepackage{adjustbox}
 \usepackage{diagbox}
+\usepackage{makecell} % better header formatting
 
 
 %% For tables that span multiple pages; used to split a paraphrasing example in
@@ -788,38 +801,43 @@ This thesis focuses on using general-purpose LLMs to detect faithfulness halluci
 
 The experiment utilizes a dataset produced by \textcite{10.1145/3632620.3671103}. It consists of LLM generated contextualized programming exercises, as well as human graded labels on the level of contextualization. Data from the dataset were injected into a prompt template and fed to a model, with the task of evaluating the level of contextualization in the original data. These output predictions of the model are then compared and analysed with the human-graded ground-truth labels to obtain a clear picture of the model's capabilities in detecting hallucinations.
 
-Models: which models, why, etc
+TODO: Models: which models, why, etc
 
 \subsection{Data}
 
     As stated in the previous section, this thesis utilizes a dataset produced by \textcite{10.1145/3632620.3671103}. In total, the dataset consists of 283 rows and 18 columns. Only a subset of these columns is relevant to this study, namely 'problemDescription', 'exampleSolution', 'theme', 'topic', and 'concept', which are used as features, and labels 'The exercise description matched the selected theme (Yes/Partially/No)', 'The exercise description matched the selected topic (Yes/Partially/No)', and 'Included concepts that were too advanced (Yes/No)'.
 
     Simple data transformations were done in order for the data to better align with the experiment. The label columns of the dataset are human-graded, but 33 of the rows are inter-rated by a group of 5 researchers. For these rows, a majority vote was held to decide the final label. Table \ref{tb:original_data} shows the distribution of the original dataset.
-    
-    \begin{table}
+
+    \begin{table}[!h]
         \centering
+        \begin{tabularx}{\textwidth}{Xcccccc}
+            \toprule
+            \makecell[l]{Label \\ Feature} 
+            & \multicolumn{2}{c}{Yes} 
+            & \multicolumn{2}{c}{Partially} 
+            & \multicolumn{2}{c}{No} \\
+            & N & \% & N & \% & N & \% \\
+            \midrule
+            The exercise description matched the selected theme 
+            & 272 & 96.1 & 7 & 2.5 & 4 & 1.4 \\
+            
+            The exercise description matched the selected topic 
+            & 270 & 95.4 & 9 & 3.2 & 4 & 1.4 \\
+            
+            Included concepts that were too advanced 
+            & 13 & 4.6 & {} & {} & 270 & 95.4 \\
+            \bottomrule
+        \end{tabularx}
         \caption{Original data label distribution}
         \label{tb:original_data}
-        \begin{tabularx}{\textwidth}{|X|cc|cc|cc|}
-        \toprule
-             \backslashbox[\dimexpr\linewidth+2\tabcolsep]{Feature}{Label} & \multicolumn{2}{c}{Yes} & \multicolumn{2}{c}{Partially} & \multicolumn{2}{c}{No} \\
-         & N & \% & N & \% & N & \% \\
-        \midrule
-        The exercise description matched the selected theme & 272 & 96.1 & 7 & 2.5 & 4 & 1.4 \\
-        \midrule
-        The exercise description matched the selected topic & 270 & 95.4 & 9 & 3.2 & 4 & 1.4 \\
-        \midrule
-        Included concepts that were too advanced & 13 & 4.6 & & & 270 & 95.4 \\
-        \bottomrule
-        \end{tabularx}
     \end{table}
-
     
-    The count of examples with negative labels ("partially" or "no") is low, so the number had to be artificially increased to balance the dataset.  Due to the ambiguity of "partially" labels, the exclusion of rows including such labels was decided. This preprocessing filter removed 10 rows from the dataset.
+    The count of examples with negative labels ("partially" or "no") is low, so the number had to be artificially increased to balance the dataset.  Due to the ambiguity of "partially" labels, the exclusion of rows that include such labels was decided. This preprocessing filter removed 10 rows from the dataset.
     
     Using LLMs to implant faithfulness hallucinations in the data proved to be a viable option. The model that was selected for planting the hallucinations was Qwen's Qwen2.5-72B-Instruct \cite{yang2024qwen2technicalreport}, since it was one of the largest models available and based on results of small scale tests performed better than some other models of the same scale. Iterations of testing different prompting techniques resulted in the prompts shown in listings \ref{lst:augment_system_prompt} and \ref{lst:augment_user_prompt}. The system prompt shown in listing \ref{lst:augment_system_prompt} contains the task instruction and the user prompt in listing \ref{lst:augment_user_prompt} was used to provide the context to the model in order to plant faithfulness hallucinations to the data. The user prompt was used as a template, where the tags surrounded by dollar signs (\$) were programmematically replaced. The tags were replaced in the following fashion:
     \begin{itemize}
-        \item \$THEME\$: A theme was selected from a list of usable themes \footnote{literature, handicrafts, food, classical music, board games, pop music, sports, art, pets, historical landmarks, cartoons, video games, outdoor activities, party games, nature destinations, Christmas} at random.
+        \item \$THEME\$: A theme was selected from a list of themes \footnote{literature, handicrafts, food, classical music, board games, pop music, sports, art, pets, historical landmarks, cartoons, video games, outdoor activities, party games, nature destinations, Christmas} at random.
         \item \$TOPIC\$: A topic that differs from the original topic was randomly selected from a list of topics corresponding to the theme \footnote{Topics were extracted from the existing dataset. Each theme included 7-10 topics.}.
         \item \$CONCEPT\$: A concept from following chapters was inserted. \footnote{The concepts were assigned to 'chapters', creating an order of intended progression. Chapters and the concepts covered: (1: user input, program output), (2: variables, arithmetics), (3: conditional statements, logical operators), (4: for loops, while loops)}
         \item \$TEXT\$: The value of 'problemDescription' was inserted.
@@ -827,10 +845,25 @@ Models: which models, why, etc
     \end{itemize}
     The prompting techniques used by \textcite{ming2025faithevallanguagemodelstay} heavily influenced the structure of the prompts used in this thesis.
 
-    The complete dataset was run through the model, producing 273 more rows. A comparison of an original exercise with the resulting augmented one is shown in
-    
+    The dataset, which excludes the deleted rows, was run through the model, producing 273 more rows. An exercise, consisting of a problem description and an example solution is shown in figure \ref{fig:og_ex}. The exercise, which was generated based on the exercise in figure \ref{fig:og_ex}, is shown in figure \ref{fig:ag_ex}. Comparing the two exercises, it can be seen that the LLM has successfully planted faithfulness hallucinations in the exercise: the exercise is no longer about Lingonberry sauce, but rather the composer Claudio Monteverdi, and usage of a while loop has been injected in the problem as well.    
     
     A total of 11 rows were removed due to JSON parsing errors, resulting in a total of 262 valid generated rows. To use the generated data as ground-truth data, the augmented problem description and example solution were set as the originals, and the labels were modified. For columns 'The exercise description matched the selected theme' and 'The exercise description matched the selected topic' the label was changed to 'no' if the value injected in the generation prompt differs from the original, and otherwise the label was set as 'yes'. All values in column 'Included concepts that were too advanced' were set to "yes", since an advanced concept was injected into each exercise. The augmented dataset consists of 535 rows, and the distribution of labels is listed in table \ref{tb:augmented_data}.
+
+    \begin{table}
+    \centering
+    \begin{tabularx}{\textwidth}{Xcccc}
+        \toprule
+        \makecell[l]{Label \\ Feature} & \multicolumn{2}{c}{Yes} & \multicolumn{2}{c}{No} \\
+        & N & \% & N & \% \\
+        \midrule
+        The exercise description matched the selected theme & 285 & 53.3 & 250 & 46.7 \\
+        The exercise description matched the selected topic & 269 & 50.3 & 266 & 49.7 \\
+        Included concepts that were too advanced & 275 & 51.4 & 260 & 48.6 \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Label distribution of the augmented dataset}
+    \label{tb:augmented_data}
+    \end{table}
 
     \clearpage
     \begin{lstlisting}[caption=System prompt used for planting hallucinations, label=lst:augment_system_prompt]
@@ -893,35 +926,17 @@ schema.
 """
 \end{lstlisting}
 
-\begin{table}[!h]
-    \centering
-    \caption{Label distribution of the augmented dataset}
-    \label{tb:augmented_data}
-    \begin{tabularx}{\textwidth}{|X|cc|cc|}
-        \toprule
-        \backslashbox[\dimexpr\linewidth+2\tabcolsep]{Feature}{Label} & \multicolumn{2}{c}{Yes} & \multicolumn{2}{c}{No} \\
-                 & N & \% & N & \% \\
-        \midrule
-        The exercise description matched the selected theme & 285 & 53.3 & 250 & 46.7 \\
-        \midrule
-        The exercise description matched the selected topic & 269 & 50.3 & 266 & 49.7 \\
-        \midrule
-        Included concepts that were too advanced & 275 & 51.4 & 260 & 48.6 \\
-        \bottomrule
-    \end{tabularx}
-\end{table}
-
 TODO: READ \cite{alazraki-etal-2025-need, cobbina2025demospromptpositionalbias, chen-etal-2023-many, chen-etal-2023-relation}
 
-\clearpage
-
-\noindent
-\begin{minipage}[t]{0.48\textwidth}
-\textbf{Original exercise}
-
-Problem description: \\
-
-Write a program that asks the user for their favorite ingredient in Lingonberry sauce. After this, the program prints a message to the user 'Your favorite ingredient in Lingonberry sauce is ingredient!', where ingredient is the ingredient entered by the user. For example, with the input `sugar`, the program output is as follows:
+\begin{figure}
+    \centering
+\begin{lstlisting}[backgroundcolor=\color{white}]
+Write a program that asks the user for their favorite ingredient 
+in Lingonberry sauce. After this, the program prints a message
+to the user 'Your favorite ingredient in Lingonberry sauce is 
+ingredient!', where ingredient is the ingredient entered by the
+user. For example, with the input `sugar`, the program output
+is as follows:
 
 ```
 What is your favorite ingredient in Lingonberry sauce?
@@ -929,33 +944,37 @@ sugar
 Your favorite ingredient in Lingonberry sauce is sugar!
 ```
 
-Similarly, if the user enters the ingredient `Lingonberries`, the program output is as follows:
+Similarly, if the user enters the ingredient `Lingonberries`,
+the program output is as follows:
 
 ```
 What is your favorite ingredient in Lingonberry sauce?
 Lingonberries
 Your favorite ingredient in Lingonberry sauce is Lingonberries!
-``` \\
-
-Example solution: \\
-
-\begin{lstlisting}
+``` 
+\end{lstlisting}
+\begin{minted}{dart}
 import 'dart:io';
 main() {
     print('What is your favorite ingredient in Lingonberry sauce?');
     var ingredient = stdin.readLineSync();
     print('Your favorite ingredient in Lingonberry sauce is $ingredient!');
 }
-\end{lstlisting}
+\end{minted}
+    \caption{Example of an exercise in the dataset}
+    \label{fig:og_ex}
+\end{figure}
 
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.48\textwidth}
-\textbf{Augmented exercise}
-
-Problem description: \\
-
-Write a program that asks the user for their favorite composition by Claudio Monteverdi. After this, the program prints a message to the user 'Your favorite composition by Claudio Monteverdi is composition!', where composition is the composition entered by the user. The program should continue asking for compositions until the user enters 'quit'. For example, with the input `L'Orfeo`, the program output is as follows:
+\begin{figure}
+    \centering
+\begin{lstlisting}[backgroundcolor=\color{white}]
+Write a program that asks the user for their favorite composition
+by Claudio Monteverdi. After this, the program prints a message
+to the user 'Your favorite composition by Claudio Monteverdi is
+composition!', where composition is the composition entered by
+the user. The program should continue asking for compositions
+until the user enters 'quit'. For example, with the input
+`L'Orfeo`, the program output is as follows:
 
 ```
 What is your favorite composition by Claudio Monteverdi?
@@ -966,37 +985,38 @@ quit
 Thank you for sharing your favorites!
 ```
 
-Similarly, if the user enters the composition `Vespro della Beata Vergine`, the program output is as follows:
+Similarly, if the user enters the composition `Vespro della
+Beata Vergine`, the program output is as follows:
 
 ```
 What is your favorite composition by Claudio Monteverdi?
 Vespro della Beata Vergine
-Your favorite composition by Claudio Monteverdi is Vespro della Beata Vergine!
+Your favorite composition by Claudio Monteverdi is Vespro della
+Beata Vergine!
 What is your favorite composition by Claudio Monteverdi?
 quit
 Thank you for sharing your favorites!
-```
-
- \\
-
-Example solution: \\
-
-\begin{lstlisting}
+``` 
+\end{lstlisting}
+\begin{minted}{dart}
 import 'dart:io';
 main() {
-	while (true) {
-		print('What is your favorite composition by Claudio Monteverdi?');
-		var composition = stdin.readLineSync();
-		if (composition == 'quit') {
-			print('Thank you for sharing your favorites!');
-			break;
-		}
-		print('Your favorite composition by Claudio Monteverdi is $composition!');
-	}
+    while (true) {
+        print('What is your favorite composition by Claudio Monteverdi?');
+        var composition = stdin.readLineSync();
+	    if (composition == 'quit') {
+	        print('Thank you for sharing your favorites!');
+	        break; }
+        print(
+        'Your favorite composition by Claudio Monteverdi is $composition!'
+        ); }
 }
-\end{lstlisting}
-\end{minipage}
+\end{minted}
+    \caption{Example of an augmented exercise generated based on the exercise in figure \ref{fig:og_ex}}
+    \label{fig:ag_ex}
+\end{figure}
 
+\clearpage
 
 \section{Results}
 
