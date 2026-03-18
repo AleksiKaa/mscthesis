@@ -13,25 +13,32 @@ from .prompts import (
     AUGMENT_SYSTEM_PROMPT,
     DETECT_TEMPLATE,
     AUGMENT_TEMPLATE,
+    DEMONSTRATION_TEMPLATE
 )
 
 
-def get_system_prompt(task):
+def get_system_prompt(task, demonstrations):
     match task:
         case "detect":
-            return DETECT_SYSTEM_PROMPT
+            if demonstrations.num_rows is None or demonstrations.num_rows == 0:
+                return DETECT_SYSTEM_PROMPT
+            return "Use the demonstrations below as examples on how to answer the question.\n\n" + \
+                make_demonstrations(demonstrations) + \
+                DETECT_SYSTEM_PROMPT
         case "augment":
             return AUGMENT_SYSTEM_PROMPT
+        case _:
+            raise ValueError(f"Task type not recognised as valid task type!")
 
 
 def get_task_type(tasktype):
     match tasktype:
         case "detect" | "d":
-            task = "detect"
+            return "detect"
         case "augment" | "a":
-            task = "augment"
-
-    return task
+            return "augment"
+        case _:
+            raise ValueError(f"Task type not recognised as valid task type!")
 
 
 def get_default_response(tasktype):
@@ -40,6 +47,30 @@ def get_default_response(tasktype):
             return DEFAULT_DETECT_RESULT
         case "augment":
             return DEFAULT_AUGMENT_RESULT
+        case _:
+            raise ValueError(f"Task type not recognised as valid task type!")
+
+
+def make_demonstrations(demonstrations):
+    EVAL_COLS = [
+        "The exercise description matched the selected theme (Yes/No)",
+        "The exercise description matched the selected topic (Yes/No)",
+        "Included concepts that were too advanced (Yes/No)"
+    ]
+    
+    return "".join(
+        [
+            DEMONSTRATION_TEMPLATE.replace("$THEME$", row["theme"])
+                .replace("$TOPIC$", row["topic"])
+                .replace("$CONCEPT$", row["concept"])
+                .replace("$TEXT$", row["problemDescription"])
+                .replace("$CODE$", row["exampleSolution"])
+                .replace("$THEMECORRECT$", row[EVAL_COLS[0]])
+                .replace("$TOPICCORRECT$", row[EVAL_COLS[1]])
+                .replace("$ADDITIONALCONCEPTS$", row[EVAL_COLS[2]])
+            for row in demonstrations
+        ]
+    )
 
 
 def make_prompt(row, task_type):
@@ -99,7 +130,7 @@ def make_prompt(row, task_type):
                 .replace("$CODE$", row["exampleSolution"])
             )
         case _:
-            raise ValueError(f"Task type '{_}' not recognised as valid task type!")
+            raise ValueError(f"Task type not recognised as valid task type!")
 
 
 def parse_output(text):

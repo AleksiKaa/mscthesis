@@ -22,21 +22,47 @@ following information:
 {
     "themeCorrect" : "yes" / "no",
     "topicCorrect" : "yes" / "no",
-    "usesAdditionalConcepts" : "yes" / "no",
-    "explanation": your reasoning
+    "usesAdditionalConcepts" : "yes" / "no"
 }
 
 Before finishing, verify that the output is valid JSON and follows the schema exactly.
 """
 
-DETECT_TEMPLATE = """Theme: $THEME$
+DETECT_TEMPLATE = """Evaluate the following programming exercise.
+
+Theme: $THEME$
 Topic: $TOPIC$
-Allowed programming concepts: $CONCEPTS$
+Concept: $CONCEPT$
 
-Problem description: $TEXT$
+--- PROBLEM DESCRIPTION ---
+$TEXT$
 
-Example solution: $CODE$
-}"""
+--- EXAMPLE SOLUTION ---
+$CODE$
+
+Return the evaluations as JSON following the required schema.
+"""
+
+DEMONSTRATION_TEMPLATE = """Demonstration:
+
+Theme: $THEME$
+Topic: $TOPIC$
+Concept: $CONCEPT$
+
+--- PROBLEM DESCRIPTION ---
+$TEXT$
+
+--- EXAMPLE SOLUTION ---
+$CODE$
+
+--- GROUND-TRUTH EVALUATION ---
+{
+    "themeCorrect" : "$THEMECORRECT$",
+    "topicCorrect" : "$TOPICCORRECT$",
+    "usesAdditionalConcepts" : "$ADDITIONALCONCEPTS$"
+}
+
+"""
 
 AUGMENT_SYSTEM_PROMPT = """You are a system that rewrites programming exercises.
 
