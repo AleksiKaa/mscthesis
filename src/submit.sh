@@ -11,9 +11,10 @@ OUTDIR=./outputs/jobs/batch.%j.out
 ERRDIR=./outputs/errs/batch.%j.err
 MODEL=Qwen/Qwen2.5-14B-Instruct
 NROWS=-1
-CASE="augment"
+NDEMOS=0
+CASE="detect"
 SAVE="True"
-FILE="/home/kaariaa3/mscthesis/data/complete_dataset.csv"
+FILE="/home/kaariaa3/mscthesis/data/final_dataset.csv"
 DEBUG=false
 
 usage() {
@@ -22,17 +23,18 @@ usage() {
     exit 1
 }
 
-while getopts "t:v:r:m:n:c:s:d:h" opt; do
+while getopts "c:d:h:m:n:p:r:s:t:v" opt; do
     case $opt in
-        t) TIME=$OPTARG ;;
-        v) VRAM=$OPTARG ;;
-        r) MEM=$OPTARG ;;
-        m) MODEL=$OPTARG ;;
-        n) NROWS=$OPTARG ;;
         c) CASE=$OPTARG ;;
-        s) SAVE=$OPTARG ;;
         d) DEBUG=$OPTARG ;;
         h) usage ;;
+        m) MODEL=$OPTARG ;;
+        n) NROWS=$OPTARG ;;
+        p) NDEMOS=$OPTARG ;;
+        r) MEM=$OPTARG ;;
+        s) SAVE=$OPTARG ;;
+        t) TIME=$OPTARG ;;
+        v) VRAM=$OPTARG ;;
         *) usage ;;
     esac
 done
@@ -54,6 +56,7 @@ echo "GPU VRAM: $VRAM"
 echo "Model: $MODEL"
 echo "Mode: $CASE"
 echo "Number of rows: $NROWS"
+echo "Number of demos per prompt: $NDEMOS$"
 echo "Batch job: $BATCH_JOB"
 
 sbatch \
@@ -70,4 +73,5 @@ sbatch \
     -m "$MODEL" \
     -c "$SAVE"  \
     -t "$CASE" \
-    -n "$NROWS" \
+    -n $NROWS \
+    -d $NDEMOS
