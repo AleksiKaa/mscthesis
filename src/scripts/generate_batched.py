@@ -1,16 +1,11 @@
-import os
 import sys
 import argparse
 import transformers
 from datasets import load_dataset
 import json
+import numpy as np
 
-print("Libraries imported")
-
-
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-)  # Add parent directory to path
+sys.path.append("./src/")  # Add module directory to path
 
 from utils.constants import (
     DEFAULT_DATA,
@@ -29,6 +24,8 @@ from utils.helpers import (
     make_prompt,
 )
 
+print("Libraries imported")
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -37,6 +34,7 @@ def main():
     parser.add_argument("-m", "--model", type=str, default=DEFAULT_MODEL)
     parser.add_argument("-c", "--csv", type=bool, default=True)
     parser.add_argument("-n", "--n_rows", type=int, default=None)
+    parser.add_argument("-d", "--demos", type=int, default=0)
     parser.add_argument(
         "-t",
         "--type",
@@ -60,7 +58,22 @@ def main():
 
     # Make prompts
     print("Forming prompts...")
-    dataset = dataset.map(lambda row: {"prompt": make_prompt(row, task)})
+
+    demonstrations_rng = np.random.default_rng(seed=10)
+    dataset = dataset.map(
+        lambda row: {
+            "user_prompt": make_prompt(row, task),
+            "system_prompt": get_system_prompt(
+                task,
+                dataset.select(
+                    # Randomly select indices for demos, each row gets own demos, reproducible across runs
+                    demonstrations_rng.integers(
+                        low=0, high=dataset.num_rows, size=args.demos
+                    )
+                ),
+            ),
+        }
+    )
 
     # Model parameters
     params = {
@@ -79,22 +92,25 @@ def main():
 
     print("Generating responses...\n")
 
-    system_prompt = get_system_prompt(task)
     results = {key: [] for key in get_default_response(task).keys()}
     default_response = get_default_response(task)
 
     batch_size = BATCH_SIZE
-    prompts = dataset["prompt"]
+    prompts = dataset["user_prompt"]
+    system_prompts = dataset["system_prompt"]
     for i in range(0, len(prompts), batch_size):
-        batch_prompts = prompts[i : i + batch_size]
 
         # Build batched conversation inputs
+        batch_prompts = zip(
+            system_prompts[i : i + batch_size], prompts[i : i + batch_size]
+        )
+
         batch_inputs = [
             [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt},
+                {"role": "system", "content": sp},
+                {"role": "user", "content": up},
             ]
-            for prompt in batch_prompts
+            for sp, up in batch_prompts
         ]
 
         # Single batched forward pass
