@@ -56,7 +56,7 @@ echo "GPU VRAM: $VRAM"
 echo "Model: $MODEL"
 echo "Mode: $CASE"
 echo "Number of rows: $NROWS"
-echo "Number of demos per prompt: $NDEMOS$"
+echo "Number of demos per prompt: $NDEMOS"
 echo "Batch job: $BATCH_JOB"
 
 sbatch \
