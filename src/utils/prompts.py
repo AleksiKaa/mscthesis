@@ -22,8 +22,7 @@ following information:
 {
     "themeCorrect" : "yes" / "no",
     "topicCorrect" : "yes" / "no",
-    "usesAdditionalConcepts" : "yes" / "no",
-    "explanation" : string
+    "usesAdditionalConcepts" : "yes" / "no"
 }
 
 Before finishing, verify that the output is valid JSON and follows the schema exactly.
@@ -60,8 +59,7 @@ $CODE$
 {
     "themeCorrect" : "$THEMECORRECT$",
     "topicCorrect" : "$TOPICCORRECT$",
-    "usesAdditionalConcepts" : "$ADDITIONALCONCEPTS$",
-    "explanation" : "" 
+    "usesAdditionalConcepts" : "$ADDITIONALCONCEPTS$"
 }
 
 """
