@@ -17,7 +17,7 @@ from .prompts import (
 )
 
 
-def get_system_prompt(task, demonstrations):
+def get_system_prompt(task, demonstrations=None):
     match task:
         case "detect":
             if demonstrations.num_rows is None or demonstrations.num_rows == 0:
