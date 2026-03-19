@@ -1,23 +1,27 @@
 import pandas as pd
 
-def calculate_accuracy(df, predictions):
+GT_COLS = [
+    "The exercise description matched the selected theme (Yes/No)",
+    "The exercise description matched the selected topic (Yes/No)",
+    "Included concepts that were too advanced (Yes/No)"
+]
 
-    # Ground truth columns
-    gt_theme = df['The exercise description matched the selected theme (Yes/No)']
-    gt_topic = df['The exercise description matched the selected topic (Yes/No)']
-    gt_concept = df['Included concepts that were too advanced (Yes/No)']
+PRED_COLS = ["themeCorrect", "topicCorrect", "usesAdditionalConcepts"]
 
-    # Normalize values
-    def normalize(series):
-        return series.astype(str).str.strip('"').str.lower()
 
-    gt_theme = normalize(gt_theme)
-    gt_topic = normalize(gt_topic)
-    gt_concept = normalize(gt_concept)
+def normalize(series):
+    return series.astype(str).str.strip('"').str.lower()
 
-    pred_theme = normalize(pd.Series(predictions['themeCorrect']))
-    pred_topic = normalize(pd.Series(predictions['topicCorrect']))
-    pred_concept = normalize(pd.Series(predictions['usesAdditionalConcepts']))
+
+def calculate_accuracy(df):
+
+    gt_theme = normalize(df[GT_COLS[0]])
+    gt_topic = normalize(df[GT_COLS[1]])
+    gt_concept = normalize(df[GT_COLS[2]])
+
+    pred_theme = normalize(df[PRED_COLS[0]])
+    pred_topic = normalize(df[PRED_COLS[1]])
+    pred_concept = normalize(df[PRED_COLS[2]])
     
     # Accuracy calculation
     theme_acc = (gt_theme == pred_theme)
