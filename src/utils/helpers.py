@@ -17,6 +17,23 @@ from .prompts import (
     FIXED_DEMONSTRATIONS
 )
 
+def get_allowed_concepts(concept):
+    concept_chapter = CONCEPT_TO_CHAPTER_MAPPING.get(concept)
+    allowed_concepts = ", ".join(  # Form comma separated string
+        list(
+            map(
+                lambda t: t[0],  # Drop chapter number, use only concept value
+                filter(
+                    lambda v: v[1]
+                    <= concept_chapter,  # Only include concepts from current or earlier chapters
+                    CONCEPT_TO_CHAPTER_MAPPING.items(),
+                ),
+            )
+        )
+    )
+
+    return allowed_concepts
+
 
 def get_system_prompt(task, demonstrations=None, use_fixed_demos=True):
     match task:
@@ -76,7 +93,7 @@ def make_demonstrations(demonstrations):
         [
             DEMONSTRATION_TEMPLATE.replace("$THEME$", row["theme"])
                 .replace("$TOPIC$", row["topic"])
-                .replace("$CONCEPT$", row["concept"])
+                .replace("$CONCEPTS$", get_allowed_concepts(row["concept"]))
                 .replace("$TEXT$", row["problemDescription"])
                 .replace("$CODE$", row["exampleSolution"])
                 .replace("$THEMECORRECT$", row[EVAL_COLS[0]])
@@ -90,25 +107,10 @@ def make_demonstrations(demonstrations):
 def make_prompt(row, task_type):
     match task_type:
         case "detect":
-            concept = row["concept"]
-            concept_chapter = CONCEPT_TO_CHAPTER_MAPPING.get(concept)
-            allowed_concepts = ", ".join(  # Form comma separated string
-                list(
-                    map(
-                        lambda t: t[0],  # Drop chapter number, use only concept value
-                        filter(
-                            lambda v: v[1]
-                            <= concept_chapter,  # Only include concepts from current or earlier chapters
-                            CONCEPT_TO_CHAPTER_MAPPING.items(),
-                        ),
-                    )
-                )
-            )
-
             return (
                 DETECT_TEMPLATE.replace("$THEME$", row["theme"])
                 .replace("$TOPIC$", row["topic"])
-                .replace("$CONCEPTS$", allowed_concepts)
+                .replace("$CONCEPTS$", get_allowed_concepts(row["concept"]))
                 .replace("$TEXT$", row["problemDescription"])
                 .replace("$CODE$", row["exampleSolution"])
             )

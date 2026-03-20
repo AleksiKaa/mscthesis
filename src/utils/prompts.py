@@ -32,7 +32,7 @@ DETECT_TEMPLATE = """Evaluate the following programming exercise.
 
 Theme: $THEME$
 Topic: $TOPIC$
-Concept: $CONCEPT$
+Allowed concepts: $CONCEPTS$
 
 --- PROBLEM DESCRIPTION ---
 $TEXT$
@@ -47,7 +47,7 @@ DEMONSTRATION_TEMPLATE = """Demonstration:
 
 Theme: $THEME$
 Topic: $TOPIC$
-Concept: $CONCEPT$
+Allowed concepts: $CONCEPTS$
 
 --- PROBLEM DESCRIPTION ---
 $TEXT$
@@ -68,7 +68,7 @@ FIXED_DEMONSTRATIONS = """Demonstration:
 
 Theme: literature
 Topic: Agatha Christie
-Concept: conditional statements
+Allowed concepts: user input, program output, variables, arithmetics, conditional statements, logical operators
 
 --- PROBLEM DESCRIPTION ---
 Vincent van Gogh, the renowned post-impressionist painter, has a unique way of describing his paintings based on their emotional impact. The emotional impact is represented as numbers and is accompanied by the following textual descriptions:
@@ -130,7 +130,7 @@ Demonstration:
 
 Theme: outdoor activities
 Topic: ice skating
-Concept: logical operators
+Allowed concepts: user input, program output, variables, arithmetics, conditional statements, logical operators
 
 --- PROBLEM DESCRIPTION ---
 In a local ice skating competition, the scores are given in the range of 1 to 10 and are accompanied by the following textual descriptions:\n<table>\n<tr>\n<th>Score</th>\n<th>Assessment</th>\n</tr>\n<tr>\n<th>10</th>\n<th>Excellent</th>\n</tr>\n<tr>\n<th>9</th>\n<th>Very Good</th>\n</tr>\n<tr>\n<th>8</th>\n<th>Good</th>\n</tr>\n<tr>\n<th>7</th>\n<th>Fair</th>\n</tr>\n<tr>\n<th>6</th>\n<th>Satisfactory</th>\n</tr>\n<tr>\n<th>5</th>\n<th>Below Average</th>\n</tr>\n<tr>\n<th>4</th>\n<th>Poor</th>\n</tr>\n<tr>\n<th>3</th>\n<th>Very Poor</th>\n</tr>\n<tr>\n<th>2</th>\n<th>Bad</th>\n</tr>\n<tr>\n<th>1</th>\n<th>Terrible</th>\n</tr>\n</table>\nWrite a program that asks the user for a score and prints the textual description related to that score. If the user enters any other number, the program should print the message <code>Invalid Score!</code>.\n\nBelow is an example of the expected operation of the program.\n\n<pre>\nWhat is the score?\n<b>&lt; 7</b>\nFair\n</pre>\n\nAnother example.\n\n<pre>\nWhat is the score?\n<b>&lt; 11</b>\nInvalid Score!\n</pre>
@@ -149,7 +149,7 @@ Demonstration:
 
 Theme: literature
 Topic: Agatha Christie
-Concept: conditional statements
+Allowed concepts: user input, program output, variables, arithmetics, conditional statements, logical operators
 
 --- PROBLEM DESCRIPTION ---
 Agatha Christie, the famous novelist, has a rating scale for her novels. The ratings are represented as numbers and are accompanied by the following textual descriptions:
@@ -211,7 +211,7 @@ Demonstration:
 
 Theme: sports
 Topic: skiing
-Concept: arithmetics
+Allowed concepts: user input, program output, variables, arithmetics
 
 --- PROBLEM DESCRIPTION ---
 Write a program that asks the user for the distance of the ski slope and the speed of the skier, then prints the time it would take for the skier to finish. If the user enters the distance as 100 meters and speed as 20 meters per second, the program should print the time as 5 seconds. The program should work as follows:
@@ -236,7 +236,7 @@ Demonstration:
 
 Theme: outdoor activities
 Topic: berry picking
-Concept: user input
+Allowed concepts: user input, program output
 
 --- PROBLEM DESCRIPTION ---
 Write a program that asks the user for their favorite type of berry. After this, the program prints a message to the user ‘You like berryType!’, where berryType is the type of berry entered by the user. For example, with the input `Strawberry`, the program output is as follows:

@@ -81,9 +81,9 @@ def calculate_accuracy(df):
 
 
 def plot_confusion_matrices(df, axes, labels=LABELS, cols1=GT_COLS, cols2=PRED_COLS):
-    fig = axes[0].figure
-
     for i, (ax, col1, col2) in enumerate(zip(axes, cols1, cols2)):
+
+        fig = ax.figure
 
         y_true = normalize(df[col1], POS_LABELS[i])
         y_pred = normalize(df[col2], POS_LABELS[i])
@@ -127,14 +127,14 @@ def plot_accuracy(df, ax, cols1=GT_COLS, cols2=PRED_COLS):
 
 
 def plot_distributions(df, axes, labels=LABELS, cols1=GT_COLS, cols2=PRED_COLS):
-    fig = axes[0].figure
+    fig = axes[0, 0].figure
 
-    for i, (col1, col2) in enumerate(zip(cols1, cols2)):
-        sns.countplot(x=df[col1], order=labels, ax=axes[i])
-        axes[i].set_title(wrap_text(f"{col1.upper()} True", 20))
+    for i, (col1, col2) in enumerate(zip(cols1, cols2)):      
+        sns.countplot(x=df[col1], order=labels, ax=axes[i, 0])
+        axes[i, 0].set_title(wrap_text(f"{col1.upper()} True", 20))
 
-        sns.countplot(x=df[col2], order=labels, ax=axes[i])
-        axes[i].set_title(wrap_text(f"{col1.upper()} Predicted", 20))
+        sns.countplot(x=df[col2], order=labels, ax=axes[i, 1])
+        axes[i, 1].set_title(wrap_text(f"{col1.upper()} Predicted", 20))
 
     return fig, axes
 
