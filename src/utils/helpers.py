@@ -14,8 +14,9 @@ from .prompts import (
     DETECT_TEMPLATE,
     AUGMENT_TEMPLATE,
     DEMONSTRATION_TEMPLATE,
-    FIXED_DEMONSTRATIONS
+    FIXED_DEMONSTRATIONS,
 )
+
 
 def get_allowed_concepts(concept):
     concept_chapter = CONCEPT_TO_CHAPTER_MAPPING.get(concept)
@@ -39,9 +40,11 @@ def get_system_prompt(task, demonstrations=None, use_fixed_demos=True):
     match task:
         case "detect":
             system_prompt = ""
-            use_random_demos = demonstrations.num_rows is not None and demonstrations.num_rows > 0
-            
-            # Just system prompt
+            use_random_demos = (
+                demonstrations.num_rows is not None and demonstrations.num_rows > 0
+            )
+
+            # Use demos
             if use_random_demos or use_fixed_demos:
                 system_prompt += "Use the demonstrations below as examples on how to answer the question.\n\n"
 
@@ -86,19 +89,19 @@ def make_demonstrations(demonstrations):
     EVAL_COLS = [
         "The exercise description matched the selected theme (Yes/No)",
         "The exercise description matched the selected topic (Yes/No)",
-        "Included concepts that were too advanced (Yes/No)"
+        "Included concepts that were too advanced (Yes/No)",
     ]
-    
+
     return "".join(
         [
             DEMONSTRATION_TEMPLATE.replace("$THEME$", row["theme"])
-                .replace("$TOPIC$", row["topic"])
-                .replace("$CONCEPTS$", get_allowed_concepts(row["concept"]))
-                .replace("$TEXT$", row["problemDescription"])
-                .replace("$CODE$", row["exampleSolution"])
-                .replace("$THEMECORRECT$", row[EVAL_COLS[0]])
-                .replace("$TOPICCORRECT$", row[EVAL_COLS[1]])
-                .replace("$ADDITIONALCONCEPTS$", row[EVAL_COLS[2]])
+            .replace("$TOPIC$", row["topic"])
+            .replace("$CONCEPTS$", get_allowed_concepts(row["concept"]))
+            .replace("$TEXT$", row["problemDescription"])
+            .replace("$CODE$", row["exampleSolution"])
+            .replace("$THEMECORRECT$", row[EVAL_COLS[0]])
+            .replace("$TOPICCORRECT$", row[EVAL_COLS[1]])
+            .replace("$ADDITIONALCONCEPTS$", row[EVAL_COLS[2]])
             for row in demonstrations
         ]
     )
