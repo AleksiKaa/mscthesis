@@ -35,6 +35,7 @@ def main():
     parser.add_argument("-c", "--csv", type=bool, default=True)
     parser.add_argument("-n", "--n_rows", type=int, default=None)
     parser.add_argument("-d", "--demos", type=int, default=0)
+    parser.add_argument("-fd", "--fixed_demos", type=bool, default=False)
     parser.add_argument(
         "-t",
         "--type",
@@ -52,9 +53,24 @@ def main():
     print("Reading input data...")
     task = get_task_type(args.type)
     dataset = load_dataset("csv", data_files=args.file, split="train", sep=";")
+    dataset = dataset.shuffle(seed=42)
 
+    # Select n rows
     if args.n_rows is not None and args.n_rows > 0:
         dataset = dataset.select(range(args.n_rows))
+
+    # Exclude fixed promps from dataset if used in prompts
+    if args.fixed_demos:
+        fixed_demos_idx = {
+            273,
+            20,
+            0,
+            8,
+            79,
+        }  # From ../notebooks/prompting/find_demonstrations.ipynb
+        dataset = dataset.select(
+            (i for i in range(len(dataset)) if i not in fixed_demos_idx)
+        )
 
     # Make prompts
     print("Forming prompts...")
@@ -71,6 +87,7 @@ def main():
                         low=0, high=dataset.num_rows, size=args.demos
                     )
                 ),
+                args.fixed_demos,
             ),
         }
     )

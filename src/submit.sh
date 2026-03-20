@@ -16,6 +16,7 @@ CASE="detect"
 SAVE="True"
 FILE="/home/kaariaa3/mscthesis/data/final_dataset.csv"
 DEBUG=false
+FIXED_DEMOS=false
 
 usage() {
     echo "Usage: $0 [-t time] [-v vram] [-m model]"
@@ -23,7 +24,7 @@ usage() {
     exit 1
 }
 
-while getopts "c:d:h:m:n:p:r:s:t:v" opt; do
+while getopts "c:d:h:m:n:p:r:s:t:v:x" opt; do
     case $opt in
         c) CASE=$OPTARG ;;
         d) DEBUG=$OPTARG ;;
@@ -35,6 +36,7 @@ while getopts "c:d:h:m:n:p:r:s:t:v" opt; do
         s) SAVE=$OPTARG ;;
         t) TIME=$OPTARG ;;
         v) VRAM=$OPTARG ;;
+        x) FIXED_DEMOS=$OPTARG ;;
         *) usage ;;
     esac
 done
@@ -58,6 +60,7 @@ echo "Mode: $CASE"
 echo "Number of rows: $NROWS"
 echo "Number of demos per prompt: $NDEMOS"
 echo "Batch job: $BATCH_JOB"
+echo "Use fixed demos: $FIXED_DEMOS"
 
 sbatch \
     --chdir="$DIR" \
