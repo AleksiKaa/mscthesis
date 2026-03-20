@@ -251,7 +251,7 @@ Demonstration:
 
 Theme: outdoor activities
 Topic: berry picking
-Allowed concepts: user input, program output
+Allowed concepts: user input, program output, variables
 
 --- PROBLEM DESCRIPTION ---
 Write a program that asks the user for their favorite type of berry. After this, the program prints a message to the user ‘You like berryType!’, where berryType is the type of berry entered by the user. For example, with the input `Strawberry`, the program output is as follows:
