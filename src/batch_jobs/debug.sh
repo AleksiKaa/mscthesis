@@ -3,6 +3,8 @@
 echo "HOST: $(hostname)"
 echo "PWD: $(pwd)"
 
+echo "Args: $@"
+
 echo "Module command:"
 type module
 
