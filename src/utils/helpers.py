@@ -13,18 +13,32 @@ from .prompts import (
     AUGMENT_SYSTEM_PROMPT,
     DETECT_TEMPLATE,
     AUGMENT_TEMPLATE,
-    DEMONSTRATION_TEMPLATE
+    DEMONSTRATION_TEMPLATE,
+    FIXED_DEMONSTRATIONS
 )
 
 
-def get_system_prompt(task, demonstrations=None):
+def get_system_prompt(task, demonstrations=None, use_fixed_demos=True):
     match task:
         case "detect":
-            if demonstrations.num_rows is None or demonstrations.num_rows == 0:
-                return DETECT_SYSTEM_PROMPT
-            return "Use the demonstrations below as examples on how to answer the question.\n\n" + \
-                make_demonstrations(demonstrations) + \
-                DETECT_SYSTEM_PROMPT
+            system_prompt = ""
+            use_random_demos = demonstrations.num_rows is not None and demonstrations.num_rows > 0
+            
+            # Just system prompt
+            if use_random_demos or use_fixed_demos:
+                system_prompt += "Use the demonstrations below as examples on how to answer the question.\n\n"
+
+            # Add fixed demos
+            if use_fixed_demos:
+                system_prompt += FIXED_DEMONSTRATIONS
+
+            # Add random demos
+            if use_random_demos:
+                system_prompt += make_demonstrations(demonstrations)
+
+            system_prompt += DETECT_SYSTEM_PROMPT
+
+            return system_prompt
         case "augment":
             return AUGMENT_SYSTEM_PROMPT
         case _:
