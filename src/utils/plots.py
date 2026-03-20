@@ -25,6 +25,7 @@ PRED_COLS = ["themeCorrect", "topicCorrect", "usesAdditionalConcepts"]
 
 LABELS = ["yes", "no"]
 
+
 POS_LABELS = ["yes", "yes", "no"]
 
 
@@ -59,13 +60,13 @@ def wrap_text(text, num_chars=20):
 
 def calculate_accuracy(df):
 
-    gt_theme = normalize(df[GT_COLS[0]])
-    gt_topic = normalize(df[GT_COLS[1]])
-    gt_concept = normalize(df[GT_COLS[2]])
+    gt_theme = normalize(df[GT_COLS[0]], pos_label="yes")
+    gt_topic = normalize(df[GT_COLS[1]], pos_label="yes")
+    gt_concept = normalize(df[GT_COLS[2]], pos_label="no")
 
-    pred_theme = normalize(df[PRED_COLS[0]])
-    pred_topic = normalize(df[PRED_COLS[1]])
-    pred_concept = normalize(df[PRED_COLS[2]])
+    pred_theme = normalize(df[PRED_COLS[0]], pos_label="yes")
+    pred_topic = normalize(df[PRED_COLS[1]], pos_label="yes")
+    pred_concept = normalize(df[PRED_COLS[2]], pos_label="no")
 
     # Accuracy calculation
     theme_acc = gt_theme == pred_theme
@@ -88,12 +89,15 @@ def plot_confusion_matrices(df, axes, labels=LABELS, cols1=GT_COLS, cols2=PRED_C
         y_true = normalize(df[col1], POS_LABELS[i])
         y_pred = normalize(df[col2], POS_LABELS[i])
         cm = confusion_matrix(y_true, y_pred, labels=[1, 0])
-        cm = cm / cm.sum(axis=1, keepdims=True)
+        cm_perc = cm / cm.sum(axis=1, keepdims=True)
+
+        cell_labels = [f"{n}\n({p:.1%})" for n, p in zip(cm.flatten(), cm_perc.flatten())]
+        cell_labels = np.asarray(cell_labels).reshape(2, 2)
 
         sns.heatmap(
             cm,
-            annot=True,
-            fmt=".3f",
+            annot=cell_labels,
+            fmt="",
             cmap="Blues",
             xticklabels=labels,
             yticklabels=labels,

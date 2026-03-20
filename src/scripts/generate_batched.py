@@ -59,14 +59,15 @@ def main():
     if args.n_rows is not None and args.n_rows > 0:
         dataset = dataset.select(range(args.n_rows))
 
-    # Exclude fixed promps from dataset if used in prompts
+    # Exclude fixed demonstrations from dataset if used in prompts
     if args.fixed_demos:
         fixed_demos_idx = {
-            273,
-            20,
-            0,
-            8,
-            79,
+            534,
+            60,
+            272,
+            253,
+            114,
+            446,
         }  # From ../notebooks/prompting/find_demonstrations.ipynb
         dataset = dataset.select(
             (i for i in range(len(dataset)) if i not in fixed_demos_idx)
