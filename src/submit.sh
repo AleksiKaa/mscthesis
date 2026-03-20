@@ -9,14 +9,8 @@ VRAM="40g"
 DIR=/home/kaariaa3/mscthesis
 OUTDIR=./outputs/jobs/batch.%j.out
 ERRDIR=./outputs/errs/batch.%j.err
-MODEL=Qwen/Qwen2.5-14B-Instruct
-NROWS=-1
-NDEMOS=0
-CASE="detect"
-SAVE=True
-FILE="/home/kaariaa3/mscthesis/data/final_dataset.csv"
 DEBUG=false
-FIXEDDEMOS=False
+PYTHONARGS=""
 
 usage() {
     echo "Usage: $0 [-t time] [-v vram] [-m model]"
@@ -24,19 +18,14 @@ usage() {
     exit 1
 }
 
-while getopts "c:d:h:m:n:p:r:s:t:v:x:" opt; do
+while getopts "d:h:p:r:t:v:" opt; do
     case $opt in
-        c) CASE=$OPTARG ;;
         d) DEBUG=$OPTARG ;;
         h) usage ;;
-        m) MODEL=$OPTARG ;;
-        n) NROWS=$OPTARG ;;
-        p) NDEMOS=$OPTARG ;;
+        p) PYTHONARGS=$OPTARG ;;
         r) MEM=$OPTARG ;;
-        s) SAVE=$OPTARG ;;
         t) TIME=$OPTARG ;;
         v) VRAM=$OPTARG ;;
-        x) FIXEDDEMOS=$OPTARG ;;
         *) usage ;; 
     esac
 done
@@ -55,12 +44,7 @@ echo "Time: $TIME"
 echo "CPUs: $CPUS"
 echo "Memory: $MEM"
 echo "GPU VRAM: $VRAM"
-echo "Model: $MODEL"
-echo "Mode: $CASE"
-echo "Number of rows: $NROWS"
-echo "Number of demos per prompt: $NDEMOS"
 echo "Batch job: $BATCH_JOB"
-echo "Use fixed demos: $FIXEDDEMOS"
 
 sbatch \
     --chdir="$DIR" \
@@ -72,10 +56,4 @@ sbatch \
     --output="$OUTDIR" \
     --error="$ERRDIR" \
     $BATCH_JOB \
-    -f "$FILE" \
-    -m "$MODEL" \
-    -c "$SAVE"  \
-    -t "$CASE" \
-    -n $NROWS \
-    -d $NDEMOS \
-    --fixed_demos $FIXEDDEMOS
+    $PYTHONARGS
