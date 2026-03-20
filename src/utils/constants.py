@@ -12,7 +12,6 @@ DEFAULT_DETECT_RESULT = {
     "themeCorrect": "no",
     "topicCorrect": "no",
     "usesAdditionalConcepts": "yes",
-    "explanation": "PARSE ERROR",
 }
 
 DEFAULT_AUGMENT_RESULT = {
@@ -25,7 +24,7 @@ ERROR_RESULT = {"Error": "PARSE ERROR"}
 CONCEPT_TO_CHAPTER_MAPPING = {
     "user input": 1,
     "program output": 1,
-    "variables": 2,
+    "variables": 1,
     "arithmetics": 2,
     "conditional statements": 3,
     "logical operators": 3,
