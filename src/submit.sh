@@ -13,10 +13,10 @@ MODEL=Qwen/Qwen2.5-14B-Instruct
 NROWS=-1
 NDEMOS=0
 CASE="detect"
-SAVE="True"
+SAVE=True
 FILE="/home/kaariaa3/mscthesis/data/final_dataset.csv"
 DEBUG=false
-FIXED_DEMOS=false
+FIXEDDEMOS=False
 
 usage() {
     echo "Usage: $0 [-t time] [-v vram] [-m model]"
@@ -24,7 +24,7 @@ usage() {
     exit 1
 }
 
-while getopts "c:d:h:m:n:p:r:s:t:v:x" opt; do
+while getopts "c:d:h:m:n:p:r:s:t:v:x:" opt; do
     case $opt in
         c) CASE=$OPTARG ;;
         d) DEBUG=$OPTARG ;;
@@ -36,13 +36,13 @@ while getopts "c:d:h:m:n:p:r:s:t:v:x" opt; do
         s) SAVE=$OPTARG ;;
         t) TIME=$OPTARG ;;
         v) VRAM=$OPTARG ;;
-        x) FIXED_DEMOS=$OPTARG ;;
-        *) usage ;;
+        x) FIXEDDEMOS=$OPTARG ;;
+        *) usage ;; 
     esac
 done
 
 BATCH_JOB=./src/batch_jobs/generate.sh
-if [ $DEBUG = true ]; then
+if [ "$DEBUG" = true ]; then
   BATCH_JOB=./src/batch_jobs/debug.sh
   TIME="00:05:00"
   CPUS=1
@@ -60,7 +60,7 @@ echo "Mode: $CASE"
 echo "Number of rows: $NROWS"
 echo "Number of demos per prompt: $NDEMOS"
 echo "Batch job: $BATCH_JOB"
-echo "Use fixed demos: $FIXED_DEMOS"
+echo "Use fixed demos: $FIXEDDEMOS"
 
 sbatch \
     --chdir="$DIR" \
@@ -77,4 +77,5 @@ sbatch \
     -c "$SAVE"  \
     -t "$CASE" \
     -n $NROWS \
-    -d $NDEMOS
+    -d $NDEMOS \
+    --fixed_demos $FIXEDDEMOS
