@@ -89,7 +89,7 @@ def main():
                 task,
                 create_demonstrations_set(
                     dataset,
-                    random_indices[i],
+                    random_indices[i] if random_indices is not None else None,
                     fixed_demos_idx,
                 ),
             ),
