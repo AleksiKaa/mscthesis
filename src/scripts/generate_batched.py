@@ -22,6 +22,8 @@ from utils.helpers import (
     get_default_response,
     get_system_prompt,
     make_prompt,
+    sample_dataset_indices,
+    create_demonstrations_set,
 )
 
 print("Libraries imported")
@@ -34,8 +36,21 @@ def main():
     parser.add_argument("-m", "--model", type=str, default=DEFAULT_MODEL)
     parser.add_argument("-c", "--csv", type=bool, default=True)
     parser.add_argument("-n", "--n_rows", type=int, default=None)
-    parser.add_argument("-d", "--demos", type=int, default=0)
-    parser.add_argument("-fd", "--fixed_demos", type=bool, default=False)
+    parser.add_argument("-rd", "--random_demos", type=int, default=0)
+    parser.add_argument("-ufd", "--use_fixed_demos", type=bool, default=False)
+    parser.add_argument(
+        "-fdi",
+        "--fixed_demos_indices",
+        type=list[int],
+        default=[
+            534,
+            60,
+            272,
+            253,
+            114,
+            446,
+        ],
+    )
     parser.add_argument(
         "-t",
         "--type",
@@ -55,43 +70,42 @@ def main():
     dataset = load_dataset("csv", data_files=args.file, split="train", sep=";")
     dataset = dataset.shuffle(seed=42)
 
-    # Select n rows
-    if args.n_rows is not None and args.n_rows > 0:
-        dataset = dataset.select(range(args.n_rows))
-
-    # Exclude fixed demonstrations from dataset if used in prompts
-    if args.fixed_demos:
-        fixed_demos_idx = {
-            534,
-            60,
-            272,
-            253,
-            114,
-            446,
-        }  # From ../notebooks/prompting/find_demonstrations.ipynb
-        dataset = dataset.select(
-            (i for i in range(len(dataset)) if i not in fixed_demos_idx)
-        )
+    fixed_demos_idx = np.array([], dtype=np.int64)
+    if args.use_fixed_demos:
+        fixed_demos_idx = np.array(args.fixed_demos_indices, dtype=np.int64)
 
     # Make prompts
     print("Forming prompts...")
 
     demonstrations_rng = np.random.default_rng(seed=10)
+    random_indices = sample_dataset_indices(
+        demonstrations_rng, dataset.num_rows, args.random_demos
+    )
+
     dataset = dataset.map(
-        lambda row: {
+        lambda row, i: {
             "user_prompt": make_prompt(row, task),
             "system_prompt": get_system_prompt(
                 task,
-                dataset.select(
-                    # Randomly select indices for demos, each row gets own demos, reproducible across runs
-                    demonstrations_rng.integers(
-                        low=0, high=dataset.num_rows, size=args.demos
-                    )
+                create_demonstrations_set(
+                    dataset,
+                    random_indices[i],
+                    fixed_demos_idx,
                 ),
-                args.fixed_demos,
             ),
-        }
+        },
+        with_indices=True,
     )
+
+    dataset = (
+        dataset.select(  # Exclude fixed demonstrations from dataset if used in prompts
+            [i for i in range(len(dataset)) if i not in fixed_demos_idx]
+        )
+    )
+
+    # Select n rows
+    if args.n_rows is not None and args.n_rows > 0:
+        dataset = dataset.select(range(args.n_rows))
 
     # Model parameters
     params = {
@@ -108,7 +122,7 @@ def main():
     pipeline.tokenizer.pad_token = pipeline.tokenizer.eos_token
     pipeline.model.config.pad_token_id = pipeline.model.config.eos_token_id
 
-    print("Generating responses...\n")
+    print(f"Generating responses for {dataset.num_rows} prompts...\n")
 
     results = {key: [] for key in get_default_response(task).keys()}
     default_response = get_default_response(task)

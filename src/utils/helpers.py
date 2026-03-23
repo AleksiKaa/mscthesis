@@ -1,5 +1,6 @@
 import json
 import random
+import numpy as np
 
 from .constants import (
     ERROR_RESULT,
@@ -14,7 +15,6 @@ from .prompts import (
     DETECT_TEMPLATE,
     AUGMENT_TEMPLATE,
     DEMONSTRATION_TEMPLATE,
-    FIXED_DEMONSTRATIONS,
 )
 
 
@@ -36,24 +36,14 @@ def get_allowed_concepts(concept):
     return allowed_concepts
 
 
-def get_system_prompt(task, demonstrations=None, use_fixed_demos=True):
+def get_system_prompt(task, demonstrations=None):
     match task:
         case "detect":
             system_prompt = ""
-            use_random_demos = (
-                demonstrations.num_rows is not None and demonstrations.num_rows > 0
-            )
 
             # Use demos
-            if use_random_demos or use_fixed_demos:
+            if demonstrations is not None:
                 system_prompt += "Use the demonstrations below as examples on how to answer the question.\n\n"
-
-            # Add fixed demos
-            if use_fixed_demos:
-                system_prompt += FIXED_DEMONSTRATIONS
-
-            # Add random demos
-            if use_random_demos:
                 system_prompt += make_demonstrations(demonstrations)
 
             system_prompt += DETECT_SYSTEM_PROMPT
@@ -171,3 +161,22 @@ def parse_output(text):
     except Exception as e:
         print(e)
         return ERROR_RESULT
+
+
+def sample_dataset_indices(rng, n_rows, size):
+    if size is None or size <= 0:
+        return None
+
+    # Randomly select indices for demos, each row gets own demos, reproducible across runs
+    return rng.integers(low=0, high=n_rows, size=(n_rows, size))
+
+
+def create_demonstrations_set(dataset, idx_a=None, idx_b=None):
+    if idx_a is None and idx_b is None:
+        return None
+    if idx_a is None:
+        return dataset.select(idx_b)
+    if idx_b is None:
+        return dataset.select(idx_a)
+
+    return dataset.select(np.unique(np.concatenate([idx_a, idx_b])))
