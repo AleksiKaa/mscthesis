@@ -32,14 +32,14 @@ def main():
     for model in models:
 
         # Construct slurm params
-        slurm_args = slurm_params.get(model)
+        model_args = slurm_params.get(model)
 
-        if slurm_args is None:
+        if model_args is None:
             print(f"Slurm arguments not found for model {model}! Skipping...")
             continue
 
         args = [submit_script]
-        for resource, amount in slurm_params.items():
+        for resource, amount in model_args.items():
             match resource:
                 case "time":
                     flag = "t"
