@@ -9,6 +9,9 @@ module load scicomp-llm-env
 
 echo "Modules loaded"
 
+echo "pycache disabled"
+export PYTHONDONTWRITEBYTECODE=1
+
 python -u src/scripts/generate_batched.py $SLURM_JOB_ID "$@"
 
 echo "JOB END"
