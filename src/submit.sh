@@ -10,6 +10,7 @@ DIR=/home/kaariaa3/mscthesis
 OUTDIR=./outputs/jobs/batch.%j.out
 ERRDIR=./outputs/errs/batch.%j.err
 DEBUG=false
+NOTE=""
 PYTHONARGS=""
 
 usage() {
@@ -18,10 +19,11 @@ usage() {
     exit 1
 }
 
-while getopts "d:h:p:r:t:v:" opt; do
+while getopts "d:h:n:p:r:t:v:" opt; do
     case $opt in
         d) DEBUG=$OPTARG ;;
         h) usage ;;
+        n) NOTE=$OPTARG ;;
         p) PYTHONARGS=$OPTARG ;;
         r) MEM=$OPTARG ;;
         t) TIME=$OPTARG ;;
@@ -45,6 +47,7 @@ echo "CPUs: $CPUS"
 echo "Memory: $MEM"
 echo "GPU VRAM: $VRAM"
 echo "Batch job: $BATCH_JOB"
+echo "Note: $BATCH_JOB"
 
 sbatch \
     --chdir="$DIR" \
