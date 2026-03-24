@@ -28,6 +28,9 @@ from utils.helpers import (
 
 print("Libraries imported")
 
+print("Loaded from:", DEFAULT_DATA.__file__)
+print("Loaded from:", parse_output.__file__)
+
 
 def main():
     parser = argparse.ArgumentParser()
