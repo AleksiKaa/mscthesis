@@ -47,7 +47,7 @@ echo "CPUs: $CPUS"
 echo "Memory: $MEM"
 echo "GPU VRAM: $VRAM"
 echo "Batch job: $BATCH_JOB"
-echo "Note: $BATCH_JOB"
+echo "Note: $NOTE"
 
 sbatch \
     --chdir="$DIR" \
