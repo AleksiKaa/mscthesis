@@ -28,8 +28,8 @@ from utils.helpers import (
 
 print("Libraries imported")
 
-print("Constants loaded from: " + sys.modules[DEFAULT_DATA.__module__].__file__)
-print("Helper functions loaded from: " + sys.modules[parse_output.__module__].__file__)
+print("Constants loaded from: " + sys.modules["utils.constants"].__file__)
+print("Helper functions loaded from: " + sys.modules["utils.helpers"].__file__)
 
 
 def main():
