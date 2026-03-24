@@ -93,7 +93,7 @@ def get_default_response(tasktype):
             raise ValueError(f"Task type not recognised as valid task type!")
 
 
-def make_demonstrations(demonstrations, include_disallowed=False):
+def make_demonstrations(demonstrations):
     EVAL_COLS = [
         "The exercise description matched the selected theme (Yes/No)",
         "The exercise description matched the selected topic (Yes/No)",
