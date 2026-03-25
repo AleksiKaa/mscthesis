@@ -58,9 +58,9 @@ models = [  # 2 model families, big vs small model
     # "meta-llama/Llama-3.3-70B-Instruct",
 ]
 
-number_of_demonstrations = [0]  # + [1, 6]
-type_of_demonstrations = [-1]  # + [0, 1]
-use_instructions = [True]  # + [False]
+number_of_demonstrations = [0, 1, 6]
+type_of_demonstrations = [-1, 0, 1]
+use_instructions = [True, False]
 
 
 def construct_python_params(model, seed, n_demos, use_instruction, type_of_demo):
