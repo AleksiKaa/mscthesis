@@ -81,7 +81,7 @@ def calculate_accuracy(df):
     }
 
 
-def plot_confusion_matrices(df, axes, labels=LABELS, cols1=GT_COLS, cols2=PRED_COLS):
+def plot_confusion_matrices(df, axes, labels=LABELS, cols1=GT_COLS, cols2=PRED_COLS, use_title=True, xlabel="Predicted", ylabel="True"):
     for i, (ax, col1, col2) in enumerate(zip(axes, cols1, cols2)):
 
         fig = ax.figure
@@ -104,9 +104,9 @@ def plot_confusion_matrices(df, axes, labels=LABELS, cols1=GT_COLS, cols2=PRED_C
             ax=ax,
         )
 
-        ax.set_title(wrap_text(f"{col1.upper()} Confusion", 20))
-        ax.set_xlabel("Predicted")
-        ax.set_ylabel("True")
+        ax.set_title(wrap_text(f"{col1.upper()} Confusion", 20) if use_title else "")
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel if i == 0 else "")
 
     return fig, axes
 

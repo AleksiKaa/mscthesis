@@ -1,7 +1,7 @@
 import sys
 import argparse
 import transformers
-from datasets import load_dataset
+from datasets import load_dataset, disable_caching
 import json
 import numpy as np
 
@@ -67,6 +67,9 @@ def main():
     # Print CL arguments
     print(args)
 
+    # Disable dataset caching
+    disable_caching()
+
     # Load Data
     print("Reading input data...")
     task = get_task_type(args.type)
@@ -98,6 +101,7 @@ def main():
             ),
         },
         with_indices=True,
+        # load_from_cache_file=False,
     )
 
     dataset = (

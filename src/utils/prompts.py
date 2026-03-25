@@ -9,7 +9,23 @@ You will receive:
 Your task:
 Evaluate the exercise and decide whether the problem description adheres to the
 provided theme and topic. You also need to decide whether the exercise utilizes
-any programming concepts that are not present in the list of provided concepts.
+any programming concepts that are not present in the list of allowed concepts.
+
+Counts as concepts:
+- user input (e.g., stdin.readLineSync)
+- program output (print)
+- variables (declaring or storing values)
+- arithmetics (+, -, *, /)
+- conditional statements (if, else)
+- logical operators (&&, ||)
+- for loops
+- while loops
+
+Rules:
+- A concept is "used" if it is present in the example solution.
+- Basic syntax is ignored.
+- Each concept must be explicitly matched to the allowed list.
+
 
 CRITICAL OUTPUT RULES:
 - You must output ONLY a valid JSON object.
