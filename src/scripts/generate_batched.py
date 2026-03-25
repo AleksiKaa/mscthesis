@@ -56,6 +56,17 @@ def main():
 
     args = parser.parse_args()
 
+    # Output directory
+    outdir = f"./outputs/{args.model}/{args.jobid}"
+
+    # Ensure directory exists
+    os.makedirs(outdir, exist_ok=True)
+
+    # Save config
+    with open(f"{outdir}/config.json", "w", encoding="utf-8") as file:
+        config_json = json.dumps(vars(args))
+        file.write(config_json)
+
     # Print CL arguments
     print(args)
 
@@ -147,18 +158,8 @@ def main():
     for column_name, column_data in results.items():
         dataset = dataset.add_column(column_name, column_data)
 
+    # Write results to csv
     if args.csv:
-        outdir = f"./outputs/{args.model}/{args.jobid}"
-
-        # Ensure directory exists
-        os.makedirs(outdir, exist_ok=True)
-
-        # Save config
-        config_json = json.dumps(vars(args))
-        with open(f"{outdir}/config.json", "w", encoding="utf-8") as file:
-            file.write(config_json)
-
-        # Write results to csv
         dataset.to_pandas().to_csv(
             f"{outdir}/result.csv",
             sep=";",
