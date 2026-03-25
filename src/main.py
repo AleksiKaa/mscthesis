@@ -152,8 +152,8 @@ def main():
                         if use_instructions is False and n_demos == 0:
                             continue
 
-                        # Mixed demonstrations only for even n_demos
-                        if type_of_demo == 0 and n_demos % 2 != 0:
+                        # Mixed demonstrations only for positive even n_demos
+                        if type_of_demo == 0 and (n_demos % 2 != 0 or n_demos <= 0):
                             continue
 
                         print(f"Args passed to python: {python_params}")
