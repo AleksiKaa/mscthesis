@@ -10,7 +10,7 @@ sys.path.append("./src/")  # Add module directory to path
 def main():
     submit_script = "./src/submit.sh"
 
-    models = ["Qwen/Qwen2.5-14B-Instruct"]
+    models = ["Qwen/Qwen2.5-72B-Instruct"]
 
     # One set of resources for each model, TODO: Params only needed for model scale, i.e. < 5B, [5, 15]B, [15, 30] etc
     slurm_params = {
@@ -18,7 +18,12 @@ def main():
             "time": "01:00:00",
             "memory": "16GB",
             "vram": "40g",
-        }
+        },
+        "Qwen/Qwen2.5-72B-Instruct": {
+            "time": "01:00:00",
+            "memory": "32GB",
+            "vram": "140g",
+        },
     }
 
     # Run each model once with these parameter configurations
@@ -38,7 +43,7 @@ def main():
             print(f"Slurm arguments not found for model {model}! Skipping...")
             continue
 
-        args = [submit_script]
+        args = [submit_script, "-m", model]
         for resource, amount in model_args.items():
             match resource:
                 case "time":
@@ -54,7 +59,9 @@ def main():
             args.append(amount)
 
         for python_params in generate_params:
-            subprocess.call(args + ["-p", python_params])
+            p = python_params + " -m " + model
+            print(f"Args passed to python: {p}")
+            subprocess.call(args + ["-p", p])
             sleep(1)
 
 

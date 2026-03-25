@@ -1,4 +1,5 @@
 import sys
+import os
 import argparse
 import transformers
 from datasets import load_dataset, disable_caching
@@ -174,8 +175,13 @@ def main():
         dataset = dataset.add_column(column_name, column_data)
 
     if args.csv:
+        outdir = f"./outputs/{args.model}/results"
+
+        # Ensure directory exists
+        os.makedirs(outdir, exist_ok=True)
+
         dataset.to_pandas().to_csv(
-            f"./outputs/results/batch_{args.jobid}_result.csv",
+            f"{outdir}/batch_{args.jobid}_result.csv",
             sep=";",
             index=False,
         )

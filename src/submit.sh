@@ -7,11 +7,10 @@ MEM="16GB"
 GPUS=1
 VRAM="40g"
 DIR=/home/kaariaa3/mscthesis
-OUTDIR=./outputs/jobs/batch.%j.out
-ERRDIR=./outputs/errs/batch.%j.err
 DEBUG=false
 NOTE=""
 PYTHONARGS=""
+MODEL="Qwen/Qwen2.5-14B-Instruct"
 
 usage() {
     echo "Usage: $0 [-t time] [-v vram] [-m model]"
@@ -19,10 +18,11 @@ usage() {
     exit 1
 }
 
-while getopts "d:h:n:p:r:t:v:" opt; do
+while getopts "d:h:m:n:p:r:t:v:" opt; do
     case $opt in
         d) DEBUG=$OPTARG ;;
         h) usage ;;
+        m) MODEL=$OPTARG ;;
         n) NOTE=$OPTARG ;;
         p) PYTHONARGS=$OPTARG ;;
         r) MEM=$OPTARG ;;
@@ -31,6 +31,9 @@ while getopts "d:h:n:p:r:t:v:" opt; do
         *) usage ;; 
     esac
 done
+
+OUTDIR=./outputs/$MODEL/jobs/batch.%j.out
+ERRDIR=./outputs/$MODEL/errs/batch.%j.err
 
 BATCH_JOB=./src/batch_jobs/generate.sh
 if [ "$DEBUG" = true ]; then
