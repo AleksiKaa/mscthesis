@@ -8,6 +8,18 @@ PIPE_MAX_NEW_TOKENS = 250
 
 MODEL_TEMPERATURE = 0.3
 
+GT_COLS = [
+    "The exercise description matched the selected theme (Yes/No)",
+    "The exercise description matched the selected topic (Yes/No)",
+    "Included concepts that were too advanced (Yes/No)",
+]
+
+PRED_COLS = ["themeCorrect", "topicCorrect", "usesAdditionalConcepts"]
+
+LABELS = ["yes", "no"]
+
+POS_LABELS = ["yes", "yes", "no"]
+
 DEFAULT_DETECT_RESULT = {
     "themeCorrect": "no",
     "topicCorrect": "no",

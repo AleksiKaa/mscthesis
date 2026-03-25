@@ -30,8 +30,9 @@ def main():
         # "meta-llama/Llama-3.3-70B-Instruct",
     ]
 
-    number_of_demonstrations = [0, 1, 6]
-    type_of_demonstrations = [-1, 0, 1]
+    number_of_demonstrations = [0]  # + [1, 6]
+    type_of_demonstrations = [-1]  # + [0, 1]
+    use_instructions = [True]  # + [False]
 
     # One set of resources for each model
     slurm_params = {
@@ -91,13 +92,13 @@ def main():
         # Construct python params
         for seed in seeds:
             for n_demos in number_of_demonstrations:
-                for use_instructions in [True, False]:
+                for use_instruction in use_instructions:
                     for type_of_demo in type_of_demonstrations:
                         python_params = (
                             f"--model {model} "
                             + f"--seed {seed} "
                             + f"--number_of_demonstrations {n_demos} "
-                            + f"--use_instructions {use_instructions} "
+                            + f"--use_instructions {use_instruction} "
                             + f"--type_of_demonstrations {type_of_demo}"
                         )
 

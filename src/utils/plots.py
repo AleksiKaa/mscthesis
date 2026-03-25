@@ -12,21 +12,7 @@ from sklearn.metrics import (
     average_precision_score,
 )
 
-
-GT_COLS = [
-    "The exercise description matched the selected theme (Yes/No)",
-    "The exercise description matched the selected topic (Yes/No)",
-    "Included concepts that were too advanced (Yes/No)",
-]
-
-
-PRED_COLS = ["themeCorrect", "topicCorrect", "usesAdditionalConcepts"]
-
-
-LABELS = ["yes", "no"]
-
-
-POS_LABELS = ["yes", "yes", "no"]
+from .constants import GT_COLS, PRED_COLS, LABELS, POS_LABELS
 
 
 def normalize(series, pos_label=None):
@@ -81,7 +67,16 @@ def calculate_accuracy(df):
     }
 
 
-def plot_confusion_matrices(df, axes, labels=LABELS, cols1=GT_COLS, cols2=PRED_COLS, use_title=True, xlabel="Predicted", ylabel="True"):
+def plot_confusion_matrices(
+    df,
+    axes,
+    labels=LABELS,
+    cols1=GT_COLS,
+    cols2=PRED_COLS,
+    use_title=True,
+    xlabel="Predicted",
+    ylabel="True",
+):
     for i, (ax, col1, col2) in enumerate(zip(axes, cols1, cols2)):
 
         fig = ax.figure
@@ -91,7 +86,9 @@ def plot_confusion_matrices(df, axes, labels=LABELS, cols1=GT_COLS, cols2=PRED_C
         cm = confusion_matrix(y_true, y_pred, labels=[1, 0])
         cm_perc = cm / cm.sum(axis=1, keepdims=True)
 
-        cell_labels = [f"{n}\n({p:.1%})" for n, p in zip(cm.flatten(), cm_perc.flatten())]
+        cell_labels = [
+            f"{n}\n({p:.1%})" for n, p in zip(cm.flatten(), cm_perc.flatten())
+        ]
         cell_labels = np.asarray(cell_labels).reshape(2, 2)
 
         sns.heatmap(
@@ -133,7 +130,7 @@ def plot_accuracy(df, ax, cols1=GT_COLS, cols2=PRED_COLS):
 def plot_distributions(df, axes, labels=LABELS, cols1=GT_COLS, cols2=PRED_COLS):
     fig = axes[0, 0].figure
 
-    for i, (col1, col2) in enumerate(zip(cols1, cols2)):      
+    for i, (col1, col2) in enumerate(zip(cols1, cols2)):
         sns.countplot(x=df[col1], order=labels, ax=axes[i, 0])
         axes[i, 0].set_title(wrap_text(f"{col1.upper()} True", 20))
 

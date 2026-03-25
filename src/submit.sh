@@ -33,7 +33,7 @@ while getopts "d:h:m:n:p:r:t:v:" opt; do
 done
 
 OUTDIR=./outputs/$MODEL/%j/job.out
-ERRDIR=./outputs/$MODEL/%j/errs/job.err
+ERRDIR=./outputs/$MODEL/%j/job.err
 
 BATCH_JOB=./src/batch_jobs/generate.sh
 if [ "$DEBUG" = true ]; then

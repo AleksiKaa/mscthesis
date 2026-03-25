@@ -10,6 +10,7 @@ from .constants import (
     DEFAULT_AUGMENT_RESULT,
     CONCEPT_TO_CHAPTER_MAPPING,
     THEME_TO_TOPICS_MAPPING,
+    GT_COLS,
 )
 
 from .prompts import (
@@ -19,8 +20,6 @@ from .prompts import (
     AUGMENT_TEMPLATE,
     DEMONSTRATION_TEMPLATE,
 )
-
-from .plots import GT_COLS
 
 
 def get_allowed_concepts(concept):
