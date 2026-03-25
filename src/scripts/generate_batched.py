@@ -4,6 +4,7 @@ import argparse
 import transformers
 from datasets import load_dataset, disable_caching
 import json
+import pandas as pd
 import numpy as np
 
 sys.path.append("./src/")  # Add module directory to path
@@ -23,8 +24,7 @@ from utils.helpers import (
     get_default_response,
     get_system_prompt,
     make_prompt,
-    sample_dataset_indices,
-    create_demonstrations_set,
+    sample_dataset,
 )
 
 print("Libraries imported")
@@ -40,21 +40,12 @@ def main():
     parser.add_argument("-m", "--model", type=str, default=DEFAULT_MODEL)
     parser.add_argument("-c", "--csv", type=bool, default=True)
     parser.add_argument("-n", "--n_rows", type=int, default=None)
-    parser.add_argument("-rd", "--random_demos", type=int, default=0)
-    parser.add_argument("-ufd", "--use_fixed_demos", type=bool, default=False)
+    parser.add_argument("-us", "--use_instructions", type=bool, default=True)
     parser.add_argument(
-        "-fdi",
-        "--fixed_demos_indices",
-        type=list[int],
-        default=[
-            534,
-            60,
-            272,
-            253,
-            114,
-            446,
-        ],
+        "-tof", "--type_of_demonstrations", type=int, choices=[-1, 0, 1], default=0
     )
+    parser.add_argument("-nd", "--number_of_demonstrations", type=int, default=0)
+    parser.add_argument("-s", "--seed", type=int, default=0)
     parser.add_argument(
         "-t",
         "--type",
@@ -75,40 +66,22 @@ def main():
     print("Reading input data...")
     task = get_task_type(args.type)
     dataset = load_dataset("csv", data_files=args.file, split="train", sep=";")
-    dataset = dataset.shuffle(seed=42)
-
-    fixed_demos_idx = np.array([], dtype=np.int64)
-    if args.use_fixed_demos:
-        fixed_demos_idx = np.array(args.fixed_demos_indices, dtype=np.int64)
+    dataset = dataset.shuffle(seed=args.seed)
 
     # Make prompts
     print("Forming prompts...")
 
-    demonstrations_rng = np.random.default_rng(seed=10)
-    random_indices = sample_dataset_indices(
-        demonstrations_rng, dataset.num_rows, args.random_demos
+    demonstrations = sample_dataset(
+        dataset, args.seed, args.number_of_demonstrations, args.type_of_demonstrations
     )
 
     dataset = dataset.map(
-        lambda row, i: {
+        lambda row: {
             "user_prompt": make_prompt(row, task),
             "system_prompt": get_system_prompt(
-                task,
-                create_demonstrations_set(
-                    dataset,
-                    random_indices[i] if random_indices is not None else None,
-                    fixed_demos_idx,
-                ),
+                task, demonstrations, args.use_instructions
             ),
         },
-        with_indices=True,
-        # load_from_cache_file=False,
-    )
-
-    dataset = (
-        dataset.select(  # Exclude fixed demonstrations from dataset if used in prompts
-            [i for i in range(len(dataset)) if i not in fixed_demos_idx]
-        )
     )
 
     # Select n rows
@@ -175,13 +148,19 @@ def main():
         dataset = dataset.add_column(column_name, column_data)
 
     if args.csv:
-        outdir = f"./outputs/{args.model}/results"
+        outdir = f"./outputs/{args.model}/{args.jobid}"
 
         # Ensure directory exists
         os.makedirs(outdir, exist_ok=True)
 
+        # Save config
+        config_json = json.dumps(vars(args))
+        with open(f"{outdir}/config.json", "w", encoding="utf-8") as file:
+            file.write(config_json)
+
+        # Write results to csv
         dataset.to_pandas().to_csv(
-            f"{outdir}/batch_{args.jobid}_result.csv",
+            f"{outdir}/result.csv",
             sep=";",
             index=False,
         )

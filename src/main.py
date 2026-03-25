@@ -6,17 +6,43 @@ from time import sleep
 os.chdir("/home/kaariaa3/mscthesis")
 sys.path.append("./src/")  # Add module directory to path
 
+"""
+Description of experiment:
+
+1) several runs (effect of random seed) = 5 runs
+2) model family (qwen vs llama) = 2 runs
+3) model size (large vs small) = 2 runs
+4) presence of instructions and number of demonstrations (zero shot with instructions, 1 shot with instructions, 1 shot no instructions, 6 shot with instructions, 6 shot no instructions) = 5 runs
+5) type of demonstrations (only positive, mixed, only negative) -- mixed only for 6 shot = 3 runs
+
+In total: 300 runs, max 300 hours of cluster time
+"""
+
 
 def main():
     submit_script = "./src/submit.sh"
 
-    models = ["Qwen/Qwen2.5-72B-Instruct"]
+    seeds = [1]  # + [10, 42, 50, 100]
+    models = [  # 2 model families, big vs small model
+        "Qwen/Qwen2.5-7B-Instruct",
+        # "meta-llama/Llama-3.1-8B-Instruct",
+        # "Qwen/Qwen2.5-72B-Instruct",
+        # "meta-llama/Llama-3.3-70B-Instruct",
+    ]
 
-    # One set of resources for each model, TODO: Params only needed for model scale, i.e. < 5B, [5, 15]B, [15, 30] etc
+    number_of_demonstrations = [0, 1, 6]
+    type_of_demonstrations = [-1, 0, 1]
+
+    # One set of resources for each model
     slurm_params = {
+        "Qwen/Qwen2.5-7B-Instruct": {
+            "time": "01:00:00",
+            "memory": "32GB",
+            "vram": "20g",
+        },
         "Qwen/Qwen2.5-14B-Instruct": {
             "time": "01:00:00",
-            "memory": "16GB",
+            "memory": "32GB",
             "vram": "40g",
         },
         "Qwen/Qwen2.5-72B-Instruct": {
@@ -24,15 +50,19 @@ def main():
             "memory": "32GB",
             "vram": "140g",
         },
+        "meta-llama/Llama-3.1-8B-Instruct": {
+            "time": "01:00:00",
+            "memory": "32GB",
+            "vram": "20",
+        },
+        "meta-llama/Llama-3.3-70B-Instruct": {
+            "time": "01:00:00",
+            "memory": "32GB",
+            "vram": "140g",
+        },
     }
 
     # Run each model once with these parameter configurations
-    generate_params = [
-        "-t d",  # zero-shot
-        "-t d -rd 1",  # 1-shot with random sampling
-        "-t d -rd 5",  # few-shot with 5 random samples
-        "-t d -ufd True",  # few-shot with 6 hand-picked examples
-    ]
 
     for model in models:
 
@@ -58,11 +88,30 @@ def main():
             args.append("-" + flag)
             args.append(amount)
 
-        for python_params in generate_params:
-            p = python_params + " -m " + model
-            print(f"Args passed to python: {p}")
-            subprocess.call(args + ["-p", p])
-            sleep(1)
+        # Construct python params
+        for seed in seeds:
+            for n_demos in number_of_demonstrations:
+                for use_instructions in [True, False]:
+                    for type_of_demo in type_of_demonstrations:
+                        python_params = (
+                            f"--model {model} "
+                            + f"--seed {seed} "
+                            + f"--number_of_demonstrations {n_demos} "
+                            + f"--use_instructions {use_instructions} "
+                            + f"--type_of_demonstrations {type_of_demo}"
+                        )
+
+                        # Don't run zero shot without instructions
+                        if use_instructions is False and n_demos == 0:
+                            continue
+
+                        # Mixed demonstrations only for even n_demos
+                        if type_of_demo == 0 and n_demos % 2 != 0:
+                            continue
+
+                        print(f"Args passed to python: {python_params}")
+                        subprocess.call(args + ["-p", python_params])
+                        sleep(1)
 
 
 if __name__ == "__main__":

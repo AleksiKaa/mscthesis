@@ -32,8 +32,8 @@ while getopts "d:h:m:n:p:r:t:v:" opt; do
     esac
 done
 
-OUTDIR=./outputs/$MODEL/jobs/batch.%j.out
-ERRDIR=./outputs/$MODEL/errs/batch.%j.err
+OUTDIR=./outputs/$MODEL/%j/job.out
+ERRDIR=./outputs/$MODEL/%j/errs/job.err
 
 BATCH_JOB=./src/batch_jobs/generate.sh
 if [ "$DEBUG" = true ]; then

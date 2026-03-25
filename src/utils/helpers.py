@@ -1,6 +1,8 @@
 import json
 import random
 import numpy as np
+import pandas as pd
+from datasets import Dataset
 
 from .constants import (
     ERROR_RESULT,
@@ -9,6 +11,7 @@ from .constants import (
     CONCEPT_TO_CHAPTER_MAPPING,
     THEME_TO_TOPICS_MAPPING,
 )
+
 from .prompts import (
     DETECT_SYSTEM_PROMPT,
     AUGMENT_SYSTEM_PROMPT,
@@ -16,6 +19,8 @@ from .prompts import (
     AUGMENT_TEMPLATE,
     DEMONSTRATION_TEMPLATE,
 )
+
+from .plots import GT_COLS
 
 
 def get_allowed_concepts(concept):
@@ -54,7 +59,7 @@ def get_disallowed_concepts(concept):
     return disallowed_concepts
 
 
-def get_system_prompt(task, demonstrations=None):
+def get_system_prompt(task, demonstrations=None, use_instructions=True):
     match task:
         case "detect":
             system_prompt = ""
@@ -64,7 +69,8 @@ def get_system_prompt(task, demonstrations=None):
                 system_prompt += "Use the demonstrations below as examples on how to answer the question.\n\n"
                 system_prompt += make_demonstrations(demonstrations)
 
-            system_prompt += DETECT_SYSTEM_PROMPT
+            if use_instructions:
+                system_prompt += DETECT_SYSTEM_PROMPT
 
             return system_prompt
         case "augment":
@@ -185,20 +191,37 @@ def parse_output(text):
         return ERROR_RESULT
 
 
-def sample_dataset_indices(rng, n_rows, size):
-    if size is None or size <= 0:
+def sample_dataset(dataset, seed, num_random_demos, type_of_demonstrations):
+    if num_random_demos is None or num_random_demos <= 0:
         return None
 
-    # Randomly select indices for demos, each row gets own demos, reproducible across runs
-    return rng.integers(low=0, high=n_rows, size=(n_rows, size))
+    labels_pos = ["yes", "yes", "no"]
+    labels_neg = ["no", "no", "yes"]
 
+    df = dataset.to_pandas()
 
-def create_demonstrations_set(dataset, idx_a=None, idx_b=None):
-    if idx_a is None and idx_b is None:
-        return None
-    if idx_a is None:
-        return dataset.select(idx_b)
-    if idx_b is None:
-        return dataset.select(idx_a)
+    # Get ground-truth evaluations
+    label_cols = df[GT_COLS]
 
-    return dataset.select(np.unique(np.concatenate([idx_a, idx_b])))
+    # Only consider rows where all labels match
+    match_pos = (label_cols == labels_pos).all(axis=1)
+    match_neg = (label_cols == labels_neg).all(axis=1)
+
+    match type_of_demonstrations:
+        case -1:
+            demos = df[match_neg].sample(num_random_demos, random_state=seed)
+        case 0:
+            half = num_random_demos // 2
+            demos = pd.concat(
+                [
+                    df[match_neg].sample(half, random_state=seed),
+                    df[match_pos].sample(num_random_demos - half, random_state=seed),
+                ],
+                ignore_index=True,
+            )
+        case 1:
+            demos = df[match_pos].sample(num_random_demos, random_state=seed)
+        case _:
+            raise ValueError("Unknown type of demonstration!")
+
+    return Dataset.from_pandas(demos)
