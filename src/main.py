@@ -24,27 +24,27 @@ sys.path.append("./src/")  # Add module directory to path
 # One set of resources for each model
 slurm_params = {
     "Qwen/Qwen2.5-7B-Instruct": {
-        "time": "01:00:00",
+        "time": "02:00:00",
         "memory": "32GB",
         "vram": "20g",
     },
     "Qwen/Qwen2.5-14B-Instruct": {
-        "time": "01:00:00",
+        "time": "02:00:00",
         "memory": "32GB",
         "vram": "40g",
     },
     "Qwen/Qwen2.5-72B-Instruct": {
-        "time": "01:00:00",
+        "time": "03:00:00",
         "memory": "32GB",
         "vram": "140g",
     },
     "meta-llama/Llama-3.1-8B-Instruct": {
-        "time": "01:00:00",
+        "time": "02:00:00",
         "memory": "32GB",
         "vram": "20",
     },
     "meta-llama/Llama-3.3-70B-Instruct": {
-        "time": "01:00:00",
+        "time": "03:00:00",
         "memory": "32GB",
         "vram": "140g",
     },
