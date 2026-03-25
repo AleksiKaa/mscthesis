@@ -1,0 +1,13 @@
+Evaluate the following programming exercise.
+
+Theme: $THEME$
+Topic: $TOPIC$
+Concept: $CONCEPT$
+
+--- PROBLEM DESCRIPTION ---
+$TEXT$
+
+--- EXAMPLE SOLUTION ---
+$CODE$
+
+Return the evaluations as JSON following the required schema.
