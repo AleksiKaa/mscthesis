@@ -58,9 +58,20 @@ models = [  # 2 model families, big vs small model
     # "meta-llama/Llama-3.3-70B-Instruct",
 ]
 
-number_of_demonstrations = [0, 1, 6]
-type_of_demonstrations = [-1, 0, 1]
-use_instructions = [True, False]
+# number_of_demonstrations, type_of_demonstrations, use_instructions
+runs = [
+    (0, 0, 1),  # Zero-shot, with instructions
+    (1, -1, 0),  # One-shot, negative, without instructions
+    (1, 1, 0),  # One-shot, positive, without instructions
+    (1, -1, 1),  # One-shot, negative, with instructions
+    (1, 1, 1),  # One-shot, positive, with instructions
+    (6, -1, 0),  # Six demos, negative, without instructions
+    (6, 0, 0),  # Six demos, negative, without instructions
+    (6, 1, 0),  # Six demos, negative, without instructions
+    (6, -1, 1),  # Six demos, negative, without instructions
+    (6, 0, 1),  # Six demos, negative, without instructions
+    (6, 1, 1),  # Six demos, negative, without instructions
+]
 
 
 def construct_python_params(model, seed, n_demos, use_instruction, type_of_demo):
@@ -136,29 +147,14 @@ def main():
 
         # Construct python params
         for seed in seeds:
-            for n_demos in number_of_demonstrations:
-                for use_instruction in use_instructions:
-                    for type_of_demo in type_of_demonstrations:
-                        python_params = (
-                            f"--model {model} "
-                            + f"--seed {seed} "
-                            + f"--number_of_demonstrations {n_demos} "
-                            + f"--use_instructions {use_instruction} "
-                            + f"--type_of_demonstrations {type_of_demo} "
-                            + "--type detect"
-                        )
+            for n_demos, type_of_demo, use_instruction in runs:
+                python_params = construct_python_params(
+                    model, seed, n_demos, use_instruction, type_of_demo
+                )
 
-                        # Don't run zero shot without instructions
-                        if use_instructions is False and n_demos == 0:
-                            continue
-
-                        # Mixed demonstrations only for positive even n_demos
-                        if type_of_demo == 0 and (n_demos % 2 != 0 or n_demos <= 0):
-                            continue
-
-                        print(f"Args passed to python: {python_params}")
-                        subprocess.call(slurm_args + ["-p", python_params])
-                        sleep(1)
+                print(f"Args passed to python: {python_params}")
+                subprocess.call(slurm_args + ["-p", python_params])
+                sleep(1)
 
 
 if __name__ == "__main__":

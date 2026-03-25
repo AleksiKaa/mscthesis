@@ -38,9 +38,11 @@ def main():
     parser.add_argument("jobid")
     parser.add_argument("-f", "--file", type=str, default=DEFAULT_DATA)
     parser.add_argument("-m", "--model", type=str, default=DEFAULT_MODEL)
-    parser.add_argument("-c", "--csv", type=bool, default=True)
+    parser.add_argument("-c", "--csv", type=int, default=1, choices=[0, 1])
     parser.add_argument("-n", "--n_rows", type=int, default=None)
-    parser.add_argument("-us", "--use_instructions", type=bool, default=True)
+    parser.add_argument(
+        "-us", "--use_instructions", type=int, default=1, choices=[0, 1]
+    )
     parser.add_argument(
         "-tof", "--type_of_demonstrations", type=int, choices=[-1, 0, 1], default=0
     )
@@ -90,7 +92,7 @@ def main():
         lambda row: {
             "user_prompt": make_prompt(row, task),
             "system_prompt": get_system_prompt(
-                task, demonstrations, args.use_instructions
+                task, demonstrations, bool(args.use_instructions)
             ),
         },
     )
@@ -159,7 +161,7 @@ def main():
         dataset = dataset.add_column(column_name, column_data)
 
     # Write results to csv
-    if args.csv:
+    if bool(args.csv):
         dataset.to_pandas().to_csv(
             f"{outdir}/result.csv",
             sep=";",
