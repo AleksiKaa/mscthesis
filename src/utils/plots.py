@@ -43,6 +43,19 @@ def wrap_text(text, num_chars=20):
 
     return ["\n".join(wrap(t, num_chars)) for t in text]
 
+def calculate_metrics(df, cols1=GT_COLS, cols2=PRED_COLS):
+    metrics = {}
+    labels = ["theme", "topic", "concept"]
+    for i, (c1, c2) in enumerate(zip(cols1, cols2)):
+        y_true = normalize(df[c1], POS_LABELS[i])
+        y_pred = normalize(df[c2], POS_LABELS[i])
+
+        metrics[labels[i] + "_precision"] = precision_score(y_true, y_pred)
+        metrics[labels[i] + "_recall"] = recall_score(y_true, y_pred)
+        metrics[labels[i] + "_f1"]= f1_score(y_true, y_pred)
+
+    return metrics      
+
 
 def calculate_accuracy(df):
 

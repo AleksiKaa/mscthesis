@@ -9,13 +9,19 @@ def get_config(path):
     return config
 
 
-def collect_jobs(base_dir):
+def collect_jobs(base_dir, model_families=None):
+    if model_families is None:
+        model_families = ["Qwen", "meta-llama"]
+    
     jobs = {}
 
     base_path = Path(base_dir)
 
     for model_family in base_path.iterdir():
         if not model_family.is_dir():
+            continue
+
+        if model_family.stem not in model_families:
             continue
 
         for model in model_family.iterdir():
