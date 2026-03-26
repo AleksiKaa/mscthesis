@@ -50,12 +50,12 @@ slurm_params = {
     },
 }
 
-seeds = [1]  # + [10, 42, 50, 100]
+seeds = [1, 10, 42, 50, 100]
 models = [  # 2 model families, big vs small model
     "Qwen/Qwen2.5-7B-Instruct",
-    # "meta-llama/Llama-3.1-8B-Instruct",
-    # "Qwen/Qwen2.5-72B-Instruct",
-    # "meta-llama/Llama-3.3-70B-Instruct",
+    "meta-llama/Llama-3.1-8B-Instruct",
+    "Qwen/Qwen2.5-72B-Instruct",
+    "meta-llama/Llama-3.3-70B-Instruct",
 ]
 
 # number_of_demonstrations, type_of_demonstrations, use_instructions
