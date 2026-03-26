@@ -797,11 +797,9 @@ Randomly selecting 120 generated exercises from a total of 240, 75.0\% were sens
 
 \subsection{Research design}
 
-This thesis focuses on using general-purpose LLMs to detect faithfulness hallucinations in LLM generated contextualized programming exercises. In this study, failures and shortcomings in the exercise contextualizations are treated as faithfulness hallucinations. The purpose of the thesis is to investigate and study the capabilities of LLMs with no task-specific fine-tuning in acting as an AI-judge. The study also utilizes a novel prompt engineering strategy to elicit the judging capabilities of the models. Much effort was put into the engineering of the prompt and by experimenting with various configurations, prompt structures, writing styles, and system prompts, promising templates were obtained and used in the actual empirical part of the study.
+This thesis focuses on using general-purpose LLMs to detect faithfulness hallucinations in LLM generated contextualized programming exercises. In this study, failures and shortcomings in the contextualizations of the exercises and usage of programming concepts not explicitly allowed in the prompt are treated as faithfulness hallucinations. The purpose of the thesis is to investigate and study the capabilities of LLMs with no task-specific fine-tuning in acting as an AI-judge. The study also uses a novel prompt engineering strategy to elicit the judging capabilities of the models. Much effort was put into the engineering of the prompt and through experimenting with various configurations, prompt structures, writing styles, and system prompts, promising templates were obtained and used in the actual empirical part of the study.
 
 The experiment utilizes a dataset produced by \textcite{10.1145/3632620.3671103}. It consists of LLM generated contextualized programming exercises, as well as human graded labels on the level of contextualization. Data from the dataset were injected into a prompt template and fed to a model, with the task of evaluating the level of contextualization in the original data. These output predictions of the model are then compared and analysed with the human-graded ground-truth labels to obtain a clear picture of the model's capabilities in detecting hallucinations.
-
-TODO: Models: which models, why, etc
 
 \subsection{Data}
 
@@ -857,11 +855,11 @@ Using LLMs to implant faithfulness hallucinations in the data proved to be a via
 \begin{itemize}
     \item \$THEME\$: A theme was selected from a list of themes \footnote{literature, handicrafts, food, classical music, board games, pop music, sports, art, pets, historical landmarks, cartoons, video games, outdoor activities, party games, nature destinations, Christmas} at random.
     \item \$TOPIC\$: A topic that differs from the original topic was randomly selected from a list of topics corresponding to the theme \footnote{Topics were extracted from the existing dataset. Each theme included 7-10 topics.}.
-    \item \$CONCEPT\$: A concept from following chapters was inserted. \footnote{The concepts were assigned to 'chapters', creating an order of intended progression. Chapters and the concepts covered: (1: user input, program output), (2: variables, arithmetics), (3: conditional statements, logical operators), (4: for loops, while loops)}
+    \item \$CONCEPT\$: Each concept in the dataset was assigned to a chapter \footnote{Chapters and the concepts covered: (1: user input, program output, variables), (2: arithmetics), (3: conditional statements, logical operators), (4: for loops, while loops)}, creating an order of intended progression. A concept from chapters higher than the ground-truth concept was selected for insertion.
     \item \$TEXT\$: The value of 'problemDescription' was inserted.
     \item \$CODE\$: The value of 'exampleSolution' was inserted.
 \end{itemize}
-The prompting techniques used by \textcite{ming2025faithevallanguagemodelstay} heavily influenced the structure of the prompts used in this thesis.
+The prompting techniques used by \textcite{ming2025faithevallanguagemodelstay} heavily influenced the structure of the prompts used in this thesis, although additional guard rails were included in the system prompt, which noticably reduced the number of model failures.
 
 The dataset, which excludes the deleted rows, was run through the model, producing 273 more rows. An exercise, consisting of a problem description and an example solution is shown in figure \ref{fig:og_ex}. The exercise, which was generated based on the exercise in figure \ref{fig:og_ex}, is shown in figure \ref{fig:ag_ex}. Comparing the two exercises, it can be seen that the LLM has successfully planted faithfulness hallucinations in the exercise: the exercise is no longer about Lingonberry sauce, but rather the composer Claudio Monteverdi, and usage of a while loop has been injected in the problem as well.    
 
@@ -898,12 +896,22 @@ A total of 11 rows were removed due to JSON parsing errors, resulting in a total
     \caption{The augmented exercise generated based on the original exercise on the left}
     \label{fig:ag_ex}
     \end{subfigure}
-    \caption{Examples from the augmented dataset}
+    \caption{Examples from the augmented dataset, note that line breaks and splits have been added post-generation by the author to fit the content nicely into the document.}
 \end{figure*}
 
 \clearpage
 
-\subsection{Practical part}
+\subsection{Experiment setup}
+
+\begin{itemize}
+    \item explain motivation for studied points
+    \item several runs (effect of random seed) = 5 runs
+    \item model family (qwen vs llama) = 2 runs
+    \item model size (large vs small) = 2 runs
+    \item presence of instructions and number of demonstrations (zero shot with instructions, 1 shot with instructions, 1 shot no instructions, 6 shot with instructions, 6 shot no instructions) = 5 runs
+    \item type of demonstrations (only positive, mixed, only negative) -- mixed only for 6 shot = 3 runs
+\end{itemize}
+
 
 TODO: READ \cite{alazraki-etal-2025-need, cobbina2025demospromptpositionalbias, chen-etal-2023-many, chen-etal-2023-relation}
 
@@ -932,23 +940,30 @@ to answer the question
 
 Construct system prompt like above but fitting to this task and no ChatModel:
 
-\begin{figure*}
-    \centering
-    \begin{subfigure}[b]{0.5\textwidth}
-    \inputminted{text}{./minted_inputs/detect_system_prompt.txt}
+\begin{figure}
+\sbox0{\begin{subfigure}[b]{\dimexpr 0.5\textwidth-0.5\columnsep}% measuer height with caption
+    \inputminted{text}{./minted_inputs/detect_system_prompt.txt}% some argitrary height
     \caption{System prompt}
     \label{fig:detect_system_prompt}
-    \end{subfigure}%
-    ~ 
-    \begin{subfigure}[b]{0.5\textwidth}
+\end{subfigure}}%
+\usebox0\hfill\begin{minipage}[b][\ht0][s]{\wd0}% s=stretch
+\begin{subfigure}{\linewidth}
     \inputminted{text}{./minted_inputs/detect_user_prompt.txt}
     \caption{User prompt}
     \label{fig:detect_user_prompt}
-    \end{subfigure}
-    \caption{Prompt templates used for detecting faithfulness hallucinations}
-\end{figure*}
+\end{subfigure}\par
+\vfill% very important
+\begin{subfigure}[b]{\linewidth}
+    \inputminted{text}{./minted_inputs/demonstration_template.txt}
+    \caption{Demonstration template}
+    \label{fig:demo_template}
+\end{subfigure}
+\end{minipage}
+\caption{Prompt templates used for detecting faithfulness hallucinations}
+\end{figure}
 
 \clearpage
+
 \section{Results}
 
 Present the results of your study here and answer the research questions, asked 
