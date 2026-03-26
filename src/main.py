@@ -41,7 +41,7 @@ slurm_params = {
     "meta-llama/Llama-3.1-8B-Instruct": {
         "time": "02:00:00",
         "memory": "32GB",
-        "vram": "20",
+        "vram": "20g",
     },
     "meta-llama/Llama-3.3-70B-Instruct": {
         "time": "03:00:00",
@@ -152,6 +152,7 @@ def main():
                     model, seed, n_demos, use_instruction, type_of_demo
                 )
 
+                print(f"Called subprocess with args: {slurm_args}")
                 print(f"Args passed to python: {python_params}")
                 subprocess.call(slurm_args + ["-p", python_params])
                 sleep(1)
