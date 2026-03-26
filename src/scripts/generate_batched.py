@@ -87,13 +87,12 @@ def main():
     demonstrations = sample_dataset(
         dataset, args.seed, args.number_of_demonstrations, args.type_of_demonstrations
     )
+    system_prompt = get_system_prompt(task, demonstrations, bool(args.use_instructions))
 
     dataset = dataset.map(
         lambda row: {
             "user_prompt": make_prompt(row, task),
-            "system_prompt": get_system_prompt(
-                task, demonstrations, bool(args.use_instructions)
-            ),
+            "system_prompt": system_prompt,
         },
     )
 
