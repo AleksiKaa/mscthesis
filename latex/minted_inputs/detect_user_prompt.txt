@@ -2,7 +2,7 @@ Evaluate the following programming exercise.
 
 Theme: $THEME$
 Topic: $TOPIC$
-Concept: $CONCEPT$
+Allowed concepts: $CONCEPTS$
 
 --- PROBLEM DESCRIPTION ---
 $TEXT$

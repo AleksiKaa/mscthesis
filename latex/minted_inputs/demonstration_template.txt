@@ -1,0 +1,18 @@
+Demonstration:
+
+Theme: $THEME$
+Topic: $TOPIC$
+Allowed concepts: $CONCEPTS$
+
+--- PROBLEM DESCRIPTION ---
+$TEXT$
+
+--- EXAMPLE SOLUTION ---
+$CODE$
+
+--- GROUND-TRUTH EVALUATION ---
+{
+    "themeCorrect" : "$THEMECORRECT$",
+    "topicCorrect" : "$TOPICCORRECT$",
+    "usesAdditionalConcepts" : "$ADDITIONALCONCEPTS$"
+}
