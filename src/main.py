@@ -1,13 +1,28 @@
 """
-Description of experiment:
+The main part of the thesis that produces the results of the study.
+This acts as the starting point of the LLM hallucination detection pipeline.
+This file starts a number of slurm jobs based on the hardcoded configs.
+Current setup:
 
-1) several runs (effect of random seed) = 5 runs
-2) model family (qwen vs llama) = 2 runs
-3) model size (large vs small) = 2 runs
-4) presence of instructions and number of demonstrations (zero shot with instructions, 1 shot with instructions, 1 shot no instructions, 6 shot with instructions, 6 shot no instructions) = 5 runs
-5) type of demonstrations (only positive, mixed, only negative) -- mixed only for 6 shot = 3 runs
+6 models: 2 Qwen (small, large), 2 llama (small, large), 2 Mistral (small, large-ish)
+5 seeds: predetermined random seeds
+11 run configurations:
+    - Zero-shot, with instructions
+    - One-shot, negative, without instructions
+    - One-shot, positive, without instructions
+    - One-shot, negative, with instructions
+    - One-shot, positive, with instructions
+    - Six demos, negative, without instructions
+    - Six demos, negative, without instructions
+    - Six demos, negative, without instructions
+    - Six demos, negative, without instructions
+    - Six demos, negative, without instructions
+    - Six demos, negative, without instructions
 
-In total: 300 runs, max 300 hours of cluster time
+In total 6 * 5 * 11 = 330 runs, worst case run time per reserved resources:
+    165 * 2 + 165 * 3 = 825 hours ~ 34 days
+
+The resource reservations are pretty generous, more likely runtime is around 1-2 days.
 """
 
 import os
@@ -60,29 +75,29 @@ slurm_params = {
     },
 }
 
-seeds = [1]  # , 10, 42, 50, 100]
+seeds = [1, 10, 42, 50, 100]
 models = [  # 3 model families, big vs small model (medium for mistral)
     "Qwen/Qwen2.5-7B-Instruct",
-    # "Qwen/Qwen2.5-72B-Instruct",
-    # "meta-llama/Llama-3.1-8B-Instruct",
-    # "meta-llama/Llama-3.3-70B-Instruct",
-    # "mistralai/Mistral-7B-Instruct-v0.3",
-    # "mistralai/Mixtral-8x7B-Instruct-v0.1",
+    "Qwen/Qwen2.5-72B-Instruct",
+    "meta-llama/Llama-3.1-8B-Instruct",
+    "meta-llama/Llama-3.3-70B-Instruct",
+    "mistralai/Mistral-7B-Instruct-v0.3",
+    "mistralai/Mixtral-8x7B-Instruct-v0.1",
 ]
 
 # number_of_demonstrations, type_of_demonstrations, use_instructions
 runs = [
     (0, 0, 1),  # Zero-shot, with instructions
-    # (1, -1, 0),  # One-shot, negative, without instructions
-    # (1, 1, 0),  # One-shot, positive, without instructions
-    # (1, -1, 1),  # One-shot, negative, with instructions
-    # (1, 1, 1),  # One-shot, positive, with instructions
-    # (6, -1, 0),  # Six demos, negative, without instructions
-    # (6, 0, 0),  # Six demos, negative, without instructions
-    # (6, 1, 0),  # Six demos, negative, without instructions
-    # (6, -1, 1),  # Six demos, negative, without instructions
-    # (6, 0, 1),  # Six demos, negative, without instructions
-    # (6, 1, 1),  # Six demos, negative, without instructions
+    (1, -1, 0),  # One-shot, negative, without instructions
+    (1, 1, 0),  # One-shot, positive, without instructions
+    (1, -1, 1),  # One-shot, negative, with instructions
+    (1, 1, 1),  # One-shot, positive, with instructions
+    (6, -1, 0),  # Six demos, negative, without instructions
+    (6, 0, 0),  # Six demos, negative, without instructions
+    (6, 1, 0),  # Six demos, negative, without instructions
+    (6, -1, 1),  # Six demos, negative, without instructions
+    (6, 0, 1),  # Six demos, negative, without instructions
+    (6, 1, 1),  # Six demos, negative, without instructions
 ]
 
 
