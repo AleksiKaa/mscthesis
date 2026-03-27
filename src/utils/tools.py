@@ -11,8 +11,8 @@ def get_config(path):
 
 def collect_jobs(base_dir, model_families=None):
     if model_families is None:
-        model_families = ["Qwen", "meta-llama"]
-    
+        model_families = ["Qwen", "meta-llama", "mistralai"]
+
     jobs = {}
 
     base_path = Path(base_dir)
@@ -56,14 +56,22 @@ def collect_jobs(base_dir, model_families=None):
 
     return jobs
 
+
 def prettify_table(df):
     # Sort values
-    df = df.sort_values(by=["number_of_demonstrations", "type_of_demonstrations", "use_instructions"], axis=0)
+    df = df.sort_values(
+        by=["number_of_demonstrations", "type_of_demonstrations", "use_instructions"],
+        axis=0,
+    )
     # Map column to yes/no
-    df["use_instructions"] = df["use_instructions"].apply(lambda x: "yes" if bool(x) else "no")
+    df["use_instructions"] = df["use_instructions"].apply(
+        lambda x: "yes" if bool(x) else "no"
+    )
     #  Map column to negative/mixed/positive
-    df["type_of_demonstrations"] = df["type_of_demonstrations"].apply(lambda x: "positive" if x > 0 else "mixed" if x == 0 else "negative")
+    df["type_of_demonstrations"] = df["type_of_demonstrations"].apply(
+        lambda x: "positive" if x > 0 else "mixed" if x == 0 else "negative"
+    )
     # When num is 0, remove value of type
     df.loc[df["number_of_demonstrations"] == 0, "type_of_demonstrations"] = "none"
-    
+
     return df

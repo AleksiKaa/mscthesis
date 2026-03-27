@@ -43,18 +43,35 @@ def wrap_text(text, num_chars=20):
 
     return ["\n".join(wrap(t, num_chars)) for t in text]
 
-def calculate_metrics(df, cols1=GT_COLS, cols2=PRED_COLS):
+
+def calculate_metrics(
+    df, cols1=GT_COLS, cols2=PRED_COLS, measure_hallucination_detection=True
+):
     metrics = {}
     labels = ["theme", "topic", "concept"]
     for i, (c1, c2) in enumerate(zip(cols1, cols2)):
         y_true = normalize(df[c1], POS_LABELS[i])
         y_pred = normalize(df[c2], POS_LABELS[i])
 
-        metrics[labels[i] + "_precision"] = precision_score(y_true, y_pred)
-        metrics[labels[i] + "_recall"] = recall_score(y_true, y_pred)
-        metrics[labels[i] + "_f1"]= f1_score(y_true, y_pred)
+        # If measure_detection is True, we want to capture metrics for correctly predicted hallucinations
+        # Then, the labels should be 0, 0, 1
+        # Otherwise, measure correctly classified non-hallucinatory data points
+        # Labels are thus 1, 1, 0
+        measure_label = np.abs(
+            int(measure_hallucination_detection) - 1
+        )  # True => 0, False => 1
 
-    return metrics      
+        metrics[labels[i] + "_precision"] = precision_score(
+            y_true, y_pred, pos_label=int(measure_label)
+        )
+        metrics[labels[i] + "_recall"] = recall_score(
+            y_true, y_pred, pos_label=int(measure_label)
+        )
+        metrics[labels[i] + "_f1"] = f1_score(
+            y_true, y_pred, pos_label=int(np.abs(measure_label - 1))
+        )  # Flip label to match labeling scheme
+
+    return metrics
 
 
 def calculate_accuracy(df):
