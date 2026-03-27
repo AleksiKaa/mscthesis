@@ -21,9 +21,9 @@ LABELS = ["yes", "no"]
 POS_LABELS = ["yes", "yes", "no"]
 
 DEFAULT_DETECT_RESULT = {
-    "themeCorrect": "no",
-    "topicCorrect": "no",
-    "usesAdditionalConcepts": "yes",
+    "themeCorrect": "PARSE ERROR",
+    "topicCorrect": "PARSE ERROR",
+    "usesAdditionalConcepts": "PARSE ERROR",
 }
 
 DEFAULT_AUGMENT_RESULT = {
