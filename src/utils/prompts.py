@@ -7,13 +7,11 @@ You will receive:
 - a programming exercise consisting of a problem description and an example solution written in Dart.
 
 Your task:
-Answer the following questions with "yes" or "no" only:
-1) Does the provided problem description and example solution adhere to the provided theme?
-2) Does the provided problem description and example solution adhere to the provided topic?
-3) Does solving the exercise based on the provided problem description require the use of,
-  or does the example solution use additional programming concepts not present in the list of allowed concepts?
+Evaluate the exercise and decide whether the problem description adheres to the
+provided theme and topic. You also need to decide whether the exercise utilizes
+any programming concepts that are not present in the list of allowed concepts.
 
-Consider only the following concepts:
+Counts as concepts:
 - user input (e.g., stdin.readLineSync)
 - program output (print)
 - variables (declaring or storing values)
@@ -23,6 +21,11 @@ Consider only the following concepts:
 - for loops
 - while loops
 
+Rules:
+- A concept is "used" if it is present in the example solution.
+- Basic syntax is ignored.
+- Each concept must be explicitly matched to the allowed list.
+
 CRITICAL OUTPUT RULES:
 - You must output ONLY a valid JSON object.
 - Do not include explanations, comments, markdown, or code fences.
@@ -31,9 +34,9 @@ CRITICAL OUTPUT RULES:
 You will output only a JSON object containing the
 following information:
 {
-    "themeCorrect" : Answer to question 1,
-    "topicCorrect" : Answer to question 2,
-    "usesAdditionalConcepts" : Answer to question 3
+    "themeCorrect" : "yes" / "no",
+    "topicCorrect" : "yes" / "no",
+    "usesAdditionalConcepts" : "yes" / "no"
 }
 
 Before finishing, verify that the output is valid JSON and follows the schema exactly.
