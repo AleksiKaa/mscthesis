@@ -63,41 +63,44 @@ slurm_params = {
 seeds = [1]  # , 10, 42, 50, 100]
 models = [  # 3 model families, big vs small model (medium for mistral)
     "Qwen/Qwen2.5-7B-Instruct",
-    "Qwen/Qwen2.5-72B-Instruct",
-    "meta-llama/Llama-3.1-8B-Instruct",
-    "meta-llama/Llama-3.3-70B-Instruct",
-    "mistralai/Mistral-7B-Instruct-v0.3",
-    "mistralai/Mixtral-8x7B-Instruct-v0.1",
+    # "Qwen/Qwen2.5-72B-Instruct",
+    # "meta-llama/Llama-3.1-8B-Instruct",
+    # "meta-llama/Llama-3.3-70B-Instruct",
+    # "mistralai/Mistral-7B-Instruct-v0.3",
+    # "mistralai/Mixtral-8x7B-Instruct-v0.1",
 ]
 
 # number_of_demonstrations, type_of_demonstrations, use_instructions
 runs = [
     (0, 0, 1),  # Zero-shot, with instructions
-    (1, -1, 0),  # One-shot, negative, without instructions
-    (1, 1, 0),  # One-shot, positive, without instructions
-    (1, -1, 1),  # One-shot, negative, with instructions
-    (1, 1, 1),  # One-shot, positive, with instructions
-    (6, -1, 0),  # Six demos, negative, without instructions
-    (6, 0, 0),  # Six demos, negative, without instructions
-    (6, 1, 0),  # Six demos, negative, without instructions
-    (6, -1, 1),  # Six demos, negative, without instructions
-    (6, 0, 1),  # Six demos, negative, without instructions
-    (6, 1, 1),  # Six demos, negative, without instructions
+    # (1, -1, 0),  # One-shot, negative, without instructions
+    # (1, 1, 0),  # One-shot, positive, without instructions
+    # (1, -1, 1),  # One-shot, negative, with instructions
+    # (1, 1, 1),  # One-shot, positive, with instructions
+    # (6, -1, 0),  # Six demos, negative, without instructions
+    # (6, 0, 0),  # Six demos, negative, without instructions
+    # (6, 1, 0),  # Six demos, negative, without instructions
+    # (6, -1, 1),  # Six demos, negative, without instructions
+    # (6, 0, 1),  # Six demos, negative, without instructions
+    # (6, 1, 1),  # Six demos, negative, without instructions
 ]
 
 
-def construct_python_params(model, seed, n_demos, use_instruction, type_of_demo):
+def construct_python_params(
+    model, seed, n_demos, use_instruction, type_of_demo, version
+):
     return (
         f"--model {model} "
         + f"--seed {seed} "
         + f"--number_of_demonstrations {n_demos} "
         + f"--use_instructions {use_instruction} "
         + f"--type_of_demonstrations {type_of_demo} "
+        + f"--version {version}"
         + "--type detect"
     )
 
 
-def construct_slurm_params(model):
+def construct_slurm_params(model, version):
     # Construct slurm params
 
     submit_script = "./src/submit.sh"
@@ -107,7 +110,7 @@ def construct_slurm_params(model):
         print(f"Slurm arguments not found for model {model}! Skipping...")
         return None
 
-    slurm_args = [submit_script, "-m", model]
+    slurm_args = [submit_script, "-m", model, "-w", version]
     for resource, amount in model_args.items():
         match resource:
             case "time":
@@ -129,6 +132,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--file", type=str, default=None)
+    parser.add_argument("-v", "--version", type=str, default="default")
 
     args = parser.parse_args()
 
@@ -136,7 +140,7 @@ def main():
         with open(args.file, "r", encoding="utf-8") as config_json:
             config = json.loads("\n".join(config_json.readlines()))
 
-            slurm_args = construct_slurm_params(config["model"])
+            slurm_args = construct_slurm_params(config["model"], args.version)
 
             if slurm_args is None:
                 return
@@ -147,6 +151,7 @@ def main():
                 config["number_of_demonstrations"],
                 config["use_instructions"],
                 config["type_of_demonstrations"],
+                config.get("version", args.version),
             )
             print(f"Args passed to python: {python_params}")
             subprocess.call(slurm_args + ["-p", python_params])
@@ -155,13 +160,13 @@ def main():
     # Run each model once with these parameter configurations
     for model in models:
 
-        slurm_args = construct_slurm_params(model)
+        slurm_args = construct_slurm_params(model, args.version)
 
         # Construct python params
         for seed in seeds:
             for n_demos, type_of_demo, use_instruction in runs:
                 python_params = construct_python_params(
-                    model, seed, n_demos, use_instruction, type_of_demo
+                    model, seed, n_demos, use_instruction, type_of_demo, args.version
                 )
 
                 print(f"Called subprocess with args: {slurm_args}")

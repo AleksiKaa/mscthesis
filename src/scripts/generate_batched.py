@@ -55,11 +55,12 @@ def main():
         choices=["detect", "d", "augment", "a"],
         required=True,
     )
+    parser.add_argument("-v", "--version", type=str, required=True)
 
     args = parser.parse_args()
 
     # Output directory
-    outdir = f"./outputs/{args.model}/{args.jobid}"
+    outdir = f"./outputs/{args.version}/{args.model}/{args.jobid}"
 
     # Ensure directory exists
     os.makedirs(outdir, exist_ok=True)

@@ -11,6 +11,7 @@ DEBUG=false
 NOTE=""
 PYTHONARGS=""
 MODEL="Qwen/Qwen2.5-14B-Instruct"
+VERSION=""
 
 usage() {
     echo "Usage: $0 [-t time] [-v vram] [-m model]"
@@ -18,7 +19,7 @@ usage() {
     exit 1
 }
 
-while getopts "d:h:m:n:p:r:t:v:" opt; do
+while getopts "d:h:m:n:p:r:t:v:w:" opt; do
     case $opt in
         d) DEBUG=$OPTARG ;;
         h) usage ;;
@@ -28,12 +29,13 @@ while getopts "d:h:m:n:p:r:t:v:" opt; do
         r) MEM=$OPTARG ;;
         t) TIME=$OPTARG ;;
         v) VRAM=$OPTARG ;;
+        w) VERSION=$OPTARG ;;
         *) usage ;; 
     esac
 done
 
-OUTDIR=./outputs/$MODEL/%j/job.out
-ERRDIR=./outputs/$MODEL/%j/job.err
+OUTDIR=./outputs/$VERSION/$MODEL/%j/job.out
+ERRDIR=./outputs/$VERSION/$MODEL/%j/job.err
 
 BATCH_JOB=./src/batch_jobs/generate.sh
 if [ "$DEBUG" = true ]; then
@@ -62,4 +64,6 @@ sbatch \
     --output="$OUTDIR" \
     --error="$ERRDIR" \
     $BATCH_JOB \
-    $PYTHONARGS
+    $PYTHONARGS \
+    -m $MODEL \
+    -v $VERSION
