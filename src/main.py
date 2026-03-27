@@ -95,7 +95,7 @@ def construct_python_params(
         + f"--number_of_demonstrations {n_demos} "
         + f"--use_instructions {use_instruction} "
         + f"--type_of_demonstrations {type_of_demo} "
-        + f"--version {version}"
+        + f"--version {version} "
         + "--type detect"
     )
 
