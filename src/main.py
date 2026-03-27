@@ -51,23 +51,23 @@ slurm_params = {
     "mistralai/Mistral-7B-Instruct-v0.3": {
         "time": "02:00:00",
         "memory": "32GB",
-        "vram": "20",
+        "vram": "20g",
     },
-    "mistralai/Mistral-Small-3.2-24B-Instruct-2506": {
+    "mistralai/Mixtral-8x7B-Instruct-v0.1": {
         "time": "03:00:00",
         "memory": "32GB",
-        "vram": "60g",
+        "vram": "120g",
     },
 }
 
-seeds = [1, 10, 42, 50, 100]
+seeds = [1]  # , 10, 42, 50, 100]
 models = [  # 3 model families, big vs small model (medium for mistral)
     "Qwen/Qwen2.5-7B-Instruct",
-    "meta-llama/Llama-3.1-8B-Instruct",
     "Qwen/Qwen2.5-72B-Instruct",
+    "meta-llama/Llama-3.1-8B-Instruct",
     "meta-llama/Llama-3.3-70B-Instruct",
     "mistralai/Mistral-7B-Instruct-v0.3",
-    "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+    "mistralai/Mixtral-8x7B-Instruct-v0.1",
 ]
 
 # number_of_demonstrations, type_of_demonstrations, use_instructions
