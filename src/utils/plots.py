@@ -62,13 +62,13 @@ def calculate_metrics(
         )  # True => 0, False => 1
 
         metrics[labels[i] + "_precision"] = precision_score(
-            y_true, y_pred, pos_label=int(measure_label)
+            y_true, y_pred, pos_label=int(measure_label), zero_division=np.nan
         )
         metrics[labels[i] + "_recall"] = recall_score(
-            y_true, y_pred, pos_label=int(measure_label)
+            y_true, y_pred, pos_label=int(measure_label), zero_division=np.nan
         )
         metrics[labels[i] + "_f1"] = f1_score(
-            y_true, y_pred, pos_label=int(np.abs(measure_label - 1))
+            y_true, y_pred, pos_label=int(np.abs(measure_label - 1)), zero_division=np.nan
         )  # Flip label to match labeling scheme
 
     return metrics
