@@ -15,6 +15,7 @@ from utils.constants import (
     DEFAULT_MODEL,
     PIPE_MAX_NEW_TOKENS,
     MODEL_TEMPERATURE,
+    BATCH_SIZE,
 )
 
 from utils.helpers import (
@@ -117,9 +118,9 @@ def main():
     llm = LLM(
         model=args.model,
         gpu_memory_utilization=0.8,
-        max_model_len=2048,
-        max_num_seqs=16,
-        enforce_eager=True,
+        max_model_len=4096,  # Max length of prompt + output
+        max_num_seqs=BATCH_SIZE,  # Max number of sequences in a batch
+        enforce_eager=True,  # Disable cuda graph for lower VRAM consumption
         tokenizer_mode=mode,
         config_format=mode,
         load_format=mode,
@@ -127,14 +128,14 @@ def main():
 
     sampling_params = SamplingParams(temperature=0.3, max_tokens=250)
 
-    prompts = dataset["user_prompt"]
+    user_prompts = dataset["user_prompt"]
     system_prompts = dataset["system_prompt"]
-    complete_prompts = [
+    chat_prompts = [
         [
             {"role": "system", "content": sp},
             {"role": "user", "content": up},
         ]
-        for sp, up in zip(system_prompts, prompts)
+        for sp, up in zip(system_prompts, user_prompts)
     ]
 
     print(f"Generating responses for {dataset.num_rows} prompts...\n")
@@ -144,7 +145,7 @@ def main():
 
     # Single batched forward pass
     outputs = llm.chat(
-        complete_prompts,
+        chat_prompts,
         sampling_params=sampling_params,
         use_tqdm=True if args.n_rows is not None else False,
     )
