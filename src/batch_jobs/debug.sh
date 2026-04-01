@@ -21,7 +21,7 @@ echo "Loading modules..."
 module load model-huggingface
 
 echo "Activating conda environment..."
-source activate thesis
+source activate slurm_env
 
 mamba env list
 
