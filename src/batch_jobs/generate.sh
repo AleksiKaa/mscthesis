@@ -5,9 +5,10 @@ echo "Working dir: $(pwd)"
 
 module purge
 module load model-huggingface
-module load scicomp-llm-env
-
 echo "Modules loaded"
+
+source activate thesis
+echo "Conda environment activated"
 
 echo "pycache disabled"
 export PYTHONDONTWRITEBYTECODE=1

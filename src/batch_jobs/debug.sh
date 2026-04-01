@@ -11,15 +11,19 @@ type module
 echo "MODULEPATH:"
 echo $MODULEPATH
 
-echo "Available modules:"
-module avail
+#echo "Available modules:"
+#module avail
 
 #echo "Load Core"
 #module load Core                # optional, if required by cluster
 
 echo "Loading modules..."
 module load model-huggingface
-module load scicomp-llm-env
+
+echo "Activating conda environment..."
+source activate thesis
+
+mamba env list
 
 echo "Loaded modules:"
 module list

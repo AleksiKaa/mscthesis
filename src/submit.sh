@@ -11,7 +11,7 @@ DEBUG=false
 NOTE=""
 PYTHONARGS=""
 MODEL="Qwen/Qwen2.5-14B-Instruct"
-VERSION=""
+VERSION="DEFAULT"
 
 usage() {
     echo "Usage: $0 [-t time] [-v vram] [-m model]"
@@ -40,6 +40,7 @@ ERRDIR=./outputs/$VERSION/$MODEL/%j/job.err
 BATCH_JOB=./src/batch_jobs/generate.sh
 if [ "$DEBUG" = true ]; then
   BATCH_JOB=./src/batch_jobs/debug.sh
+  MODEL="DEBUG"
   TIME="00:05:00"
   CPUS=1
   MEM="1GB"
