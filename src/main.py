@@ -73,31 +73,41 @@ slurm_params = {
         "memory": "32GB",
         "vram": "120g",
     },
+    "mistralai/Mistral-Small-3.2-24B-Instruct-2506": {
+        "time": "02:00:00",
+        "memory": "32GB",
+        "vram": "60g",
+    },
+    "mistralai/Mistral-Large-3-675B-Instruct-2512": {
+        "time": "03:00:00",
+        "memory": "32GB",
+        "vram": "120g",
+    },
 }
 
-seeds = [1, 10, 42, 50, 100]
+seeds = [1]  # , 10, 42, 50, 100]
 models = [  # 3 model families, big vs small model (medium for mistral)
-    "Qwen/Qwen2.5-7B-Instruct",
-    "Qwen/Qwen2.5-72B-Instruct",
-    "meta-llama/Llama-3.1-8B-Instruct",
-    "meta-llama/Llama-3.3-70B-Instruct",
-    "mistralai/Mistral-7B-Instruct-v0.3",
-    "mistralai/Mixtral-8x7B-Instruct-v0.1",
+    # "Qwen/Qwen2.5-7B-Instruct",
+    # "Qwen/Qwen2.5-72B-Instruct",
+    # "meta-llama/Llama-3.1-8B-Instruct",
+    # "meta-llama/Llama-3.3-70B-Instruct",
+    "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+    # "mistralai/Mistral-Large-3-675B-Instruct-2512",
 ]
 
 # number_of_demonstrations, type_of_demonstrations, use_instructions
 runs = [
     (0, 0, 1),  # Zero-shot, with instructions
-    (1, -1, 0),  # One-shot, negative, without instructions
-    (1, 1, 0),  # One-shot, positive, without instructions
-    (1, -1, 1),  # One-shot, negative, with instructions
-    (1, 1, 1),  # One-shot, positive, with instructions
-    (6, -1, 0),  # Six demos, negative, without instructions
-    (6, 0, 0),  # Six demos, negative, without instructions
-    (6, 1, 0),  # Six demos, negative, without instructions
-    (6, -1, 1),  # Six demos, negative, without instructions
-    (6, 0, 1),  # Six demos, negative, without instructions
-    (6, 1, 1),  # Six demos, negative, without instructions
+    # (1, -1, 0),  # One-shot, negative, without instructions
+    # (1, 1, 0),  # One-shot, positive, without instructions
+    # (1, -1, 1),  # One-shot, negative, with instructions
+    # (1, 1, 1),  # One-shot, positive, with instructions
+    # (6, -1, 0),  # Six demos, negative, without instructions
+    # (6, 0, 0),  # Six demos, negative, without instructions
+    # (6, 1, 0),  # Six demos, negative, without instructions
+    # (6, -1, 1),  # Six demos, negative, without instructions
+    # (6, 0, 1),  # Six demos, negative, without instructions
+    # (6, 1, 1),  # Six demos, negative, without instructions
 ]
 
 
@@ -146,13 +156,13 @@ def construct_slurm_params(model, version):
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--file", type=str, default=None)
+    parser.add_argument("-c", "--config_file", type=str, default=None)
     parser.add_argument("-v", "--version", type=str, default="default")
 
     args = parser.parse_args()
 
-    if args.file is not None:
-        with open(args.file, "r", encoding="utf-8") as config_json:
+    if args.config_file is not None:
+        with open(args.config_file, "r", encoding="utf-8") as config_json:
             config = json.loads("\n".join(config_json.readlines()))
 
             slurm_args = construct_slurm_params(config["model"], args.version)
