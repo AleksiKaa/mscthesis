@@ -911,7 +911,7 @@ A total of 11 rows were removed due to JSON parsing errors, resulting in a total
 
 \clearpage
 
-\subsection{Experiment setup}
+\subsection{Description of experiment}
 
 As stated in section \ref{sec:design}, the aim of this study is to clarify whether an LLM could be used as an AI-judge to detect faithfulness hallucinations in LLM generated programming exercises. The model's answers to the questions listed in \ref{sec:design} directly correspond to the labels in \ref{tb:labels_interpretation}, where the interpretation of the labels is stated. If any of the labels are hallucinatory, the whole exercise is deemed to contain faithfulness hallucinations.
 
@@ -932,15 +932,46 @@ As stated in section \ref{sec:design}, the aim of this study is to clarify wheth
 \label{tb:labels_interpretation}
 \end{table}
 
+In addition to simply measuring the performance of a model in detecting faithfulness hallucinations, the performance is measured by the following aspects:
+\begin{itemize}   
+    \item \textbf{Model family:} Model families have different architectures that affect their performance in ways that are difficult to tract analytically TODO: cite. Additionally, the performance of a model can be task-specific, varying even intra-task depending on e.g. input data TODO: Cite. For this reason, an empirical experiment comparing the model families' performance in this specific task is justified. TODO: Lisää humppaa
+
+    For this experiment, the use of models from the Qwen, Llama, and Mistral families was decided.
+    
+    \item \textbf{Model size:} It is well-known that model performance scales with respect to model size. Generally, for better results, it is advisable to use a large model. However, the inference of large models is resource-heavy, thus it is of interest to determine whether a smaller model could match or nearly achieve the performance of a large model in detecting faithfulness hallucinations. Furthermore, since this experiment utilizes ICL, which is an emergent ability of LLMs \cite{wei2022emergentabilitieslargelanguage}, it is of interest to discover how ICL affects hallucination detection performance both in small and large models. In this experiment, small models have around 7 billion parameters, and large models have around 70 billion parameters. It was decided, that for the model families used, the models are:
+    \begin{itemize}
+        \item Llama-3.1-8B-Instruct \cite{grattafiori2024llama3herdmodels}
+        \item Llama-3.3-70B-Instruct \cite{grattafiori2024llama3herdmodels}
+        \item Mistral-7B-Instruct-v0.3 \cite{jiang2023mistral7b}
+        \item Mixtral-8x7B-Instruct-v0.1 \cite{jiang2024mixtralexperts}
+        \item Qwen2.5-7B-Instruct \cite{yang2024qwen2technicalreport}
+        \item Qwen2.5-72B-Instruct \cite{yang2024qwen2technicalreport}
+    \end{itemize}
+    While Mixtral-8x7B-Instruct-v0.1 is technically not from the same model family as Mistral-7B-Instruct-v0.3, it was selected as its larger counterpart, since it consists of 8 Mistral-7B-Instruct-v0.3 models, creating a close enough match. Note that all the citations to the technical reports are for the base models, not the patched versions.
+    
+    \item \textbf{Effect of ICL:} This experiment studies the effect of ICL in detecting faithfulness hallucinations in two ways: the effect of including demonstrations in the prompts, and the differences of implicit and explicit in-context learning. 
+    
+    
+    
+    In this context, by implicit in-context learning, the exclusion of task instructions in the prompt is signified, requiring the model to implicitly draw the task distribution from the presented demonstrations, whereas in the explicit context, task instructions are directly presented to the model.
+
+    
+    \item \textbf{Type of demonstrations in ICL:}
+    \item \textbf{Consistency:} Introducing randomness into the generation process enables the measure of model robustness to noise and decreases the effect of outliers. 
+\end{itemize}
+
 \begin{itemize}
     \item explain motivation for studied points
-    \item several runs (effect of random seed) = 5 runs
+    \item several runs (effect of random seed (demonstration selection)) = 5 runs
     \item model family (qwen vs llama vs mistral) = 3 runs
     \item model size (large vs small) = 2 runs
     \item presence of instructions and number of demonstrations (zero shot with instructions, 1 shot with instructions, 1 shot no instructions, 6 shot with instructions, 6 shot no instructions) = 5 runs
     \item type of demonstrations (only positive, mixed, only negative) -- mixed only for 6 shot = 3 runs
 \end{itemize}
 
+
+
+\subsubsection{Prompt structure}
 
 TODO: READ \cite{alazraki-etal-2025-need, cobbina2025demospromptpositionalbias, chen-etal-2023-many, chen-etal-2023-relation}
 
@@ -977,19 +1008,27 @@ Construct system prompt like above but fitting to this task and no ChatModel:
 \end{subfigure}}%
 \usebox0\hfill\begin{minipage}[b][\ht0][s]{\wd0}% s=stretch
 \begin{subfigure}{\linewidth}
-    \inputminted{text}{./minted_inputs/detect_user_prompt.txt}
-    \caption{User prompt}
+    \inputminted{text}{./minted_inputs/demonstration_template.txt}
+    \caption{Demonstration template}
+    \label{fig:demo_template}
+\end{subfigure}\par
+\vspace{0.5cm}
+\begin{subfigure}{\linewidth}
+    \inputminted{text}{./minted_inputs/detect_system_template.txt}
+    \caption{System prompt template}
     \label{fig:detect_user_prompt}
 \end{subfigure}\par
 \vfill% very important
 \begin{subfigure}[b]{\linewidth}
-    \inputminted{text}{./minted_inputs/demonstration_template.txt}
-    \caption{Demonstration template}
-    \label{fig:demo_template}
+    \inputminted{text}{./minted_inputs/detect_user_prompt.txt}
+    \caption{User prompt}
+    \label{fig:detect_user_prompt}
 \end{subfigure}
 \end{minipage}
 \caption{Prompt templates used for detecting faithfulness hallucinations}
 \end{figure}
+
+\subsubsection{Final experiment setup}
 
 \clearpage
 
