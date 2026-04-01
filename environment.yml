@@ -4,6 +4,7 @@ channels:
 dependencies:
   - _openmp_mutex=4.5=7_kmp_llvm
   - _python_abi3_support=1.0=hd8ed1ab_2
+  - accelerate=1.13.0=pyhcf101f3_0
   - aiohappyeyeballs=2.6.1=pyhd8ed1ab_0
   - aiohttp=3.13.3=py313hd6074c6_0
   - aiosignal=1.4.0=pyhd8ed1ab_0
