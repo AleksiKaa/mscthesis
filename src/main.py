@@ -38,7 +38,7 @@ sys.path.append("./src/")  # Add module directory to path
 
 # One set of resources for each model, reserve circa 10GB VRAM for KV cache
 slurm_params = {
-    "Qwen/Qwen3-8B": {
+    "Qwen/Qwen3-VL-8B-Instruct": {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "32g",
@@ -87,12 +87,12 @@ slurm_params = {
 
 seeds = [1, 10, 42, 50, 100]
 models = [  # 3 model families, big vs small model (medium for mistral)
-    "Qwen/Qwen3-8B",
+    # "Qwen/Qwen3-VL-8B-Instruct",  # Use with vllm script
     "Qwen/Qwen3-32B",
-    # "meta-llama/Llama-3.1-8B-Instruct",
-    # "meta-llama/Llama-3.3-70B-Instruct",
-    # "mistralai/Mistral-7B-Instruct-v0.3",
-    # "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+    "meta-llama/Llama-3.1-8B-Instruct",
+    "meta-llama/Llama-3.3-70B-Instruct",
+    "mistralai/Mistral-7B-Instruct-v0.3",
+    # "mistralai/Mistral-Small-3.2-24B-Instruct-2506",  # Use with vllm script
 ]
 
 # number_of_demonstrations, type_of_demonstrations, use_instructions
