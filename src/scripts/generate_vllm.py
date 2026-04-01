@@ -13,7 +13,7 @@ sys.path.append("./src/")  # Add module directory to path
 from utils.constants import (
     DEFAULT_DATA,
     DEFAULT_MODEL,
-    PIPE_MAX_NEW_TOKENS,
+    MAX_GENERATED_TOKENS,
     MODEL_TEMPERATURE,
     BATCH_SIZE,
 )
@@ -101,15 +101,6 @@ def main():
     if args.n_rows is not None and args.n_rows > 0:
         dataset = dataset.select(range(args.n_rows))
 
-    # Model parameters
-    params = {
-        "model": args.model,
-        "device_map": 0,  # Force GPU
-        "max_new_tokens": PIPE_MAX_NEW_TOKENS,
-        "temperature": MODEL_TEMPERATURE,
-    }
-    print(f"Model parameters: {params}")
-
     print("Initializing model...")
 
     # Initialize the model
@@ -117,7 +108,7 @@ def main():
 
     llm = LLM(
         model=args.model,
-        gpu_memory_utilization=0.8,
+        gpu_memory_utilization=0.9,
         max_model_len=4096,  # Max length of prompt + output
         max_num_seqs=BATCH_SIZE,  # Max number of sequences in a batch
         enforce_eager=True,  # Disable cuda graph for lower VRAM consumption
@@ -126,7 +117,9 @@ def main():
         load_format=mode,
     )
 
-    sampling_params = SamplingParams(temperature=0.3, max_tokens=250)
+    sampling_params = SamplingParams(
+        temperature=MODEL_TEMPERATURE, max_tokens=MAX_GENERATED_TOKENS
+    )
 
     user_prompts = dataset["user_prompt"]
     system_prompts = dataset["system_prompt"]

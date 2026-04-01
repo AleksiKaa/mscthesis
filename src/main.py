@@ -36,19 +36,19 @@ os.chdir("/home/kaariaa3/mscthesis")
 sys.path.append("./src/")  # Add module directory to path
 
 
-# One set of resources for each model
+# One set of resources for each model, reserve circa 10GB VRAM for KV cache
 slurm_params = {
-    "Qwen/Qwen2.5-7B-Instruct": {
+    "Qwen/Qwen3-8B": {
         "time": "02:00:00",
         "memory": "32GB",
-        "vram": "20g",
+        "vram": "32g",
     },
-    "Qwen/Qwen2.5-14B-Instruct": {
-        "time": "02:00:00",
+    "Qwen/Qwen3-32B": {
+        "time": "03:00:00",
         "memory": "32GB",
-        "vram": "40g",
+        "vram": "80g",
     },
-    "Qwen/Qwen2.5-72B-Instruct": {
+    "Qwen/Qwen3-235B-A22B": {
         "time": "03:00:00",
         "memory": "32GB",
         "vram": "140g",
@@ -56,9 +56,14 @@ slurm_params = {
     "meta-llama/Llama-3.1-8B-Instruct": {
         "time": "02:00:00",
         "memory": "32GB",
-        "vram": "20g",
+        "vram": "32g",
     },
     "meta-llama/Llama-3.3-70B-Instruct": {
+        "time": "03:00:00",
+        "memory": "32GB",
+        "vram": "140g",
+    },
+    "meta-llama/Llama-4-Scout-17B-16E-Instruct": {
         "time": "03:00:00",
         "memory": "32GB",
         "vram": "140g",
@@ -66,55 +71,50 @@ slurm_params = {
     "mistralai/Mistral-7B-Instruct-v0.3": {
         "time": "02:00:00",
         "memory": "32GB",
-        "vram": "20g",
-    },
-    "mistralai/Mixtral-8x7B-Instruct-v0.1": {
-        "time": "03:00:00",
-        "memory": "32GB",
-        "vram": "120g",
+        "vram": "32g",
     },
     "mistralai/Mistral-Small-3.2-24B-Instruct-2506": {
         "time": "02:00:00",
         "memory": "32GB",
-        "vram": "60g",
+        "vram": "80g",
     },
     "mistralai/Mistral-Large-3-675B-Instruct-2512": {
         "time": "03:00:00",
         "memory": "32GB",
-        "vram": "120g",
+        "vram": "140g",
     },
 }
 
-seeds = [1]  # , 10, 42, 50, 100]
+seeds = [1, 10, 42, 50, 100]
 models = [  # 3 model families, big vs small model (medium for mistral)
-    # "Qwen/Qwen2.5-7B-Instruct",
-    # "Qwen/Qwen2.5-72B-Instruct",
+    "Qwen/Qwen3-8B",
+    "Qwen/Qwen3-32B",
     # "meta-llama/Llama-3.1-8B-Instruct",
     # "meta-llama/Llama-3.3-70B-Instruct",
-    "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
-    # "mistralai/Mistral-Large-3-675B-Instruct-2512",
+    # "mistralai/Mistral-7B-Instruct-v0.3",
+    # "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
 ]
 
 # number_of_demonstrations, type_of_demonstrations, use_instructions
 runs = [
     (0, 0, 1),  # Zero-shot, with instructions
-    # (1, -1, 0),  # One-shot, negative, without instructions
-    # (1, 1, 0),  # One-shot, positive, without instructions
-    # (1, -1, 1),  # One-shot, negative, with instructions
-    # (1, 1, 1),  # One-shot, positive, with instructions
-    # (6, -1, 0),  # Six demos, negative, without instructions
-    # (6, 0, 0),  # Six demos, negative, without instructions
-    # (6, 1, 0),  # Six demos, negative, without instructions
-    # (6, -1, 1),  # Six demos, negative, without instructions
-    # (6, 0, 1),  # Six demos, negative, without instructions
-    # (6, 1, 1),  # Six demos, negative, without instructions
+    (1, -1, 0),  # One-shot, negative, without instructions
+    (1, 1, 0),  # One-shot, positive, without instructions
+    (1, -1, 1),  # One-shot, negative, with instructions
+    (1, 1, 1),  # One-shot, positive, with instructions
+    (6, -1, 0),  # Six demos, negative, without instructions
+    (6, 0, 0),  # Six demos, negative, without instructions
+    (6, 1, 0),  # Six demos, negative, without instructions
+    (6, -1, 1),  # Six demos, negative, without instructions
+    (6, 0, 1),  # Six demos, negative, without instructions
+    (6, 1, 1),  # Six demos, negative, without instructions
 ]
 
 
 def construct_python_params(
-    model, seed, n_demos, use_instruction, type_of_demo, version
+    model, seed, n_demos, use_instruction, type_of_demo, version, debug
 ):
-    return (
+    python_params = (
         f"--model {model} "
         + f"--seed {seed} "
         + f"--number_of_demonstrations {n_demos} "
@@ -124,8 +124,13 @@ def construct_python_params(
         + "--type detect"
     )
 
+    if debug is not None and debug == "debug":
+        python_params += " --n_rows 1"
 
-def construct_slurm_params(model, version):
+    return python_params
+
+
+def construct_slurm_params(model, version, debug):
     # Construct slurm params
 
     submit_script = "./src/submit.sh"
@@ -140,6 +145,9 @@ def construct_slurm_params(model, version):
         match resource:
             case "time":
                 flag = "t"
+                amount = (
+                    "00:30:00" if debug is not None and debug == "debug" else amount
+                )
             case "memory":
                 flag = "r"
             case "vram":
@@ -156,6 +164,7 @@ def construct_slurm_params(model, version):
 def main():
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("debug")
     parser.add_argument("-c", "--config_file", type=str, default=None)
     parser.add_argument("-v", "--version", type=str, default="default")
 
@@ -165,7 +174,9 @@ def main():
         with open(args.config_file, "r", encoding="utf-8") as config_json:
             config = json.loads("\n".join(config_json.readlines()))
 
-            slurm_args = construct_slurm_params(config["model"], args.version)
+            slurm_args = construct_slurm_params(
+                config["model"], args.version, args.debug
+            )
 
             if slurm_args is None:
                 return
@@ -177,6 +188,7 @@ def main():
                 config["use_instructions"],
                 config["type_of_demonstrations"],
                 config.get("version", args.version),
+                args.debug,
             )
             print(f"Args passed to python: {python_params}")
             subprocess.call(slurm_args + ["-p", python_params])
@@ -185,13 +197,19 @@ def main():
     # Run each model once with these parameter configurations
     for model in models:
 
-        slurm_args = construct_slurm_params(model, args.version)
+        slurm_args = construct_slurm_params(model, args.version, args.debug)
 
         # Construct python params
         for seed in seeds:
             for n_demos, type_of_demo, use_instruction in runs:
                 python_params = construct_python_params(
-                    model, seed, n_demos, use_instruction, type_of_demo, args.version
+                    model,
+                    seed,
+                    n_demos,
+                    use_instruction,
+                    type_of_demo,
+                    args.version,
+                    args.debug,
                 )
 
                 print(f"Called subprocess with args: {slurm_args}")
