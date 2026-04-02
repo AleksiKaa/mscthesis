@@ -4,11 +4,11 @@ DEFAULT_MODEL = "Qwen/Qwen2.5-14B-Instruct"
 
 PIPE_RETURN_FULL_TEXT = False
 
-PIPE_MAX_NEW_TOKENS = 250
+PIPE_MAX_NEW_TOKENS = 64
 
 MAX_GENERATED_TOKENS = 64
 
-MODEL_TEMPERATURE = 0.7
+MODEL_TEMPERATURE = 0.3
 
 GT_COLS = [
     "The exercise description matched the selected theme (Yes/No)",
