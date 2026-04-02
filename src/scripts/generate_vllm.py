@@ -105,8 +105,7 @@ def main():
     print("Initializing model...")
 
     # Initialize the model
-    mode = "mistral" if "mistral" in args.model.lower() else "auto"
-
+    mode = "auto"
     llm = LLM(
         model=args.model,
         gpu_memory_utilization=0.9,
@@ -118,13 +117,18 @@ def main():
         load_format=mode,
     )
 
+    # All models have same params
     sampling_params = SamplingParams(
-        temperature=MODEL_TEMPERATURE, max_tokens=MAX_GENERATED_TOKENS
+        temperature=MODEL_TEMPERATURE,
+        max_tokens=MAX_GENERATED_TOKENS,
+        top_p=0.8,
+        top_k=20,
+        min_p=0.0,
     )
 
     user_prompts = dataset["user_prompt"]
     system_prompts = dataset["system_prompt"]
-    chat_prompts = [
+    prompts = [
         [
             {"role": "system", "content": sp},
             {"role": "user", "content": up},
@@ -132,22 +136,31 @@ def main():
         for sp, up in zip(system_prompts, user_prompts)
     ]
 
-    tokenizer = AutoTokenizer.from_pretrained(args.model)
-    prompts = tokenizer.apply_chat_template(
-        chat_prompts, tokenize=False, add_generation_prompt=True
-    )
+    print(f"Total number of prompts: {len(prompts)}")
 
-    print(f"Generating responses for {dataset.num_rows} prompts...\n")
+    tqdm_flag = True if args.n_rows is not None else False
+    if args.model != "mistralai/Mistral-Small-3.2-24B-Instruct-2506":
+        tokenizer = AutoTokenizer.from_pretrained(args.model)
+        prompts = tokenizer.apply_chat_template(
+            prompts, tokenize=False, add_generation_prompt=True, enable_thinking=False
+        )
+
+        outputs = llm.generate(
+            prompts,
+            sampling_params=sampling_params,
+            use_tqdm=tqdm_flag,
+        )
+    else:
+        # Installed autotokenizer version does not support mistral small, use chat template
+        # without tokenization and generate with chat method instead of generate method
+        outputs = llm.chat(
+            prompts,
+            sampling_params=sampling_params,
+            use_tqdm=tqdm_flag,
+        )
 
     default_response = get_default_response(task)
     results = {key: [] for key in default_response.keys()}
-
-    # Single batched forward pass
-    outputs = llm.generate(
-        prompts,
-        sampling_params=sampling_params,
-        use_tqdm=True if args.n_rows is not None else False,
-    )
 
     # Process each output in the batch
     for out in outputs:

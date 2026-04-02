@@ -90,30 +90,30 @@ slurm_params = {
     },
 }
 
-seeds = [1, 10, 42, 50, 100]
+seeds = [1]  # , 10, 42, 50, 100]
 models = [  # 3 model families, big vs small model (medium for mistral)
     # "Qwen/Qwen3-VL-8B-Instruct",  # Use with vllm script
     "Qwen/Qwen3-8B",
     "Qwen/Qwen3-32B",
-    # "meta-llama/Llama-3.1-8B-Instruct",
-    # "meta-llama/Llama-3.3-70B-Instruct",
-    # "mistralai/Mistral-7B-Instruct-v0.3",
-    # "mistralai/Mistral-Small-3.2-24B-Instruct-2506",  # Use with vllm script
+    "meta-llama/Llama-3.1-8B-Instruct",
+    "meta-llama/Llama-3.3-70B-Instruct",
+    "mistralai/Mistral-7B-Instruct-v0.3",
+    "mistralai/Mistral-Small-3.2-24B-Instruct-2506",  # Use with vllm script
 ]
 
 # number_of_demonstrations, type_of_demonstrations, use_instructions
 runs = [
     (0, 0, 1),  # Zero-shot, with instructions
-    (1, -1, 0),  # One-shot, negative, without instructions
-    (1, 1, 0),  # One-shot, positive, without instructions
-    (1, -1, 1),  # One-shot, negative, with instructions
-    (1, 1, 1),  # One-shot, positive, with instructions
-    (6, -1, 0),  # Six demos, negative, without instructions
-    (6, 0, 0),  # Six demos, negative, without instructions
-    (6, 1, 0),  # Six demos, negative, without instructions
-    (6, -1, 1),  # Six demos, negative, without instructions
-    (6, 0, 1),  # Six demos, negative, without instructions
-    (6, 1, 1),  # Six demos, negative, without instructions
+    # (1, -1, 0),  # One-shot, negative, without instructions
+    # (1, 1, 0),  # One-shot, positive, without instructions
+    # (1, -1, 1),  # One-shot, negative, with instructions
+    # (1, 1, 1),  # One-shot, positive, with instructions
+    # (6, -1, 0),  # Six demos, negative, without instructions
+    # (6, 0, 0),  # Six demos, negative, without instructions
+    # (6, 1, 0),  # Six demos, negative, without instructions
+    # (6, -1, 1),  # Six demos, negative, without instructions
+    # (6, 0, 1),  # Six demos, negative, without instructions
+    # (6, 1, 1),  # Six demos, negative, without instructions
 ]
 
 

@@ -8,7 +8,7 @@ PIPE_MAX_NEW_TOKENS = 250
 
 MAX_GENERATED_TOKENS = 64
 
-MODEL_TEMPERATURE = 0.3
+MODEL_TEMPERATURE = 0.7
 
 GT_COLS = [
     "The exercise description matched the selected theme (Yes/No)",
