@@ -3,6 +3,7 @@ import os
 import argparse
 
 from vllm import LLM, SamplingParams
+from transformers import AutoTokenizer
 from datasets import load_dataset, disable_caching
 import json
 import pandas as pd
@@ -131,14 +132,19 @@ def main():
         for sp, up in zip(system_prompts, user_prompts)
     ]
 
+    tokenizer = AutoTokenizer.from_pretrained(args.model)
+    prompts = tokenizer.apply_chat_template(
+        chat_prompts, tokenize=False, add_generation_prompt=True
+    )
+
     print(f"Generating responses for {dataset.num_rows} prompts...\n")
 
     default_response = get_default_response(task)
     results = {key: [] for key in default_response.keys()}
 
     # Single batched forward pass
-    outputs = llm.chat(
-        chat_prompts,
+    outputs = llm.generate(
+        prompts,
         sampling_params=sampling_params,
         use_tqdm=True if args.n_rows is not None else False,
     )
