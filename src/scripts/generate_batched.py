@@ -13,7 +13,7 @@ from utils.constants import (
     DEFAULT_DATA,
     DEFAULT_MODEL,
     PIPE_RETURN_FULL_TEXT,
-    PIPE_MAX_NEW_TOKENS,
+    MAX_GENERATED_TOKENS,
     MODEL_TEMPERATURE,
     BATCH_SIZE,
 )
@@ -57,8 +57,9 @@ def main():
     )
     parser.add_argument("-v", "--version", type=str, required=True)
 
-    args = parser.parse_args()
+    args, unknown = parser.parse_known_args()
 
+    print("Unknown arguments: " + str(unknown))
     # Output directory
     outdir = f"./outputs/{args.version}/{args.model}/{args.jobid}"
 
@@ -105,8 +106,11 @@ def main():
     params = {
         "model": args.model,
         "device_map": 0,  # Force GPU
-        "max_new_tokens": PIPE_MAX_NEW_TOKENS,
+        "max_new_tokens": MAX_GENERATED_TOKENS,
         "temperature": MODEL_TEMPERATURE,
+        "top_p": 0.80,
+        "top_k": 20,
+        "min_p": 0.00,
     }
     print(f"Model parameters: {params}")
 
@@ -121,37 +125,37 @@ def main():
     results = {key: [] for key in get_default_response(task).keys()}
     default_response = get_default_response(task)
 
-    batch_size = BATCH_SIZE
-    prompts = dataset["user_prompt"]
+    user_prompts = dataset["user_prompt"]
     system_prompts = dataset["system_prompt"]
-    for i in range(0, len(prompts), batch_size):
 
-        # Build batched conversation inputs
-        batch_prompts = zip(
-            system_prompts[i : i + batch_size], prompts[i : i + batch_size]
-        )
-
-        batch_inputs = [
-            [
-                {"role": "system", "content": sp},
-                {"role": "user", "content": up},
-            ]
-            for sp, up in batch_prompts
+    prompts = [
+        [
+            {"role": "system", "content": sp},
+            {"role": "user", "content": up},
         ]
+        for sp, up in zip(system_prompts, user_prompts)
+    ]
 
-        # Single batched forward pass
-        outputs = pipeline(
-            batch_inputs,
-            return_full_text=PIPE_RETURN_FULL_TEXT,
-        )
+    # Disable thinking mode
+    if "qwen3" in args.model.lower():
+        for prompt in prompts:
+            prompt.append(
+                {"role": "assistant", "content": "<think>\n\n</think>\n\n"},
+            )
 
-        # Process each output in the batch
-        for output in outputs:
-            text = output[0]["generated_text"]
-            parsed = parse_output(text)
+    outputs = pipeline(
+        prompts,
+        return_full_text=PIPE_RETURN_FULL_TEXT,
+        batch_size=BATCH_SIZE,
+    )
 
-            for key, value in default_response.items():
-                results[key].append(json.dumps(parsed.get(key, value)))
+    # Process each output in the batch
+    for output in outputs:
+        text = output[0]["generated_text"]
+        parsed = parse_output(text)
+
+        for key, value in default_response.items():
+            results[key].append(json.dumps(parsed.get(key, value)))
 
     # For debugging purposes
     print(results)

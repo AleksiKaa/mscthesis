@@ -145,9 +145,15 @@ def main():
 
         print("Using tokenization with chat template for generation...")
         tokenizer = AutoTokenizer.from_pretrained(args.model)
-        prompts = tokenizer.apply_chat_template(
-            prompts, tokenize=False, add_generation_prompt=True, enable_thinking=False
-        )
+        prompts = [
+            tokenizer.apply_chat_template(
+                prompt,
+                tokenize=False,
+                add_generation_prompt=True,
+                enable_thinking=False,
+            )
+            for prompt in prompts
+        ]
 
         outputs = llm.generate(
             prompts,
