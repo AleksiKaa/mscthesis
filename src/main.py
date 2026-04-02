@@ -42,7 +42,7 @@ slurm_params = {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "32g",
-        "max_number_of_sequences": 20,  # OK
+        "max_number_of_sequences": 16,  # OK
     },
     "Qwen/Qwen3-32B": {
         "time": "03:00:00",
@@ -54,7 +54,7 @@ slurm_params = {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "32g",
-        "max_number_of_sequences": 20,  # OK
+        "max_number_of_sequences": 16,  # OK
     },
     "meta-llama/Llama-3.3-70B-Instruct": {
         "time": "03:00:00",
@@ -67,22 +67,22 @@ slurm_params = {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "32g",
-        "max_number_of_sequences": 24,  # OK
+        "max_number_of_sequences": 16,  # OK
     },
     "mistralai/Mistral-Small-3.2-24B-Instruct-2506": {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "80g",
-        "max_number_of_sequences": 24,  # OK
+        "max_number_of_sequences": 16,  # OK
     },
 }
 
 seeds = [1, 10, 42, 50, 100]
-models = [  # 3 model families, big vs small model (medium for mistral)
+models = [  # 3 model families, big and small model
     "Qwen/Qwen3-8B",
     "Qwen/Qwen3-32B",
     "meta-llama/Llama-3.1-8B-Instruct",
-    "meta-llama/Llama-3.3-70B-Instruct",  # OOM
+    "meta-llama/Llama-3.3-70B-Instruct",
     "mistralai/Mistral-7B-Instruct-v0.3",
     "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
 ]
