@@ -11,6 +11,6 @@ echo "Modules loaded"
 echo "pycache disabled"
 export PYTHONDONTWRITEBYTECODE=1
 
-python -u src/scripts/generate_batched.py $SLURM_JOB_ID "$@"
+python -u src/scripts/generate_vllm.py $SLURM_JOB_ID "$@"
 
 echo "JOB END"
