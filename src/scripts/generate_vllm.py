@@ -57,6 +57,8 @@ def main():
         required=True,
     )
     parser.add_argument("-v", "--version", type=str, required=True)
+    parser.add_argument("--max_number_of_sequences", type=int, default=BATCH_SIZE)
+    parser.add_argument("--gpu_memory_utilization", type=float, default=0.9)
 
     args = parser.parse_args()
 
@@ -105,12 +107,12 @@ def main():
     print("Initializing model...")
 
     # Initialize the model
-    mode = "auto"
+    mode = "mistral" if "mistral-small" in args.model.lower() else "auto"
     llm = LLM(
         model=args.model,
-        gpu_memory_utilization=0.9,
+        gpu_memory_utilization=args.gpu_memory_utilization,
         max_model_len=4096,  # Max length of prompt + output
-        max_num_seqs=BATCH_SIZE,  # Max number of sequences in a batch
+        max_num_seqs=args.max_number_of_sequences,
         enforce_eager=True,  # Disable cuda graph for lower VRAM consumption
         tokenizer_mode=mode,
         config_format=mode,
@@ -139,7 +141,9 @@ def main():
     print(f"Total number of prompts: {len(prompts)}")
 
     tqdm_flag = True if args.n_rows is not None else False
-    if args.model != "mistralai/Mistral-Small-3.2-24B-Instruct-2506":
+    if "mistral-small" not in args.model.lower():
+
+        print("Using tokenization with chat template for generation...")
         tokenizer = AutoTokenizer.from_pretrained(args.model)
         prompts = tokenizer.apply_chat_template(
             prompts, tokenize=False, add_generation_prompt=True, enable_thinking=False
@@ -153,6 +157,9 @@ def main():
     else:
         # Installed autotokenizer version does not support mistral small, use chat template
         # without tokenization and generate with chat method instead of generate method
+        print(
+            "Using chat template without tokenization for generation with chat method..."
+        )
         outputs = llm.chat(
             prompts,
             sampling_params=sampling_params,

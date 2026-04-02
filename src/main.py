@@ -38,87 +38,81 @@ sys.path.append("./src/")  # Add module directory to path
 
 # One set of resources for each model, reserve circa 10GB VRAM for KV cache
 slurm_params = {
-    "Qwen/Qwen3-VL-8B-Instruct": {
-        "time": "02:00:00",
-        "memory": "32GB",
-        "vram": "32g",
-    },
     "Qwen/Qwen3-8B": {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "32g",
+        "max_number_of_sequences": 20,  # OK
     },
     "Qwen/Qwen3-32B": {
         "time": "03:00:00",
         "memory": "32GB",
         "vram": "80g",
-    },
-    "Qwen/Qwen3-235B-A22B": {
-        "time": "03:00:00",
-        "memory": "32GB",
-        "vram": "140g",
+        "max_number_of_sequences": 8,  # OK
     },
     "meta-llama/Llama-3.1-8B-Instruct": {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "32g",
+        "max_number_of_sequences": 20,  # OK
     },
     "meta-llama/Llama-3.3-70B-Instruct": {
         "time": "03:00:00",
         "memory": "32GB",
         "vram": "140g",
-    },
-    "meta-llama/Llama-4-Scout-17B-16E-Instruct": {
-        "time": "03:00:00",
-        "memory": "32GB",
-        "vram": "140g",
+        "max_number_of_sequences": 1,
+        "gpu_memory_utilization": 0.98,  # OK
     },
     "mistralai/Mistral-7B-Instruct-v0.3": {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "32g",
+        "max_number_of_sequences": 24,  # OK
     },
     "mistralai/Mistral-Small-3.2-24B-Instruct-2506": {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "80g",
-    },
-    "mistralai/Mistral-Large-3-675B-Instruct-2512": {
-        "time": "03:00:00",
-        "memory": "32GB",
-        "vram": "140g",
+        "max_number_of_sequences": 24,  # OK
     },
 }
 
-seeds = [1]  # , 10, 42, 50, 100]
+seeds = [1, 10, 42, 50, 100]
 models = [  # 3 model families, big vs small model (medium for mistral)
-    # "Qwen/Qwen3-VL-8B-Instruct",  # Use with vllm script
     "Qwen/Qwen3-8B",
     "Qwen/Qwen3-32B",
     "meta-llama/Llama-3.1-8B-Instruct",
-    "meta-llama/Llama-3.3-70B-Instruct",
+    "meta-llama/Llama-3.3-70B-Instruct",  # OOM
     "mistralai/Mistral-7B-Instruct-v0.3",
-    "mistralai/Mistral-Small-3.2-24B-Instruct-2506",  # Use with vllm script
+    "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
 ]
 
 # number_of_demonstrations, type_of_demonstrations, use_instructions
 runs = [
     (0, 0, 1),  # Zero-shot, with instructions
-    # (1, -1, 0),  # One-shot, negative, without instructions
-    # (1, 1, 0),  # One-shot, positive, without instructions
-    # (1, -1, 1),  # One-shot, negative, with instructions
-    # (1, 1, 1),  # One-shot, positive, with instructions
-    # (6, -1, 0),  # Six demos, negative, without instructions
-    # (6, 0, 0),  # Six demos, negative, without instructions
-    # (6, 1, 0),  # Six demos, negative, without instructions
-    # (6, -1, 1),  # Six demos, negative, without instructions
-    # (6, 0, 1),  # Six demos, negative, without instructions
-    # (6, 1, 1),  # Six demos, negative, without instructions
+    (1, -1, 0),  # One-shot, negative, without instructions
+    (1, 1, 0),  # One-shot, positive, without instructions
+    (1, -1, 1),  # One-shot, negative, with instructions
+    (1, 1, 1),  # One-shot, positive, with instructions
+    (6, -1, 0),  # Six demos, negative, without instructions
+    (6, 0, 0),  # Six demos, negative, without instructions
+    (6, 1, 0),  # Six demos, negative, without instructions
+    (6, -1, 1),  # Six demos, negative, without instructions
+    (6, 0, 1),  # Six demos, negative, without instructions
+    (6, 1, 1),  # Six demos, negative, without instructions
 ]
 
 
 def construct_python_params(
-    model, seed, n_demos, use_instruction, type_of_demo, version, debug
+    model,
+    seed,
+    n_demos,
+    use_instruction,
+    type_of_demo,
+    version,
+    debug,
+    num_seqs,
+    gpu_memory_utilization,
 ):
     python_params = (
         f"--model {model} "
@@ -127,6 +121,8 @@ def construct_python_params(
         + f"--use_instructions {use_instruction} "
         + f"--type_of_demonstrations {type_of_demo} "
         + f"--version {version} "
+        + f"--max_number_of_sequences {num_seqs} "
+        + f"--gpu_memory_utilization {gpu_memory_utilization} "
         + "--type detect"
     )
 
@@ -159,7 +155,7 @@ def construct_slurm_params(model, version, debug):
             case "vram":
                 flag = "v"
             case _:
-                raise ValueError("Resource not known!")
+                continue
 
         slurm_args.append("-" + flag)
         slurm_args.append(amount)
@@ -187,14 +183,19 @@ def main():
             if slurm_args is None:
                 return
 
+            model = config["model"]
+            params = slurm_params.get(model, {})
+
             python_params = construct_python_params(
-                config["model"],
+                model,
                 config["seed"],
                 config["number_of_demonstrations"],
                 config["use_instructions"],
                 config["type_of_demonstrations"],
                 config.get("version", args.version),
                 args.debug,
+                params.get("max_number_of_sequences", "8"),
+                params.get("gpu_memory_utilization", 0.9),
             )
             print(f"Args passed to python: {python_params}")
             subprocess.call(slurm_args + ["-p", python_params])
@@ -216,6 +217,8 @@ def main():
                     type_of_demo,
                     args.version,
                     args.debug,
+                    slurm_params.get(model, {}).get("max_number_of_sequences", "8"),
+                    slurm_params.get(model, {}).get("gpu_memory_utilization", 0.9),
                 )
 
                 print(f"Called subprocess with args: {slurm_args}")
