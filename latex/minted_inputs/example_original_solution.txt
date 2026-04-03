@@ -1,8 +1,6 @@
 import 'dart:io';
 main() {
-  print('What is your favorite ingredient' +
-    ' in Lingonberry sauce?');
-  var ingredient = stdin.readLineSync();
-  print('Your favorite ingredient in Lingonberry sauce' +
-    ' is $ingredient!');
+    print('What is your favorite ingredient in Lingonberry sauce?');
+    var ingredient = stdin.readLineSync();
+    print('Your favorite ingredient in Lingonberry sauce is $ingredient!');
 }

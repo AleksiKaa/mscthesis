@@ -1,0 +1,8 @@
+<system>
+Use the demos below as examples on how to answer the question
+<DEMOS_PLACEHOLDER>
+<SYSTEM_PLACEHOLDER>
+<end_of_system>
+<user>
+<QUESTION_PLACEHOLDER>
+<end_of_user>
