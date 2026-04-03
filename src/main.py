@@ -42,7 +42,7 @@ slurm_params = {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "32g",
-        "batch_size": 1,
+        "batch_size": 2,
     },
     "Qwen/Qwen3-32B": {
         "time": "03:00:00",
@@ -82,7 +82,7 @@ models = [  # 3 model families, big and small model
     "meta-llama/Llama-3.1-8B-Instruct",
     "meta-llama/Llama-3.3-70B-Instruct",
     "mistralai/Mistral-7B-Instruct-v0.3",
-    # "mistralai/Mistral-Small-3.2-24B-Instruct-2506",  # Use with vllm script
+    "mistralai/Mistral-Small-3.2-24B-Instruct-2506",  # Uses vllm script
 ]
 
 # number_of_demonstrations, type_of_demonstrations, use_instructions
@@ -143,13 +143,18 @@ def construct_slurm_params(model, version, debug):
     # Construct slurm params
 
     submit_script = "./src/submit.sh"
+    generate_script = (
+        "generate_batched.py"
+        if model != "mistralai/Mistral-Small-3.2-24B-Instruct-2506"
+        else "generate_vllm.py"
+    )
     model_args = slurm_params.get(model)
 
     if model_args is None:
         print(f"Slurm arguments not found for model {model}! Skipping...")
         return None
 
-    slurm_args = [submit_script, "-m", model, "-w", version]
+    slurm_args = [submit_script, "-m", model, "-w", version, "-s", generate_script]
     for resource, amount in model_args.items():
         match resource:
             case "time":

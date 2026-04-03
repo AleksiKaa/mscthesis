@@ -12,6 +12,7 @@ NOTE=""
 PYTHONARGS=""
 MODEL="Qwen/Qwen2.5-14B-Instruct"
 VERSION="DEFAULT"
+SCRIPTFILE="generate_batched.py"
 
 usage() {
     echo "Usage: $0 [-t time] [-v vram] [-m model]"
@@ -19,7 +20,7 @@ usage() {
     exit 1
 }
 
-while getopts "d:h:m:n:p:r:t:v:w:" opt; do
+while getopts "d:h:m:n:p:r:t:v:w:s:" opt; do
     case $opt in
         d) DEBUG=$OPTARG ;;
         h) usage ;;
@@ -30,6 +31,7 @@ while getopts "d:h:m:n:p:r:t:v:w:" opt; do
         t) TIME=$OPTARG ;;
         v) VRAM=$OPTARG ;;
         w) VERSION=$OPTARG ;;
+        s) SCRIPTFILE=$OPTARG ;;
         *) usage ;; 
     esac
 done
@@ -65,6 +67,7 @@ sbatch \
     --output="$OUTDIR" \
     --error="$ERRDIR" \
     $BATCH_JOB \
+    -s $SCRIPTFILE \
     $PYTHONARGS \
     -m $MODEL \
     -v $VERSION
