@@ -42,38 +42,33 @@ slurm_params = {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "32g",
-        "max_number_of_sequences": 16,  # OK
+        "batch_size": 1,
     },
     "Qwen/Qwen3-32B": {
         "time": "03:00:00",
         "memory": "32GB",
         "vram": "80g",
-        "max_number_of_sequences": 8,  # OK
     },
     "meta-llama/Llama-3.1-8B-Instruct": {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "32g",
-        "max_number_of_sequences": 16,  # OK
     },
     "meta-llama/Llama-3.3-70B-Instruct": {
         "time": "03:00:00",
         "memory": "32GB",
         "vram": "140g",
-        "max_number_of_sequences": 1,
-        "gpu_memory_utilization": 0.98,  # OK
     },
     "mistralai/Mistral-7B-Instruct-v0.3": {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "32g",
-        "max_number_of_sequences": 16,  # OK
     },
     "mistralai/Mistral-Small-3.2-24B-Instruct-2506": {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "80g",
-        "max_number_of_sequences": 16,  # OK
+        "max_number_of_sequences": 16,
     },
 }
 
@@ -84,7 +79,7 @@ models = [  # 3 model families, big and small model
     "meta-llama/Llama-3.1-8B-Instruct",
     "meta-llama/Llama-3.3-70B-Instruct",
     "mistralai/Mistral-7B-Instruct-v0.3",
-    "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+    # "mistralai/Mistral-Small-3.2-24B-Instruct-2506",  # Use with vllm script
 ]
 
 # number_of_demonstrations, type_of_demonstrations, use_instructions
@@ -113,6 +108,7 @@ def construct_python_params(
     debug,
     num_seqs,
     gpu_memory_utilization,
+    batch_size,
 ):
     python_params = (
         f"--model {model} "
@@ -121,12 +117,20 @@ def construct_python_params(
         + f"--use_instructions {use_instruction} "
         + f"--type_of_demonstrations {type_of_demo} "
         + f"--version {version} "
-        + f"--max_number_of_sequences {num_seqs} "
-        + f"--gpu_memory_utilization {gpu_memory_utilization} "
-        + "--type detect"
     )
 
-    if debug is not None and debug == "debug":
+    if batch_size is not None:
+        python_params += f"--batch_size {batch_size} "
+
+    if num_seqs is not None:
+        python_params += f"--max_number_of_sequences {num_seqs} "
+
+    if gpu_memory_utilization is not None:
+        python_params += f"--gpu_memory_utilization {gpu_memory_utilization} "
+
+    python_params += "--type detect"
+
+    if debug:
         python_params += " --n_rows 1"
 
     return python_params
@@ -147,9 +151,7 @@ def construct_slurm_params(model, version, debug):
         match resource:
             case "time":
                 flag = "t"
-                amount = (
-                    "00:30:00" if debug is not None and debug == "debug" else amount
-                )
+                amount = "00:30:00" if debug else amount
             case "memory":
                 flag = "r"
             case "vram":
@@ -166,7 +168,9 @@ def construct_slurm_params(model, version, debug):
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("debug")
+    parser.add_argument(
+        "--debug", action="store_true", help="Run in debug mode with reduced resources"
+    )
     parser.add_argument("-c", "--config_file", type=str, default=None)
     parser.add_argument("-v", "--version", type=str, default="default")
 
@@ -194,8 +198,9 @@ def main():
                 config["type_of_demonstrations"],
                 config.get("version", args.version),
                 args.debug,
-                params.get("max_number_of_sequences", "8"),
-                params.get("gpu_memory_utilization", 0.9),
+                params.get("max_number_of_sequences"),
+                params.get("gpu_memory_utilization"),
+                params.get("batch_size"),
             )
             print(f"Args passed to python: {python_params}")
             subprocess.call(slurm_args + ["-p", python_params])
@@ -205,6 +210,8 @@ def main():
     for model in models:
 
         slurm_args = construct_slurm_params(model, args.version, args.debug)
+
+        params = slurm_params.get(model, {})
 
         # Construct python params
         for seed in seeds:
@@ -217,8 +224,9 @@ def main():
                     type_of_demo,
                     args.version,
                     args.debug,
-                    slurm_params.get(model, {}).get("max_number_of_sequences", "8"),
-                    slurm_params.get(model, {}).get("gpu_memory_utilization", 0.9),
+                    params.get("max_number_of_sequences"),
+                    params.get("gpu_memory_utilization"),
+                    params.get("batch_size"),
                 )
 
                 print(f"Called subprocess with args: {slurm_args}")
