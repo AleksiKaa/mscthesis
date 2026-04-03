@@ -53,16 +53,19 @@ slurm_params = {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "32g",
+        "batch_size": 2,
     },
     "meta-llama/Llama-3.3-70B-Instruct": {
         "time": "03:00:00",
         "memory": "32GB",
         "vram": "140g",
+        "batch_size": 1,
     },
     "mistralai/Mistral-7B-Instruct-v0.3": {
         "time": "02:00:00",
         "memory": "32GB",
         "vram": "32g",
+        "batch_size": 2,
     },
     "mistralai/Mistral-Small-3.2-24B-Instruct-2506": {
         "time": "02:00:00",
