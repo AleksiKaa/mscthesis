@@ -56,6 +56,7 @@ def main():
         required=True,
     )
     parser.add_argument("-v", "--version", type=str, required=True)
+    parser.add_argument("--batch_size", type=int, default=BATCH_SIZE)
 
     args, unknown = parser.parse_known_args()
 
@@ -146,7 +147,7 @@ def main():
     outputs = pipeline(
         prompts,
         return_full_text=PIPE_RETURN_FULL_TEXT,
-        batch_size=BATCH_SIZE,
+        batch_size=args.batch_size,
     )
 
     # Process each output in the batch
