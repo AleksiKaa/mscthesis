@@ -1,5 +1,4 @@
-Use the demonstrations below as examples on how to answer
-the question.
+Use the demonstrations below as examples on how to answer the question.
 
 $DEMONSTRATIONS$
 

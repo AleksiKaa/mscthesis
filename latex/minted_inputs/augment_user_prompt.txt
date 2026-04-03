@@ -10,5 +10,4 @@ $TEXT$
 --- ORIGINAL EXAMPLE SOLUTION ---
 $CODE$
 
-Return the modified exercise as JSON following the required
-schema.
+Return the modified exercise as JSON following the required schema.
