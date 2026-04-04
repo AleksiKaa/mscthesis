@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# This script checks the status of SLURM jobs for different models by looking
-# for error logs and counting the number of started, finished, and failed jobs.
+# This script checks the status of SLURM jobs for a specific batch of jobs for different models 
+# by looking for error logs and counting the number of started, finished, and failed jobs.
+# Expects the first argument to be the batch name (e.g., "v1", "default", "test", etc.)
 
 models=(
     "Qwen/Qwen3-8B"
