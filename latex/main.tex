@@ -148,6 +148,7 @@ backgroundcolor=\color{white},xleftmargin=0.5cm,frame=single}
 \definecolor{LightGray}{gray}{0.9}
 \usepackage{minted}
 \setminted{
+breaklines,
 frame=single,
 framesep=2mm,
 baselinestretch=1.2,
@@ -162,6 +163,7 @@ linenos=false
 \usepackage{makecell} % better header formatting
 \usepackage{multirow}
 \usepackage{multicol}
+\usepackage{rotating}
 
 
 %% For tables that span multiple pages; used to split a paraphrasing example in
@@ -911,7 +913,7 @@ A total of 11 rows were removed due to JSON parsing errors, resulting in a total
 
 \clearpage
 
-\subsection{Description of experiment}
+\subsection{Description of experiment} \label{sec:desc}
 
 As stated in section \ref{sec:design}, the aim of this study is to clarify whether an LLM could be used as an AI-judge to detect faithfulness hallucinations in LLM generated programming exercises. The model's answers to the questions listed in \ref{sec:design} directly correspond to the labels in \ref{tb:labels_interpretation}, where the interpretation of the labels is stated. If any of the labels are hallucinatory, the whole exercise is deemed to contain faithfulness hallucinations.
 
@@ -936,44 +938,46 @@ In addition to simply measuring the performance of a model in detecting faithful
 \begin{itemize}   
     \item \textbf{Model family:} Model families have different architectures that affect their performance in ways that are difficult to tract analytically TODO: cite. Additionally, the performance of a model can be task-specific, varying even intra-task depending on e.g. input data TODO: Cite. For this reason, an empirical experiment comparing the model families' performance in this specific task is justified. TODO: Lisää humppaa
 
-    For this experiment, the use of models from the Qwen, Llama, and Mistral families was decided.
+    For this experiment, the use of models from the Qwen3, Llama3, and Mistral families was decided.
     
-    \item \textbf{Model size:} It is well-known that model performance scales with respect to model size. Generally, for better results, it is advisable to use a large model. However, the inference of large models is resource-heavy, thus it is of interest to determine whether a smaller model could match or nearly achieve the performance of a large model in detecting faithfulness hallucinations. Furthermore, since this experiment utilizes ICL, which is an emergent ability of LLMs \cite{wei2022emergentabilitieslargelanguage}, it is of interest to discover how ICL affects hallucination detection performance both in small and large models. In this experiment, small models have around 7 billion parameters, and large models have around 70 billion parameters. It was decided, that for the model families used, the models are:
+    \item \textbf{Model size:} It is well-known that model performance scales with respect to model size. Generally, for better results, it is advisable to use a large model. However, the inference of large models is resource-heavy, thus it is of interest to determine whether a smaller model could match or nearly achieve the performance of a large model in detecting faithfulness hallucinations. Furthermore, since this experiment utilizes ICL, which is an emergent ability of LLMs \cite{wei2022emergentabilitieslargelanguage}, it is of interest to discover how ICL affects hallucination detection performance both in small and large models. In this experiment, small models under 10 billion parameters, and larger models have many times more. It was decided, that for the model families used, the models are:
     \begin{itemize}
         \item Llama-3.1-8B-Instruct \cite{grattafiori2024llama3herdmodels}
         \item Llama-3.3-70B-Instruct \cite{grattafiori2024llama3herdmodels}
         \item Mistral-7B-Instruct-v0.3 \cite{jiang2023mistral7b}
-        \item Mixtral-8x7B-Instruct-v0.1 \cite{jiang2024mixtralexperts}
-        \item Qwen2.5-7B-Instruct \cite{yang2024qwen2technicalreport}
-        \item Qwen2.5-72B-Instruct \cite{yang2024qwen2technicalreport}
+        \item Mistral-Small-3.2-24B-Instruct-2506 \cite{Mistral3webpage}
+        %\item Mixtral-8x7B-Instruct-v0.1??? \cite{jiang2024mixtralexperts}
+        %\item Qwen2.5-7B-Instruct??? \cite{yang2024qwen2technicalreport}
+        %\item Qwen3-VL-8B-Instruct \cite{yang2025qwen3technicalreport}
+        \item Qwen3-8B \cite{yang2025qwen3technicalreport}
+        \item Qwen3-32B \cite{yang2025qwen3technicalreport}
+        %\item Qwen2.5-72B-Instruct \cite{yang2024qwen2technicalreport}
     \end{itemize}
-    While Mixtral-8x7B-Instruct-v0.1 is technically not from the same model family as Mistral-7B-Instruct-v0.3, it was selected as its larger counterpart, since it consists of 8 Mistral-7B-Instruct-v0.3 models, creating a close enough match. Note that all the citations to the technical reports are for the base models, not the patched versions.
+    Although Mistral-Small-3.2-24B-Instruct-2506 is technically not from the same model family as Mistral-7B-Instruct-v0.3, it was selected as its larger counterpart, since it supersedes the model, creating a close enough match. Note that all citations to the model's technical reports are for the base models, not the patched versions, and that the technical report of Mistral-Small-3.2-24B-Instruct-2506 has not yet been published. The citation directs to the official webpage of the model instead.
     
-    \item \textbf{Effect of ICL:} This experiment studies the effect of ICL in detecting faithfulness hallucinations in two ways: the effect of including demonstrations in the prompts, and the differences of implicit and explicit in-context learning. 
+    \item \textbf{Effect of ICL:} This experiment studies the effect of ICL in detecting faithfulness hallucinations in two ways: the effect of including demonstrations in the prompts, and the differences of implicit and explicit in-context learning. In this context, implicit in-context learning signifies the exclusion of task instructions in the prompt, requiring the model to implicitly draw the task distribution from the presented demonstrations, whereas in explicit ICL, task instructions are directly presented to the model. The effect of the number of demonstrations in the prompts is also studied. \textcite{chen-etal-2023-many} suggest, that random 1-shot prompting performs nearly as well in arithmetic tasks as prompts with 7-8 demonstrations. The aim of this study is to determine, whether these findings can be extended to multi-label classification tasks, by first drawing a baseline with 0-shot prompting and then comparing the performance of random 1-shot prompting and 6-shot prompting to the baseline.
     
+    \item \textbf{Type of demonstrations in ICL:} \textcite{chen-etal-2023-many} also compare the effect of negative and positive demonstrations in the prompts. In their study, demonstrations are labeled 'positive' or 'negative' for each query based on whether the demonstration leads the model to the correct answer. In this experiment, however, non-hallucinatory examples are classified as positive demonstrations and hallucinatory examples as negative demonstrations. The results of \textcite{wei2023largerlanguagemodelsincontext} suggest, that larger models are better at 'learning' the task distribution from the in-context demonstrations, while smaller models especially tend to underfit to demonstration examples, showing significantly lower ICL capabilities. Measuring the performance of the model with specific demonstration setups may give insight on under which circumstances the model performs the best. The performance of the models shown positive, negative, and mixed (only for 6-shot prompting) is measured.
     
-    
-    In this context, by implicit in-context learning, the exclusion of task instructions in the prompt is signified, requiring the model to implicitly draw the task distribution from the presented demonstrations, whereas in the explicit context, task instructions are directly presented to the model.
-
-    
-    \item \textbf{Type of demonstrations in ICL:}
-    \item \textbf{Consistency:} Introducing randomness into the generation process enables the measure of model robustness to noise and decreases the effect of outliers. 
+    \item \textbf{Consistency:} Introducing randomness into the generation process enables the measure of model robustness to noise and decreases the effect of outliers. For this reason, each suite is executed 5 times on different seeds. The seed affects the random state of the dataset sampling, not the model itself.
 \end{itemize}
-
-\begin{itemize}
-    \item explain motivation for studied points
-    \item several runs (effect of random seed (demonstration selection)) = 5 runs
-    \item model family (qwen vs llama vs mistral) = 3 runs
-    \item model size (large vs small) = 2 runs
-    \item presence of instructions and number of demonstrations (zero shot with instructions, 1 shot with instructions, 1 shot no instructions, 6 shot with instructions, 6 shot no instructions) = 5 runs
-    \item type of demonstrations (only positive, mixed, only negative) -- mixed only for 6 shot = 3 runs
-\end{itemize}
-
-
 
 \subsubsection{Prompt structure}
 
-TODO: READ \cite{alazraki-etal-2025-need, cobbina2025demospromptpositionalbias, chen-etal-2023-many, chen-etal-2023-relation}
+As explained in \ref{sec:icl}, LLMs are sensitive to the settings and parameters of ICL, where minor changes in the ICL configuration may cause major changes in output quality. \textcite{cobbina2025demospromptpositionalbias} show that the position of the demonstrations provided in-context greatly affect the accuracy of the model. The position of demonstrations that yielded the best results varied between tasks. They found that with most models, including 3 of the models considered in this thesis (llama-3-8B, llama-3-70B, Mistral-7B), and the predecessors of the used Qwen3 family, Qwen-7B and Qwen-72B, placing the demonstrations at the start of the system prompt yielded the best results across all classification datasets. For this reason, the use of the prompt structure, where the demonstrations are shown in the beginning of the system prompt, shown in figure \ref{fig:prompt_structure} is selected for the experiment.
+
+The prompt structure fig 11 liibalaaba
+
+Tänne tavaraa mallien tavoista käyttää system promptia
+
+\begin{figure*}
+    \centering
+    \begin{subfigure}{0.6\textwidth}
+        \inputminted[fontsize=\small]{text}{./minted_inputs/ssp_prompt_structure.txt}
+    \end{subfigure}
+    \caption{ICL prompt structure yielding the best results in \cite{cobbina2025demospromptpositionalbias}}
+    \label{fig:prompt_structure}
+\end{figure*}
 
 \cite{chen-etal-2023-many} found, that one random demo has only slightly lower accuracy than 7-8 demos. Including one positive demonstration significantly outperforms few-shot prompting. "For an in-depth study of these questions, we categorize all the demos into positive/negative demos for each input query in the one-demo prompting setting, i.e., “positive Demos” enabling the LLMs to produce a correct answer while “negative Demos” results in wrong answers." => Too much work, one random?
 
@@ -986,17 +990,7 @@ From \cite{cobbina2025demospromptpositionalbias}:
 \end{itemize}
 
 The study suggests that placing demonstrations at the beginning of the system prompt yields the largest accuracy gain for classification tasks. ssp type prompt stucture in ChatModel wrapper:
-\begin{minted}[fontsize=\small]{text}
-<system>
-Use the demos below as examples on how
-to answer the question
-<DEMOS_PLACEHOLDER>
-<SYSTEM_PLACEHOLDER>
-<end_of_system>
-<user>
-<QUESTION_PLACEHOLDER>
-<end_of_user>
-\end{minted}
+
 
 Construct system prompt like above but fitting to this task and no ChatModel:
 
@@ -1029,6 +1023,31 @@ Construct system prompt like above but fitting to this task and no ChatModel:
 \end{figure}
 
 \subsubsection{Final experiment setup}
+
+Based on the parameters explained in section \ref{sec:desc} the suite visible in \ref{tb:suites} was constructed. This suite was executed once for each model and once for each random seed, resulting in $6 * 5 * 11 = 330$ passes of the dataset. 
+
+\begin{table}
+\centering
+\begin{tabularx}{0.9\textwidth}{c|c|c}
+    \toprule
+     number of demonstrations & type of demonstrations & use instructions \\
+    \midrule
+    0 & none & yes \\
+    1 & negative & no \\
+    1 & positive & no \\
+    1 & negative & yes \\
+    1 & positive & yes \\
+    6 & negative & no \\
+    6 & mixed & no \\
+    6 & positive & no \\
+    6 & negative & yes \\
+    6 & mixed & yes \\
+    6 & positive & yes \\
+    \bottomrule
+\end{tabularx}
+\caption{The final suite of run parameters}
+\label{tb:suites}
+\end{table}
 
 \clearpage
 

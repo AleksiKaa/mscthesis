@@ -1,9 +1,4 @@
-Write a program that asks the user for their favorite
-ingredient in Lingonberry sauce. After this, the program
-prints a message to the user 'Your favorite ingredient
-in Lingonberry sauce is ingredient!', where ingredient
-is the ingredient entered by the user. For example,
-with the input `sugar`, the program output is as follows:
+Write a program that asks the user for their favorite ingredient in Lingonberry sauce. After this, the program prints a message to the user 'Your favorite ingredient in Lingonberry sauce is ingredient!', where ingredient is the ingredient entered by the user. For example, with the input `sugar`, the program output is as follows:
 
 ```
 What is your favorite ingredient in Lingonberry sauce?
@@ -11,12 +6,9 @@ sugar
 Your favorite ingredient in Lingonberry sauce is sugar!
 ```
 
-Similarly, if the user enters the ingredient 
-`Lingonberries`, the program output is as follows:
+Similarly, if the user enters the ingredient `Lingonberries`, the program output is as follows:
 
 ```
 What is your favorite ingredient in Lingonberry sauce?
 Lingonberries
-Your favorite ingredient in Lingonberry sauce is 
-Lingonberries!
-``` 
+Your favorite ingredient in Lingonberry sauce is Lingonberries!

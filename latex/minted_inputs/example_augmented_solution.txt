@@ -1,14 +1,12 @@
 import 'dart:io';
 main() {
-  while (true) {
-    print('What is your favorite composition by Claudio' + 
-      ' Monteverdi?');
-    var composition = stdin.readLineSync();
-	  if (composition == 'quit') {
-	     print('Thank you for sharing your favorites!');
-	     break; 
+    while (true) {
+        print('What is your favorite composition by Claudio Monteverdi?');
+        var composition = stdin.readLineSync();
+        if (composition == 'quit') {
+            print('Thank you for sharing your favorites!');
+            break;
+        }
+        print('Your favorite composition by Claudio Monteverdi is $composition!');
     }
-    print('Your favorite composition by Claudio' + 
-      ' Monteverdi is $composition!');
-  }
 }
