@@ -67,7 +67,5 @@ sbatch \
     --output="$OUTDIR" \
     --error="$ERRDIR" \
     $BATCH_JOB \
-    -s $SCRIPTFILE \
-    $PYTHONARGS \
-    -m $MODEL \
-    -v $VERSION
+    $SCRIPTFILE \
+    "$PYTHONARGS"

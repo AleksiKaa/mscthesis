@@ -18,7 +18,7 @@ echo "Modules loaded"
 echo "pycache disabled"
 export PYTHONDONTWRITEBYTECODE=1
 
-echo "Running script: $SCRIPTFILE"
-python -u src/scripts/$SCRIPTFILE $SLURM_JOB_ID "$@"
+echo "Running script: $1 with args: $2"
+python -u src/scripts/$1 $SLURM_JOB_ID $2
 
 echo "JOB END"
