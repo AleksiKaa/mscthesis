@@ -164,6 +164,8 @@ linenos=false
 \usepackage{multirow}
 \usepackage{multicol}
 \usepackage{rotating}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 
 
 %% For tables that span multiple pages; used to split a paraphrasing example in
@@ -959,16 +961,12 @@ In addition to simply measuring the performance of a model in detecting faithful
     
     \item \textbf{Type of demonstrations in ICL:} \textcite{chen-etal-2023-many} also compare the effect of negative and positive demonstrations in the prompts. In their study, demonstrations are labeled 'positive' or 'negative' for each query based on whether the demonstration leads the model to the correct answer. In this experiment, however, non-hallucinatory examples are classified as positive demonstrations and hallucinatory examples as negative demonstrations. The results of \textcite{wei2023largerlanguagemodelsincontext} suggest, that larger models are better at 'learning' the task distribution from the in-context demonstrations, while smaller models especially tend to underfit to demonstration examples, showing significantly lower ICL capabilities. Measuring the performance of the model with specific demonstration setups may give insight on under which circumstances the model performs the best. The performance of the models shown positive, negative, and mixed (only for 6-shot prompting) is measured.
     
-    \item \textbf{Consistency:} Introducing randomness into the generation process enables the measure of model robustness to noise and decreases the effect of outliers. For this reason, each suite is executed 5 times on different seeds. The seed affects the random state of the dataset sampling, not the model itself.
+    \item \textbf{Consistency:} Introducing randomness into the generation process enables the measure of model robustness to noise and decreases the effect of outliers. For this reason, each suite is executed 5 times on different seeds. The seed affects the random state of the demonstration selection process, not the model itself.
 \end{itemize}
 
 \subsubsection{Prompt structure}
 
-As explained in \ref{sec:icl}, LLMs are sensitive to the settings and parameters of ICL, where minor changes in the ICL configuration may cause major changes in output quality. \textcite{cobbina2025demospromptpositionalbias} show that the position of the demonstrations provided in-context greatly affect the accuracy of the model. The position of demonstrations that yielded the best results varied between tasks. They found that with most models, including 3 of the models considered in this thesis (llama-3-8B, llama-3-70B, Mistral-7B), and the predecessors of the used Qwen3 family, Qwen-7B and Qwen-72B, placing the demonstrations at the start of the system prompt yielded the best results across all classification datasets. For this reason, the use of the prompt structure, where the demonstrations are shown in the beginning of the system prompt, shown in figure \ref{fig:prompt_structure} is selected for the experiment.
-
-The prompt structure fig 11 liibalaaba
-
-Tänne tavaraa mallien tavoista käyttää system promptia
+As explained in \ref{sec:icl}, LLMs are sensitive to the settings and parameters of ICL, where minor changes in the ICL configuration may cause major changes in output quality. \textcite{cobbina2025demospromptpositionalbias} show that the position of the demonstrations provided in-context greatly affects the accuracy of the model. The position of demonstrations that yielded the best results varied between tasks, and they found that with most models, including 3 of the models considered in this thesis (Llama-3-8B, Llama-3-70B, Mistral-7B), and the predecessors of the used Qwen3 family, Qwen-7B and Qwen-72B, placing the demonstrations at the start of the system prompt yielded the best results across all classification datasets. For this reason, the use of the prompt structure, where the demonstrations are shown in the beginning of the system prompt, shown in figure \ref{fig:prompt_structure} is selected for the experiment.
 
 \begin{figure*}
     \centering
@@ -979,20 +977,21 @@ Tänne tavaraa mallien tavoista käyttää system promptia
     \label{fig:prompt_structure}
 \end{figure*}
 
-\cite{chen-etal-2023-many} found, that one random demo has only slightly lower accuracy than 7-8 demos. Including one positive demonstration significantly outperforms few-shot prompting. "For an in-depth study of these questions, we categorize all the demos into positive/negative demos for each input query in the one-demo prompting setting, i.e., “positive Demos” enabling the LLMs to produce a correct answer while “negative Demos” results in wrong answers." => Too much work, one random?
+The prompts used for the detection task are shown in figure \ref{fig:detect_prompts}. They are used as the parts for building a structure matching the one in \ref{fig:prompt_structure}, and is built in the following way:
+\begin{enumerate}
+    \item Hyperparameters: $N \geq 0$, $use\_instructions \in \{0, 1\}$, \\ $type\_of\_demonstrations \in \{negative, mixed, positive\}$
+    \item Build demonstrations:
+        \begin{itemize}
+            \item Sample dataset for $N$ $type\_of\_demonstrations$ demonstrations.
+            \item Insert context in the demonstration template \ref{fig:demo_template}. Concatenate all demonstrations into a single string.
+        \end{itemize}
+    \item Inject demonstrations into \$DEMONSTRATIONS\$ in \ref{fig:detect_template}
+    \item If $use\_instruction = 1$, inject the system prompt \ref{fig:detect_system_prompt} into \$SYSTEMPROMPT\$ in \ref{fig:detect_template}, otherwise the tag is removed.
+\end{enumerate}
+However, in 0-shot runs, i.e., runs where $N = 0$, the procedure is skipped and only the system prompt \ref{fig:detect_system_prompt} is used. To avoid data leakage, for runs with $N > 0$, the rows that were used as demonstrations were removed from the dataset, so the total number of generated responses varies from 529 to 535 depending on $N$.
 
-From \cite{cobbina2025demospromptpositionalbias}:
-\begin{itemize}
-    \item Start of system prompt = ssp
-    \item End of system prompt = esp
-    \item Start of user prompt = sup
-    \item End of user prompt = eup
-\end{itemize}
+% MAYBE NOT RELEVANT AFTER ALL!!! Note that not all models support a multi-role chat model. For example, Mistral-7B only supports the roles 'user instruction' and 'assistant'. The model simulates the use of system prompts by prepending the inputted system prompt to the actual user instruction before tokenization, treating the system prompt as additional instructions. This achieves a similar result in
 
-The study suggests that placing demonstrations at the beginning of the system prompt yields the largest accuracy gain for classification tasks. ssp type prompt stucture in ChatModel wrapper:
-
-
-Construct system prompt like above but fitting to this task and no ChatModel:
 
 \begin{figure}
 \sbox0{\begin{subfigure}[b]{\dimexpr 0.5\textwidth-0.5\columnsep}% measuer height with caption
@@ -1010,7 +1009,7 @@ Construct system prompt like above but fitting to this task and no ChatModel:
 \begin{subfigure}{\linewidth}
     \inputminted{text}{./minted_inputs/detect_system_template.txt}
     \caption{System prompt template}
-    \label{fig:detect_user_prompt}
+    \label{fig:detect_template}
 \end{subfigure}\par
 \vfill% very important
 \begin{subfigure}[b]{\linewidth}
@@ -1020,17 +1019,20 @@ Construct system prompt like above but fitting to this task and no ChatModel:
 \end{subfigure}
 \end{minipage}
 \caption{Prompt templates used for detecting faithfulness hallucinations}
+\label{fig:detect_prompts}
 \end{figure}
 
 \subsubsection{Final experiment setup}
 
-Based on the parameters explained in section \ref{sec:desc} the suite visible in \ref{tb:suites} was constructed. This suite was executed once for each model and once for each random seed, resulting in $6 * 5 * 11 = 330$ passes of the dataset. 
+Based on the parameters explained in section \ref{sec:desc} the suite visible in table \ref{tb:suites} was constructed. This suite was executed once for each model and once for each random seed\footnote{Used seeds: 1, 10, 42, 50, 100}, resulting in $6 * 5 * 11 = 330$ passes of the dataset. 
+
+MODEL PARAMETERS: TEmperature etc
 
 \begin{table}
 \centering
-\begin{tabularx}{0.9\textwidth}{c|c|c}
+\begin{tabularx}{0.8\textwidth}{c|c|c}
     \toprule
-     number of demonstrations & type of demonstrations & use instructions \\
+     N Demonstrations & Type of Demonstrations & Use Instructions \\
     \midrule
     0 & none & yes \\
     1 & negative & no \\
@@ -1055,11 +1057,11 @@ Based on the parameters explained in section \ref{sec:desc} the suite visible in
 
 ERRORS:
 
-\begin{table}[]
+\begin{table}
     \centering
     \input{latex/tables/err_table.tex}
-    \caption{Caption}
-    \label{tab:placeholder}
+    \caption{Breakdown of errors in generated detection predictions}
+    \label{tab:error_stats}
 \end{table}
 
 
