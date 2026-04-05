@@ -192,7 +192,7 @@ def parse_output(text):
 
 def sample_dataset(dataset, seed, num_random_demos, type_of_demonstrations):
     if num_random_demos is None or num_random_demos <= 0:
-        return None
+        return None, None
 
     labels_pos = ["yes", "yes", "no"]
     labels_neg = ["no", "no", "yes"]
