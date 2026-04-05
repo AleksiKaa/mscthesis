@@ -1,0 +1,54 @@
+\begin{tabular}{llllrr}
+\toprule
+ &  &  &  & num\_parse\_errors & num\_gen\_errors \\
+model & number_of_demonstrations & type_of_demonstrations & use_instructions &  &  \\
+\midrule
+\multirow[t]{5}{*}{Llama-3.1-8B-Instruct} & \multirow[t]{2}{*}{1} & negative & no & 12 & 0 \\
+\cline{3-6}
+ &  & positive & no & 542 & 0 \\
+\cline{2-6} \cline{3-6}
+ & \multirow[t]{3}{*}{6} & mixed & no & 46 & 0 \\
+\cline{3-6}
+ &  & negative & no & 3 & 0 \\
+\cline{3-6}
+ &  & positive & no & 220 & 0 \\
+\cline{1-6} \cline{2-6} \cline{3-6}
+\multirow[t]{3}{*}{Llama-3.3-70B-Instruct} & \multirow[t]{2}{*}{1} & negative & no & 4 & 0 \\
+\cline{3-6}
+ &  & positive & no & 9 & 0 \\
+\cline{2-6} \cline{3-6}
+ & 6 & positive & no & 3 & 0 \\
+\cline{1-6} \cline{2-6} \cline{3-6}
+\multirow[t]{5}{*}{Mistral-7B-Instruct-v0.3} & \multirow[t]{2}{*}{1} & negative & no & 110 & 0 \\
+\cline{3-6}
+ &  & positive & no & 40 & 0 \\
+\cline{2-6} \cline{3-6}
+ & \multirow[t]{3}{*}{6} & mixed & no & 1 & 0 \\
+\cline{3-6}
+ &  & negative & no & 3 & 0 \\
+\cline{3-6}
+ &  & positive & no & 2 & 17 \\
+\cline{1-6} \cline{2-6} \cline{3-6}
+\multirow[t]{7}{*}{Mistral-Small-3.2-24B-Instruct-2506} & 0 & none & yes & 3 & 0 \\
+\cline{2-6} \cline{3-6}
+ & \multirow[t]{2}{*}{1} & negative & no & 16 & 0 \\
+\cline{3-6}
+ &  & positive & no & 12 & 0 \\
+\cline{2-6} \cline{3-6}
+ & \multirow[t]{4}{*}{6} & mixed & no & 17 & 0 \\
+\cline{3-6}
+ &  & \multirow[t]{2}{*}{negative} & no & 18 & 0 \\
+ &  &  & yes & 8 & 0 \\
+\cline{3-6}
+ &  & positive & no & 13 & 0 \\
+\cline{1-6} \cline{2-6} \cline{3-6}
+\multirow[t]{3}{*}{Qwen3-32B} & 1 & negative & no & 0 & 24 \\
+\cline{2-6} \cline{3-6}
+ & \multirow[t]{2}{*}{6} & mixed & no & 0 & 4 \\
+\cline{3-6}
+ &  & negative & no & 0 & 144 \\
+\cline{1-6} \cline{2-6} \cline{3-6}
+Total sum &  &  &  & 1082 & 189 \\
+\cline{1-6} \cline{2-6} \cline{3-6}
+\bottomrule
+\end{tabular}
