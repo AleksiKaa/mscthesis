@@ -72,32 +72,33 @@ slurm_params = {
         "memory": "32GB",
         "vram": "80g",
         "max_number_of_sequences": 16,
+        "engine": "vllm",
     },
 }
 
-seeds = [1, 10, 42, 50, 100]
+seeds = [1]  # , 10, 42, 50, 100]
 models = [  # 3 model families, big and small model
-    "Qwen/Qwen3-8B",
-    "Qwen/Qwen3-32B",
-    "meta-llama/Llama-3.1-8B-Instruct",
-    "meta-llama/Llama-3.3-70B-Instruct",
+    # "Qwen/Qwen3-8B",
+    # "Qwen/Qwen3-32B",
+    # "meta-llama/Llama-3.1-8B-Instruct",
+    # "meta-llama/Llama-3.3-70B-Instruct",
     "mistralai/Mistral-7B-Instruct-v0.3",
-    "mistralai/Mistral-Small-3.2-24B-Instruct-2506",  # Uses vllm script
+    "mistralai/Mistral-Small-3.2-24B-Instruct-2506",  # Uses vllm
 ]
 
 # number_of_demonstrations, type_of_demonstrations, use_instructions
 runs = [
-    (0, 0, 1),  # Zero-shot, with instructions
-    (1, -1, 0),  # One-shot, negative, without instructions
-    (1, 1, 0),  # One-shot, positive, without instructions
-    (1, -1, 1),  # One-shot, negative, with instructions
-    (1, 1, 1),  # One-shot, positive, with instructions
-    (6, -1, 0),  # Six demos, negative, without instructions
-    (6, 0, 0),  # Six demos, negative, without instructions
-    (6, 1, 0),  # Six demos, negative, without instructions
-    (6, -1, 1),  # Six demos, negative, without instructions
+    # (0, 0, 1),  # Zero-shot, with instructions
+    # (1, -1, 0),  # One-shot, negative, without instructions
+    # (1, 1, 0),  # One-shot, positive, without instructions
+    # (1, -1, 1),  # One-shot, negative, with instructions
+    # (1, 1, 1),  # One-shot, positive, with instructions
+    # (6, -1, 0),  # Six demos, negative, without instructions
+    # (6, 0, 0),  # Six demos, negative, without instructions
+    # (6, 1, 0),  # Six demos, negative, without instructions
+    # (6, -1, 1),  # Six demos, negative, without instructions
     (6, 0, 1),  # Six demos, negative, without instructions
-    (6, 1, 1),  # Six demos, negative, without instructions
+    # (6, 1, 1),  # Six demos, negative, without instructions
 ]
 
 
@@ -112,6 +113,7 @@ def construct_python_params(
     num_seqs,
     gpu_memory_utilization,
     batch_size,
+    engine,
 ):
     python_params = (
         f"--model {model} "
@@ -120,6 +122,7 @@ def construct_python_params(
         + f"--use_instructions {use_instruction} "
         + f"--type_of_demonstrations {type_of_demo} "
         + f"--version {version} "
+        + f"--engine {engine} "
     )
 
     if batch_size is not None:
@@ -145,8 +148,8 @@ def construct_slurm_params(model, version, debug):
     submit_script = "./src/submit.sh"
     generate_script = (
         "generate_batched.py"
-        if model != "mistralai/Mistral-Small-3.2-24B-Instruct-2506"
-        else "generate_vllm.py"
+        # if model != "mistralai/Mistral-Small-3.2-24B-Instruct-2506"
+        # else "generate_vllm.py"
     )
     model_args = slurm_params.get(model)
 
@@ -206,9 +209,10 @@ def main():
                 config["type_of_demonstrations"],
                 config.get("version", args.version),
                 args.debug,
-                params.get("max_number_of_sequences"),
-                params.get("gpu_memory_utilization"),
-                params.get("batch_size"),
+                config.get("max_number_of_sequences"),
+                config.get("gpu_memory_utilization"),
+                config.get("batch_size", 2),
+                config.get("engine", "transformers"),
             )
             print(f"Args passed to python: {python_params}")
             subprocess.call(slurm_args + ["-p", python_params])
@@ -235,6 +239,7 @@ def main():
                     params.get("max_number_of_sequences"),
                     params.get("gpu_memory_utilization"),
                     params.get("batch_size"),
+                    params.get("engine", "transformers"),
                 )
 
                 print(f"Called subprocess with args: {slurm_args}")

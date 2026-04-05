@@ -223,4 +223,4 @@ def sample_dataset(dataset, seed, num_random_demos, type_of_demonstrations):
         case _:
             raise ValueError("Unknown type of demonstration!")
 
-    return Dataset.from_pandas(demos)
+    return Dataset.from_pandas(demos), demos.index.tolist()

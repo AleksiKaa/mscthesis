@@ -2,6 +2,7 @@ import sys
 import os
 import argparse
 import transformers
+from vllm import LLM, SamplingParams
 from datasets import load_dataset, disable_caching
 import json
 import pandas as pd
@@ -34,6 +35,9 @@ print("Helper functions loaded from: " + sys.modules["utils.helpers"].__file__)
 
 
 def main():
+    ############################
+    #     Argument parsing     #
+    ############################
     parser = argparse.ArgumentParser()
     parser.add_argument("jobid")
     parser.add_argument("-f", "--file", type=str, default=DEFAULT_DATA)
@@ -57,12 +61,23 @@ def main():
     )
     parser.add_argument("-v", "--version", type=str, required=True)
     parser.add_argument("--batch_size", type=int, default=BATCH_SIZE)
+    parser.add_argument(
+        "--engine", type=str, required=True, choices=["vllm", "transformers"]
+    )
+    parser.add_argument("--max_number_of_sequences", type=int, default=BATCH_SIZE)
+    parser.add_argument("--gpu_memory_utilization", type=float, default=0.9)
 
     args, unknown = parser.parse_known_args()
 
-    print("Unknown arguments: " + str(unknown))
+    if len(unknown) > 0:
+        print("Unknown arguments: " + str(unknown))
+
     # Output directory
     outdir = f"./outputs/{args.version}/{args.model}/{args.jobid}"
+
+    ############################
+    #   Write config & setup   #
+    ############################
 
     # Ensure directory exists
     os.makedirs(outdir, exist_ok=True)
@@ -74,6 +89,10 @@ def main():
 
     # Print CL arguments
     print(args)
+
+    ############################
+    # Load data & make prompts #
+    ############################
 
     # Disable dataset caching
     disable_caching()
@@ -87,7 +106,7 @@ def main():
     # Make prompts
     print("Forming prompts...")
 
-    demonstrations = sample_dataset(
+    demonstrations, demo_indices = sample_dataset(
         dataset, args.seed, args.number_of_demonstrations, args.type_of_demonstrations
     )
     system_prompt = get_system_prompt(task, demonstrations, bool(args.use_instructions))
@@ -99,32 +118,15 @@ def main():
         },
     )
 
+    if args.number_of_demonstrations > 0:
+        # Remove demonstration examples from the dataset to avoid data leakage
+        dataset = dataset.select(
+            [idx for idx in range(len(dataset)) if idx not in demo_indices]
+        )
+
     # Select n rows
     if args.n_rows is not None and args.n_rows > 0:
         dataset = dataset.select(range(args.n_rows))
-
-    # Model parameters
-    params = {
-        "model": args.model,
-        "device_map": 0,  # Force GPU
-        "max_new_tokens": MAX_GENERATED_TOKENS,
-        "temperature": MODEL_TEMPERATURE,
-        "top_p": 0.80,
-        "top_k": 20,
-        "min_p": 0.00,
-    }
-    print(f"Model parameters: {params}")
-
-    print("Initializing pipeline...")
-    # Initialize the pipeline
-    pipeline = transformers.pipeline("text-generation", **params)
-    pipeline.tokenizer.pad_token = pipeline.tokenizer.eos_token
-    pipeline.model.config.pad_token_id = pipeline.model.config.eos_token_id
-
-    print(f"Generating responses for {dataset.num_rows} prompts...\n")
-
-    results = {key: [] for key in get_default_response(task).keys()}
-    default_response = get_default_response(task)
 
     user_prompts = dataset["user_prompt"]
     system_prompts = dataset["system_prompt"]
@@ -144,15 +146,104 @@ def main():
                 {"role": "assistant", "content": "<think>\n\n</think>\n\n"},
             )
 
-    outputs = pipeline(
-        prompts,
-        return_full_text=PIPE_RETURN_FULL_TEXT,
-        batch_size=args.batch_size,
-    )
+    ###############################
+    #     Initialize model &      #
+    #     and generate responses  #
+    ###############################
+
+    top_p = 0.8
+    top_k = 20
+    min_p = 0.0
+
+    results = {key: [] for key in get_default_response(task).keys()}
+    default_response = get_default_response(task)
+
+    if args.engine == "vllm":
+        # Initialize the model
+        mode = "mistral" if "mistral-small" in args.model.lower() else "auto"
+        llm = LLM(
+            model=args.model,
+            gpu_memory_utilization=args.gpu_memory_utilization,
+            max_model_len=4096,  # Max length of prompt + output
+            max_num_seqs=args.max_number_of_sequences,
+            enforce_eager=True,  # Disable cuda graph for lower VRAM consumption
+            tokenizer_mode=mode,
+            config_format=mode,
+            load_format=mode,
+        )
+
+        # All models have same params
+        sampling_params = SamplingParams(
+            temperature=MODEL_TEMPERATURE,
+            max_tokens=MAX_GENERATED_TOKENS,
+            top_p=top_p,
+            top_k=top_k,
+            min_p=min_p,
+        )
+
+        tqdm_flag = True if args.n_rows is not None else False
+        if "mistral-small" not in args.model.lower():
+            print("Using tokenization with chat template for generation...")
+            tokenizer = transformers.AutoTokenizer.from_pretrained(args.model)
+            prompts = [
+                tokenizer.apply_chat_template(
+                    prompt,
+                    tokenize=False,
+                    add_generation_prompt=True,
+                    enable_thinking=False,
+                )
+                for prompt in prompts
+            ]
+
+            outputs = llm.generate(
+                prompts,
+                sampling_params=sampling_params,
+                use_tqdm=tqdm_flag,
+            )
+        else:
+            # Installed autotokenizer version does not support mistral small, use chat template
+            # without tokenization and generate with chat method instead of generate method
+            print(
+                "Using chat template without tokenization for generation with chat method..."
+            )
+            outputs = llm.chat(
+                prompts,
+                sampling_params=sampling_params,
+                use_tqdm=tqdm_flag,
+            )
+    else:  # Transformers pipeline
+        # Model parameters
+        params = {
+            "model": args.model,
+            "device_map": 0,  # Force GPU
+            "max_new_tokens": MAX_GENERATED_TOKENS,
+            "temperature": MODEL_TEMPERATURE,
+            "top_p": top_p,
+            "top_k": top_k,
+            "min_p": min_p,
+        }
+        print(f"Model parameters: {params}")
+
+        print("Initializing pipeline...")
+        # Initialize the pipeline
+        pipeline = transformers.pipeline("text-generation", **params)
+        pipeline.tokenizer.pad_token = pipeline.tokenizer.eos_token
+        pipeline.model.config.pad_token_id = pipeline.model.config.eos_token_id
+
+        print(f"Generating responses for {dataset.num_rows} prompts...\n")
+
+        outputs = pipeline(
+            prompts,
+            return_full_text=PIPE_RETURN_FULL_TEXT,
+            batch_size=args.batch_size,
+        )
 
     # Process each output in the batch
     for output in outputs:
-        text = output[0]["generated_text"]
+        if args.engine == "vllm":
+            text = output.outputs[0].text
+        else:
+            text = output[0]["generated_text"]
         parsed = parse_output(text)
 
         for key, value in default_response.items():
