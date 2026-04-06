@@ -517,8 +517,6 @@ COT     & Chain-Of-Thought \\
 %% 
 \thispagestyle{empty}
 
-\textbf{TODO: citations in intro! along with text improvements }
-
 The recent advances in Language Models (LMs) have significantly extended the capabilities of computational Natural Language Processing (NLP) and text generation. Modern LMs are commonly transformer-based and pretrained on a Web-scale text corpora. These models are usually called Large Language Models (LLMs). LLMs, such as GPT-4 and Llama 4, have been shown to excel at a number of text-related tasks, including the generation of program code \cite{Minaee2024-fr}.
 
 Computer Science (CS) education and programming skills are usually obtained by completing sets of various exercises. These exercises are typically created by hand by the teaching staff. Distributing the same set of exercises to a large group of students may lead to the students sharing the answers, which hinders learning, or the lack of relevant context in the exercises might not inspire students to complete them. Personalizing and contextualizing the exercises has been shown to increase student's engagement and improve the learning outcome. However, personalizing each exercise is a laborious task and is unfeasible for most CS teachers.
@@ -535,7 +533,7 @@ One promising method for detecting hallucinations is the use of LLMs with in-con
 This thesis investigates the use of LLMs for detecting hallucinations in educational CS content generated using LLMs. The study provides an empirical comparison of performance between models and various ICL setups with the task of detecting faithfulness hallucinations in LLM generated programming exercises. The main research questions in this thesis are as follows:
 
 \begin{itemize}
-     \item \textbf{RQ1: Are out-of-the-box LLMs able to detect faithfulness hallucinations in LLM generated programming exercises?} This includes researching the capabilities and evaluating the performance of multiple LLMs in detecting faithfulness hallucinations in LLM generated programming exercises. 
+     \item \textbf{RQ1: Are out-of-the-box LLMs able to detect faithfulness hallucinations in LLM generated programming exercises?} Fine-tuning LLMs is costly. Employing base models in detecting hallucinations allow the development of cheaper pipelines. This study includes researching the capabilities and evaluating the performance of multiple base models in detecting faithfulness hallucinations in LLM generated programming exercises. 
     \item \textbf{RQ2: Can smaller, lighter LLMs achieve the performance of larger models in detecting faithfulness hallucinations?} This would enable the development and use of less resource-intensive hallucination detection pipelines. The results of the models are compared, with an emphasis on the difference in the performance of larger and smaller models.
     \item \textbf{RQ3: Can the performance of faithfulness hallucination performance of LLMs be improved using in-context learning?} Since fine-tuning a model is costly and time-consuming, it is of interest whether the performance of a model can be improved during inference, by only modifying the input and providing more context to the model. A baseline is obtained by prompting the models in a 0-shot fashion and then compared with the results of various ICL setups.
 \end{itemize}
@@ -805,18 +803,16 @@ Randomly selecting 120 generated exercises from a total of 240, 75.0\% were sens
 
 \subsection{Research design} \label{sec:design}
 
-TODO: Tie things up, tell why this is interesting, what is the point? In short, if a course is using an LLM to generate the programming exercises, it is important that the generated content is error-free and matches the descriptions. In this sense, it is of utmost importance that a system that is reliably able to detect errors and hallucinations in the generated content is in place. Also of importance is the resource aspect: Can a small model be as efficient as a larger model? What kind of setup does that need? On a more general level in intro, and more specific here?
+In this thesis, an experiment in which general-purpose LLMs are instructed to detect faithfulness hallucinations in LLM generated contextualized programming exercises. Failures and shortcomings in the contextualizations of the exercises and the usage of advanced programming concepts are treated as faithfulness hallucinations. The motivation for the experiment is to determine whether an LLM could be used as a human-independent system with the task of detecting faithfulness hallucinations. This kind of system could be deployed as part of a programming exercise generation pipeline that would autonomously generate content, check for hallucinations, and regenerate the exercise if necessary. 
 
-This thesis uses general-purpose LLMs to detect faithfulness hallucinations in LLM generated contextualized programming exercises. In this study, failures and shortcomings in the contextualizations of the exercises and usage of advanced programming concepts are treated as faithfulness hallucinations. The purpose of the thesis is to investigate and study the capabilities of LLMs with no task-specific fine-tuning in acting as an AI-judge. The study also uses a novel prompt engineering strategy to elicit the judging capabilities of the models. Much effort was put into the engineering of the prompt and through experimenting with various configurations, prompt structures, writing styles, and system prompts, promising templates were obtained and used in the actual empirical part of the study.
-
-The experiment utilizes a dataset produced by \textcite{10.1145/3632620.3671103}. It consists of LLM generated contextualized programming exercises intended to be used as material in an introductory programming course teaching Dart, as well as human graded labels on the level of contextualization. Data from the dataset were injected into a prompt template and fed to a model, with the task of evaluating the level of contextualization in the original data. More formally, for each datapoint in the dataset, the aim is to obtain an
-answer to the following questions:
+The experiment utilizes a dataset produced by \textcite{10.1145/3632620.3671103}. It consists of LLM generated contextualized programming exercises intended to be used as material in an introductory programming course teaching Dart, as well as human graded labels on the level of contextualization. Data from the dataset were injected into a prompt template and fed to a model, with the task of evaluating the level of contextualization in the original data. More formally, for each datapoint in the dataset, the aim is to obtain an answer to the following questions:
 \begin{enumerate}
     \item Does the provided problem description and example solution adhere to the provided theme?
     \item Does the provided problem description and example solution adhere to the provided topic?
     \item Does solving the exercise based on the provided problem description require the use of, or does the example solution use additional programming concepts that are too advanced for the programming level of the exercise?
 \end{enumerate}
-The predictions of the model are then compared and analyzed with the human-graded ground-truth labels to obtain a clear picture of the model's capabilities in detecting hallucinations.
+
+A novel prompt engineering strategy was crafted to elicit the judging capabilities of the models. Much effort was put into the engineering of the prompt and through experimenting with various configurations, prompt structures, writing styles, and system prompts, promising templates were obtained and used in the actual empirical part of the study. The predictions of the model are then compared and analyzed with the human-graded ground-truth labels to obtain a clear picture of the model's capabilities in detecting hallucinations.
 
 All computations in this research were performed using the Aalto Triton high-performance computing cluster. It provides the resources and capabilities for running LLMs and other heavy computations. As this study was performed on the Triton cluster, only models that were pre-downloaded on the cluster at the time of writing this thesis were considered as candidates for the research experiment.
 
@@ -1104,6 +1100,14 @@ The questions stated in section \ref{sec:design} are yes/no questions, meaning t
 How to present the results?? 6 models, 11 suites, 3 labels, x metrics (accuracy, precision, recall, f1)? => at least 6 * 11 * 3 = 198 values
 
 3 heatmaps, axis = (model, suite), values = f1???
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{}
+    \caption{Caption}
+    \label{fig:placeholder}
+\end{figure}
+
 
 ERRORS:
 
