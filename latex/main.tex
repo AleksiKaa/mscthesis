@@ -523,19 +523,21 @@ The recent advances in Language Models (LMs) have significantly extended the cap
 
 Computer Science (CS) education and programming skills are usually obtained by completing sets of various exercises. These exercises are typically created by hand by the teaching staff. Distributing the same set of exercises to a large group of students may lead to the students sharing the answers, which hinders learning, or the lack of relevant context in the exercises might not inspire students to complete them. Personalizing and contextualizing the exercises has been shown to increase student's engagement and improve the learning outcome. However, personalizing each exercise is a laborious task and is unfeasible for most CS teachers.
 
-Since the emergence of LLMs, researchers, particularly in the field of CS education, have been interested in the models' ability to generate contextualized text, including computer program code, that is nearly indistinguishable from content written by humans. The use of LLMs in the creation of educational materials have a number of advantages compared to creating each exercise by hand: LLMs decrease the amount of time needed to create each exercise, they allow deep personalization of the exercises and can also be used to create the supporting artifacts in the assignments, including starter code, hints, and example solutions. Time-effectiveness and personalization are not the only important factors in creating educational content, however, it is also crucial to ensure that the materials offered to students are of high quality.
+Since the emergence of LLMs, researchers, particularly in the field of CS education, have been interested in the models' ability to generate contextualized text, including computer program code, that is nearly indistinguishable from content written by humans. The use of LLMs in the creation of educational materials have a number of advantages compared to creating each exercise by hand: LLMs decrease the amount of time needed to create each exercise, they allow deep personalization of the exercises and can also be used to create the supporting artifacts in the assignments, including starter code, hints, and example solutions. 
+
+\textcite{10.1145/3632620.3671103} conducted a study on the generation of contextualized programming exercises using LLMs. The study focused on an introductory programming course offered to students on an online platform. For a given exercise on a specific programming concept, students were allowed to select the topic and theme of the exercise. An LLM generated the contextualized exercise in real time, outputting the exercise for the student to complete. Operating in real time, time-effectiveness and personalization are not the only important factors in creating educational content; it is also crucial to ensure that the materials offered to students are of high quality, error-free, and match the intended purpose.
 
 Various aspects of the training data, the training phase, and inference make LLMs prone to hallucinations. A hallucination in the context of LLMs is a model-generated output that is "either
-nonsensical or unfaithful to the provided source content". \cite{10.1145/3703155}. Hallucinations decrease the quality of the generated content, and in an educational environment, may make the content unusable \cite{10.1145/3769994.3770036}. Manually checking each output for erroneous content is time-consuming and prone to human-error. For this reason, it would be highly advantageous to mitigate hallucinations produced or to have the ability to detect and correct output containing hallucinations. 
+nonsensical or unfaithful to the provided source content". \cite{10.1145/3703155}. Hallucinations decrease the quality of the generated content, and in an educational environment, may make the content unusable \cite{10.1145/3769994.3770036}. Manually checking each output for hallucinatory content is time-consuming and prone to human-error, and for an LLM generation system offering generated content in real-time, it is unfeasible. For this reason, it would be highly advantageous to mitigate hallucinations produced or to have the ability to detect output containing hallucinations with a human-independent system capable of operating in real-time. 
 
-One promising method of preventing hallucinations is in-context learning (ICL). ICL is the practice of introducing incorrect examples for the model as a demonstration and letting the model learn from them \cite{dong-etal-2024-survey}. ICL has shown great promise in reasoning-heavy tasks, such as mathematical reasoning \cite{an2024learningmistakesmakesllm}. Extending ICL to the generation of program code and programming exercises could decrease the amount of human input needed to create programming exercises.
+One promising method for detecting hallucinations is the use of LLMs with in-context learning (ICL). ICL is the practice of introducing examples for the model as a demonstration and letting the model learn from them \cite{dong-etal-2024-survey}. ICL has shown great promise in reasoning-heavy tasks, such as mathematical reasoning \cite{an2024learningmistakesmakesllm}. Extending ICL to a hallucination detection system could improve detection performance, allowing the development of more robust hallucination detection pipelines.
 
-\textbf{TODO: define scope!} This thesis investigates possible methods for detecting, preventing, or reducing hallucinations in educational CS content generated using LLMs. The study provides an empirical comparison of performance between implicit and explicit in-context learning in LLMs used in the generation of CS education content. The main research questions in this thesis are as follows:
+This thesis investigates the use of LLMs for detecting hallucinations in educational CS content generated using LLMs. The study provides an empirical comparison of performance between models and various ICL setups with the task of detecting faithfulness hallucinations in LLM generated programming exercises. The main research questions in this thesis are as follows:
 
 \begin{itemize}
-    \item \textbf{RQ1: How effective is a state-of-the-art LLM in generating hallucination-free programming exercises?} This includes researching the effect of the prompt used in the generation, optimizing the prompt structures, and analyzing the faithfulness and factuality of the output.
-    \item \textbf{RQ2: Can LLMs learn from previously produced erroneous content, producing higher quality content?} The objective of this research question is to find out whether in-context learning can be extended to the generation of CS education material and how much does in-context learning improve the output quality.
-    \item \textbf{RQ3: Can CS education materials generated using implicit in-context learning achieve the same level of quality, or outperform explicit in-context learning?} If the answer to the second research question is yes, the next point of interest is to compare the performance of the two different types of ICL.
+     \item \textbf{RQ1: Are out-of-the-box LLMs able to detect faithfulness hallucinations in LLM generated programming exercises?} This includes researching the capabilities and evaluating the performance of multiple LLMs in detecting faithfulness hallucinations in LLM generated programming exercises. 
+    \item \textbf{RQ2: Can smaller, lighter LLMs achieve the performance of larger models in detecting faithfulness hallucinations?} This would enable the development and use of less resource-intensive hallucination detection pipelines. The results of the models are compared, with an emphasis on the difference in the performance of larger and smaller models.
+    \item \textbf{RQ3: Can the performance of faithfulness hallucination performance of LLMs be improved using in-context learning?} Since fine-tuning a model is costly and time-consuming, it is of interest whether the performance of a model can be improved during inference, by only modifying the input and providing more context to the model. A baseline is obtained by prompting the models in a 0-shot fashion and then compared with the results of various ICL setups.
 \end{itemize}
 
 These questions determine the course and content of the study. The thesis is structured as follows:
@@ -803,6 +805,8 @@ Randomly selecting 120 generated exercises from a total of 240, 75.0\% were sens
 
 \subsection{Research design} \label{sec:design}
 
+TODO: Tie things up, tell why this is interesting, what is the point? In short, if a course is using an LLM to generate the programming exercises, it is important that the generated content is error-free and matches the descriptions. In this sense, it is of utmost importance that a system that is reliably able to detect errors and hallucinations in the generated content is in place. Also of importance is the resource aspect: Can a small model be as efficient as a larger model? What kind of setup does that need? On a more general level in intro, and more specific here?
+
 This thesis uses general-purpose LLMs to detect faithfulness hallucinations in LLM generated contextualized programming exercises. In this study, failures and shortcomings in the contextualizations of the exercises and usage of advanced programming concepts are treated as faithfulness hallucinations. The purpose of the thesis is to investigate and study the capabilities of LLMs with no task-specific fine-tuning in acting as an AI-judge. The study also uses a novel prompt engineering strategy to elicit the judging capabilities of the models. Much effort was put into the engineering of the prompt and through experimenting with various configurations, prompt structures, writing styles, and system prompts, promising templates were obtained and used in the actual empirical part of the study.
 
 The experiment utilizes a dataset produced by \textcite{10.1145/3632620.3671103}. It consists of LLM generated contextualized programming exercises intended to be used as material in an introductory programming course teaching Dart, as well as human graded labels on the level of contextualization. Data from the dataset were injected into a prompt template and fed to a model, with the task of evaluating the level of contextualization in the original data. More formally, for each datapoint in the dataset, the aim is to obtain an
@@ -912,8 +916,6 @@ A total of 11 rows were removed due to JSON parsing errors, resulting in a total
 \caption{Label distribution of the augmented dataset}
 \label{tb:augmented_data}
 \end{table}
-
-\clearpage
 
 \subsection{Description of experiment} \label{sec:desc}
 
@@ -1051,6 +1053,49 @@ Another model specific configuration done relates to the Qwen3 models. They have
 Based on the hyperparameters explained in section \ref{sec:desc} the suite visible in table \ref{tb:suites} was constructed. This suite was executed once for each model and once for each random seed \footnote{Used seeds: 1, 10, 42, 50, 100}, resulting in $6 * 5 * 11 = 330$ passes of the dataset. It was decided that 0-shot prompting would only run with included task instructions, since the context given to the model would not be sufficient without instructions, leading to excessive erroneous generations.
 
 All runs were conducted with the same decoding and generation hyperparameters: the model temperature was set to 0.3, top-$k$ to 20, and top-$p$ to 0.80, and the maximum number of generated tokens was set to 64. As explained in section \ref{sec:decoding}, a low temperature sharpens the output token probabilities, making high probability tokens even more likely. Combining this with top-$k$ = 20, the number of tokens considered is reduced to 20, and lastly applying top-p reduces the probability mass of the nucleus to 0.8 of the total of the top 20 tokens. This results in a distribution shape where the output is fairly predictable. These hyperparameters were selected to promote a controlled, conservative generation with mild variability in the model, since generating JSON is a task requiring accuracy, where even one falsely generated token, such as ',' at the wrong position, breaks the validity of the JSON, thus rendering the output useless. The maximum number of generated tokens is set to be strict, but still having room for the generation of the output according to the schema.
+
+\subsection{Evaluation metrics}
+
+\begin{table}
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabularx}{0.75\textwidth}{lXXX}
+        \toprule
+        & & \multicolumn{2}{c}{\textbf{Predicted value}} \\
+        \cmidrule(lr){3-4}
+        & \textbf{Total population (P + N)} & \textbf{Positive (P)} & \textbf{Negative (N)} \\
+        \midrule
+        \multirow{2}{*}{\textbf{True value}} 
+            & \textbf{Positive (P)} & True positive (TP) & False negative (FN) \\
+        \cmidrule(lr){2-4}
+            & \textbf{Negative (N)} & False positive (FP) & True negative (TN) \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Confusion matrix for binary classification}
+    \label{tab:confusion-matrix}
+\end{table}
+
+The questions stated in section \ref{sec:design} are yes/no questions, meaning that the task of predicting hallucinations is in essence binary classification of 3 labels. There are common metrics for evaluating the performance of binary classifiers, and they compare the true label with the predicted label. There are 4 types of classification in binary classification: True positive, False positive, True negative, and false negative, and their interpretation is shown in table \ref{tab:confusion-matrix}. Using the results, metrics can be calculated that describe the performance of the classifier more accurately. In this thesis, the models are evaluated based on the following metrics:
+\begin{itemize}
+    \item \textbf{Accuracy} is the rate of correct classifications. It is defined as:
+    \begin{align*}
+        accuracy = \frac{TP + TN}{TP + FN + FP + TN}.
+    \end{align*}
+    It tells how often the classifier is correct overall, but does not take class misbalances into account.
+    \item \textbf{Precision}, or True Positive Rate, is the rate of correctly predicted positive samples. It is defined as:
+    \begin{align*}
+        precision = \frac{TP}{TP + FP}.
+    \end{align*}
+    \item \textbf{Recall}, or Sensitivity, is the rate of all correctly identified positive samples.
+    \begin{align*}
+        recall = \frac{TP}{P}.
+    \end{align*}
+    Recall is especially useful when missing a positive sample is unwanted.
+    \item \textbf{F1 score} is the harmonic mean of precision and recall. It combines the two metrics into a single number:
+    \begin{align*}
+        F1 = \frac{2 TP}{2 TP + FP + FN} = \frac{2 \cdot precision \cdot recall}{precision + recall}.
+    \end{align*}
+\end{itemize}
 
 \clearpage
 
