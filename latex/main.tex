@@ -966,37 +966,8 @@ In addition to simply measuring the performance of a model in detecting faithful
 
 \subsubsection{Prompt structure}
 
-As explained in \ref{sec:icl}, LLMs are sensitive to the settings and parameters of ICL, where minor changes in the ICL configuration may cause major changes in output quality. \textcite{cobbina2025demospromptpositionalbias} show that the position of the demonstrations provided in-context greatly affects the accuracy of the model. The position of demonstrations that yielded the best results varied between tasks, and they found that with most models, including 3 of the models considered in this thesis (Llama-3-8B, Llama-3-70B, Mistral-7B), and the predecessors of the used Qwen3 family, Qwen-7B and Qwen-72B, placing the demonstrations at the start of the system prompt yielded the best results across all classification datasets. For this reason, the use of the prompt structure, where the demonstrations are shown in the beginning of the system prompt, shown in figure \ref{fig:prompt_structure} is selected for the experiment.
-
-\begin{figure*}
-    \centering
-    \begin{subfigure}{0.6\textwidth}
-        \inputminted[fontsize=\small]{text}{./minted_inputs/ssp_prompt_structure.txt}
-    \end{subfigure}
-    \caption{ICL prompt structure yielding the best results in \cite{cobbina2025demospromptpositionalbias}}
-    \label{fig:prompt_structure}
-\end{figure*}
-
-The prompts used for the detection task are shown in figure \ref{fig:detect_prompts}. They are used as the parts for building a structure matching the one in \ref{fig:prompt_structure}, and is built in the following way:
-\begin{enumerate}
-    \item Hyperparameters: $N \geq 0$, $use\_instructions \in \{0, 1\}$, \\ $type\_of\_demonstrations \in \{negative, mixed, positive\}$
-    \item Build demonstrations:
-        \begin{itemize}
-            \item Sample dataset for $N$ $type\_of\_demonstrations$ demonstrations.
-            \item Insert context in the demonstration template \ref{fig:demo_template}. Concatenate all demonstrations into a single string.
-        \end{itemize}
-    \item Inject demonstrations into \$DEMONSTRATIONS\$ in \ref{fig:detect_template}
-    \item If $use\_instruction = 1$, inject the system prompt \ref{fig:detect_system_prompt} into \$SYSTEMPROMPT\$ in \ref{fig:detect_template}, otherwise the tag is removed.
-\end{enumerate}
-However, in 0-shot runs, i.e., runs where $N = 0$, the procedure is skipped and only the system prompt \ref{fig:detect_system_prompt} is used. To avoid data leakage, for runs with $N > 0$, the rows that were used as demonstrations were removed from the dataset, so the total number of generated responses varies from 529 to 535 depending on $N$.
-
-% MAYBE NOT RELEVANT AFTER ALL!!! Note that not all models support a multi-role chat model. For example, Mistral-7B only supports the roles 'user instruction' and 'assistant'. The model simulates the use of system prompts by prepending the inputted system prompt to the actual user instruction before tokenization, treating the system prompt as additional instructions. This achieves a similar result in
-
-Qwen3 thinking mode?
-
-
 \begin{figure}
-\sbox0{\begin{subfigure}[b]{\dimexpr 0.5\textwidth-0.5\columnsep}% measuer height with caption
+\sbox0{\begin{subfigure}[b]{\dimexpr 0.5\textwidth-0.5\columnsep}% measure height with caption
     \inputminted{text}{./minted_inputs/detect_system_prompt.txt}% some argitrary height
     \caption{System prompt}
     \label{fig:detect_system_prompt}
@@ -1024,38 +995,70 @@ Qwen3 thinking mode?
 \label{fig:detect_prompts}
 \end{figure}
 
+As explained in \ref{sec:icl}, LLMs are sensitive to the settings and parameters of ICL, where minor changes in the ICL configuration may cause major changes in output quality. \textcite{cobbina2025demospromptpositionalbias} show that the position of the demonstrations provided in-context greatly affects the accuracy of the model. The position of demonstrations that yielded the best results varied between tasks, and they found that with most models, including 3 of the models considered in this thesis (Llama-3-8B, Llama-3-70B, Mistral-7B), and the predecessors of the used Qwen3 family, Qwen-7B and Qwen-72B, placing the demonstrations at the start of the system prompt yielded the best results across all classification datasets. For this reason, the use of the prompt structure, where the demonstrations are shown in the beginning of the system prompt, shown in figure \ref{fig:prompt_structure} is selected for the experiment.
+
+\begin{figure*}
+    \centering
+    \begin{subfigure}{0.6\textwidth}
+        \inputminted[fontsize=\small]{text}{./minted_inputs/ssp_prompt_structure.txt}
+    \end{subfigure}
+    \caption{ICL prompt structure yielding the best results in \cite{cobbina2025demospromptpositionalbias}}
+    \label{fig:prompt_structure}
+\end{figure*}
+
+The prompts used for the detection task are shown in figure \ref{fig:detect_prompts}. They are used as the parts for building a structure matching the one in \ref{fig:prompt_structure}, and is built in the following way:
+\begin{enumerate}
+    \item Hyperparameters: $N \geq 0$, $use\_instructions \in \{0, 1\}$, \\ $type\_of\_demonstrations \in \{negative, mixed, positive\}$
+    \item Build demonstrations:
+        \begin{itemize}
+            \item Sample dataset for $N$ $type\_of\_demonstrations$ demonstrations.
+            \item Insert context in the demonstration template \ref{fig:demo_template}. Concatenate all demonstrations into a single string.
+        \end{itemize}
+    \item Inject demonstrations into \$DEMONSTRATIONS\$ in \ref{fig:detect_template}
+    \item If $use\_instructions = 1$, inject the system prompt \ref{fig:detect_system_prompt} into \$SYSTEMPROMPT\$ in \ref{fig:detect_template}, otherwise the tag is removed.
+\end{enumerate}
+However, in 0-shot runs, i.e., runs where $N = 0$, the procedure is skipped and only the system prompt \ref{fig:detect_system_prompt} is used. To avoid data leakage, for runs with $N > 0$, the rows that were used as demonstrations were removed from the dataset, so the total number of generated responses varies from 529 to 535 depending on the value of $N$.
+
+Note that not all models support a multi-role chat model. For example, Mistral-7B only supports the roles 'user instruction' and 'assistant'. The model simulates the use of system prompts by prepending the inputted system prompt to the actual user instruction before tokenization, treating the system prompt as additional user instructions \footnote{The used tokenizer was a model-specific pre-trained tokenizer downloaded from Huggingface}. This achieves a similar result, but differs from other models' method of using system prompts.
+
+Another model specific configuration done relates to the Qwen3 models. They have a 'thinking' mode enabled by default, meaning that the model will always begin the output with a text block of form: \texttt{<think></think>}. This resulted in the model not being able to follow the instructions given in the system prompt. To disable this feature, the thinking block had to be appended to the prompts before inputting them into the model.
+
 \subsubsection{Final experiment setup}
-
-Based on the parameters explained in section \ref{sec:desc} the suite visible in table \ref{tb:suites} was constructed. This suite was executed once for each model and once for each random seed\footnote{Used seeds: 1, 10, 42, 50, 100}, resulting in $6 * 5 * 11 = 330$ passes of the dataset. 
-
-MODEL PARAMETERS: TEmperature etc
 
 \begin{table}
 \centering
-\begin{tabularx}{0.8\textwidth}{c|c|c}
+\begin{tabularx}{0.6\textwidth}{X|rrr}
     \toprule
-     N Demonstrations & Type of Demonstrations & Use Instructions \\
+     Suite ID & Demos (N) & Type & Instructions \\
     \midrule
-    0 & none & yes \\
-    1 & negative & no \\
-    1 & positive & no \\
-    1 & negative & yes \\
-    1 & positive & yes \\
-    6 & negative & no \\
-    6 & mixed & no \\
-    6 & positive & no \\
-    6 & negative & yes \\
-    6 & mixed & yes \\
-    6 & positive & yes \\
+    1 & 0 & none & yes \\
+    2 & 1 & negative & no \\
+    3 & 1 & positive & no \\
+    4 & 1 & negative & yes \\
+    5 & 1 & positive & yes \\
+    6 & 6 & negative & no \\
+    7 & 6 & mixed & no \\
+    8 & 6 & positive & no \\
+    9 & 6 & negative & yes \\
+    10 & 6 & mixed & yes \\
+    11 & 6 & positive & yes \\
     \bottomrule
 \end{tabularx}
 \caption{The final suite of run parameters}
 \label{tb:suites}
 \end{table}
 
+Based on the hyperparameters explained in section \ref{sec:desc} the suite visible in table \ref{tb:suites} was constructed. This suite was executed once for each model and once for each random seed \footnote{Used seeds: 1, 10, 42, 50, 100}, resulting in $6 * 5 * 11 = 330$ passes of the dataset. It was decided that 0-shot prompting would only run with included task instructions, since the context given to the model would not be sufficient without instructions, leading to excessive erroneous generations.
+
+All runs were conducted with the same decoding and generation hyperparameters: the model temperature was set to 0.3, top-$k$ to 20, and top-$p$ to 0.80, and the maximum number of generated tokens was set to 64. As explained in section \ref{sec:decoding}, a low temperature sharpens the output token probabilities, making high probability tokens even more likely. Combining this with top-$k$ = 20, the number of tokens considered is reduced to 20, and lastly applying top-p reduces the probability mass of the nucleus to 0.8 of the total of the top 20 tokens. This results in a distribution shape where the output is fairly predictable. These hyperparameters were selected to promote a controlled, conservative generation with mild variability in the model, since generating JSON is a task requiring accuracy, where even one falsely generated token, such as ',' at the wrong position, breaks the validity of the JSON, thus rendering the output useless. The maximum number of generated tokens is set to be strict, but still having room for the generation of the output according to the schema.
+
 \clearpage
 
 \section{Results}
+
+How to present the results?? 6 models, 11 suites, 3 labels, x metrics (accuracy, precision, recall, f1)? => at least 6 * 11 * 3 = 198 values
+
+3 heatmaps, axis = (model, suite), values = f1???
 
 ERRORS:
 
