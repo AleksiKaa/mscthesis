@@ -1,40 +1,41 @@
-\begin{tabular}{llllrr}
+\begin{tabularx}{\textwidth}{lXXXXX}
 \toprule
- &  &  &  & num parse errors & num gen errors \\
-model & number of demonstrations & type of demonstrations & use instructions &  &  \\
+ &  &  &  & Parse Errors (N) & Generation Errors (N) \\
+ 
+ Model & Demos (N) & Type & Use Instructions &  &  \\
 \midrule
 \multirow[t]{5}{*}{Llama-8B} & \multirow[t]{2}{*}{1} & negative & no & 5 & 0 \\
 \cline{3-6}
  &  & positive & no & 508 & 0 \\
-\cline{2-6} \cline{3-6}
+\cline{2-6}
  & \multirow[t]{3}{*}{6} & mixed & no & 54 & 0 \\
 \cline{3-6}
  &  & negative & no & 3 & 0 \\
 \cline{3-6}
  &  & positive & no & 219 & 0 \\
-\cline{1-6} \cline{2-6} \cline{3-6}
+\cline{1-6}
 \multirow[t]{3}{*}{Llama-70B} & \multirow[t]{2}{*}{1} & negative & no & 5 & 0 \\
 \cline{3-6}
  &  & positive & no & 11 & 0 \\
-\cline{2-6} \cline{3-6}
+\cline{2-6}
  & 6 & positive & no & 2 & 0 \\
-\cline{1-6} \cline{2-6} \cline{3-6}
+\cline{1-6}
 \multirow[t]{5}{*}{Mistral-7B} & \multirow[t]{2}{*}{1} & negative & no & 121 & 0 \\
 \cline{3-6}
  &  & positive & no & 32 & 0 \\
-\cline{2-6} \cline{3-6}
+\cline{2-6}
  & \multirow[t]{3}{*}{6} & mixed & no & 1 & 0 \\
 \cline{3-6}
  &  & negative & no & 3 & 0 \\
 \cline{3-6}
  &  & positive & no & 1 & 18 \\
-\cline{1-6} \cline{2-6} \cline{3-6}
+\cline{1-6}
 \multirow[t]{9}{*}{Mistral-24B} & 0 & none & yes & 3 & 0 \\
-\cline{2-6} \cline{3-6}
+\cline{2-6} 
  & \multirow[t]{2}{*}{1} & negative & no & 22 & 0 \\
 \cline{3-6}
  &  & positive & no & 6 & 0 \\
-\cline{2-6} \cline{3-6}
+\cline{2-6} 
  & \multirow[t]{6}{*}{6} & \multirow[t]{2}{*}{mixed} & no & 15 & 0 \\
  &  &  & yes & 5 & 0 \\
 \cline{3-6}
@@ -43,13 +44,13 @@ model & number of demonstrations & type of demonstrations & use instructions &  
 \cline{3-6}
  &  & \multirow[t]{2}{*}{positive} & no & 7 & 0 \\
  &  &  & yes & 1 & 0 \\
-\cline{1-6} \cline{2-6} \cline{3-6}
+\cline{1-6} 
 \multirow[t]{3}{*}{Qwen3-32B} & 1 & negative & no & 0 & 31 \\
-\cline{2-6} \cline{3-6}
+\cline{2-6}
  & \multirow[t]{2}{*}{6} & \multirow[t]{2}{*}{negative} & no & 0 & 150 \\
  &  &  & yes & 1 & 0 \\
-\cline{1-6} \cline{2-6} \cline{3-6}
+\cline{1-6}
 Total sum &  &  &  & 1054 & 199 \\
-\cline{1-6} \cline{2-6} \cline{3-6}
+\cline{1-6}
 \bottomrule
-\end{tabular}
+\end{tabularx}
