@@ -728,7 +728,7 @@ Figure \ref{fig:icl_faithfulness} shows the prompt design of the ICL evaluation 
 
 Various strategies are employed to mitigate hallucinations. Typical methods for hallucination mitigation include data filtering, model editing, and Retrieval-Augmented Generation (RAG). Data filtering seeks to decrease the frequency of LLM hallucinations arising from low quality pre-training data. By filtering out misinformation, biased information, and duplicate data among other unwanted data qualities from the pre-training data, the factual correctness of LLMs has been shown to improve \cite{gunasekar2023textbooksneed}. Additionally, diverse datasets consisting of multiple smaller high-quality datasets improve the generalization and cross-domain capabilities of LLMs \cite{gao2020pile800gbdatasetdiverse}, reducing hallucinations.
 
-Model editing aims to mitigate hallucinations by rectifying gaps in the model knowledge or behavior by introducing additional knowledge to the model. Usually, model editing methods consist of two steps: locating the buggy part of model parameters responsible for the unwanted behavior and updating it. While providing a targeted way to mitigate hallucinations caused by specific misinformation, studies have found that this type of model editing does not scale well \cite{yao2023editinglargelanguagemodels}. Large-scale updates are difficult to perform and may unintentionally weaken the model's performance in unrelated domains.
+TODO: source! Model editing aims to mitigate hallucinations by rectifying gaps in the model knowledge or behavior by introducing additional knowledge to the model. Usually, model editing methods consist of two steps: locating the buggy part of model parameters responsible for the unwanted behavior and updating it. While providing a targeted way to mitigate hallucinations caused by specific misinformation, studies have found that this type of model editing does not scale well \cite{yao2023editinglargelanguagemodels}. Large-scale updates are difficult to perform and may unintentionally weaken the model's performance in unrelated domains.
 
 The RAG architecture \cite{NEURIPS2020_6b493230} consists of a retriever and a generator. The retriever employs an external non-parametric knowledge base, retrieving information relevant to input, and feeds it to the generator with the original prompt. The generator then produces an output conditioned by the prompt and the retrieved information. Using RAG targets specifically hallucinations caused by the knowledge boundaries of the model, mitigating them without impacting the performance of the model \cite{shuster-etal-2021-retrieval-augmentation}.
 
@@ -805,7 +805,7 @@ Randomly selecting 120 generated exercises from a total of 240, 75.0\% were sens
 
 In this thesis, an experiment in which general-purpose LLMs are instructed to detect faithfulness hallucinations in LLM generated contextualized programming exercises. Failures and shortcomings in the contextualizations of the exercises and the usage of advanced programming concepts are treated as faithfulness hallucinations. The motivation for the experiment is to determine whether an LLM could be used as a human-independent system with the task of detecting faithfulness hallucinations. This kind of system could be deployed as part of a programming exercise generation pipeline that would autonomously generate content, check for hallucinations, and regenerate the exercise if necessary. 
 
-The experiment utilizes a dataset produced by \textcite{10.1145/3632620.3671103}. It consists of LLM generated contextualized programming exercises intended to be used as material in an introductory programming course teaching Dart, as well as human graded labels on the level of contextualization. Data from the dataset were injected into a prompt template and fed to a model, with the task of evaluating the level of contextualization in the original data. More formally, for each datapoint in the dataset, the aim is to obtain an answer to the following questions:
+The experiment utilizes a dataset produced by \textcite{10.1145/3632620.3671103}. It consists of LLM generated contextualized programming exercises intended to be used as material in an introductory programming course teaching Dart, as well as human graded labels on the level of contextualization. Samples from the dataset were injected into a prompt template and fed to a model, with the task of evaluating the level of contextualization in the original data. More formally, for each sample in the dataset, the aim is to obtain an answer to the following questions:
 \begin{enumerate}
     \item Does the provided problem description and example solution adhere to the provided theme?
     \item Does the provided problem description and example solution adhere to the provided topic?
@@ -822,7 +822,7 @@ As stated in the previous section, this thesis utilizes a dataset produced by \t
 
 In total, the dataset consists of 283 rows and 18 columns. The data columns relevant to the experiment performed in this study are: 'problemDescription', 'exampleSolution', which contain the generated programming exercise described in the previous paragraph, 'theme', 'topic', which are the features used to contextualize the exercise, and 'concept' that was used as the programming concept the exercise required for completing the exercise. Additionally, the human-graded columns 'The exercise description matched the selected theme (Yes/Partially/No)', 'The exercise description matched the selected topic (Yes/Partially/No)', and 'Included concepts that were too advanced (Yes/No)' are used as labels. The features provide all the necessary context for the model, while the label columns are used as ground-truth in the evaluations, directly corresponding to the questions listed in \ref{sec:design}.
 
-Simple data transformations were performed to improve the alignment of the data with the experiment. The label columns of the dataset are human-graded, but 33 of the rows are inter-rated by a group of 5 researchers. For these rows, a majority vote was held to decide the final label. Table \ref{tb:original_data} shows the label distribution of the original dataset. Since the count of examples with negative labels ("partially" or "no") is low, the number had to be artificially increased to balance the dataset. Due to the ambiguity of "partially" labels, the exclusion of rows that include such labels was decided. This preprocessing filter removed 10 rows from the dataset in total. 
+Simple data transformations were performed to improve the alignment of the data with the experiment. The label columns of the dataset are human-graded, but 33 of the rows are inter-rated by a group of 5 researchers. For these rows, a majority vote was held to decide the final label. Table \ref{tb:original_data} shows the label distribution of the original dataset. Since the count of examples with negative labels ("partially" or "no") is low, the number had to be artificially increased to balance the dataset. Due to the ambiguity of "partially" labels, the exclusion of rows that include such labels was decided. This preprocessing filter removed 10 samples from the dataset in total. 
 \begin{table}
     \centering
     \begin{tabularx}{\textwidth}{Xcccccc}
@@ -863,7 +863,7 @@ Simple data transformations were performed to improve the alignment of the data 
     \caption{Prompts used for planting hallucinations}
 \end{figure*}
 
-To balance the dataset, new data needed to be introduced in the form of data points containing faithfulness hallucinations. This meant modifying the theme and topic, and including additional programming concepts in the existing data and appending it to the dataset. Using LLMs to implant faithfulness hallucinations in the data proved to be a viable option. The model that was selected for planting the hallucinations was Qwen's Qwen2.5-72B-Instruct \cite{yang2024qwen2technicalreport}, since it was one of the largest models available and based on the results of small scale tests performed better than other models of the same scale. Iterations of testing different prompting techniques resulted in the prompts shown in listings \ref{lst:augment_system_prompt} and \ref{lst:augment_user_prompt}. The system prompt shown in listing \ref{lst:augment_system_prompt} contains the task instruction and the user prompt in listing \ref{lst:augment_user_prompt} was used to provide the context to the model in order to plant faithfulness hallucinations to the data. The user prompt was used as a template, where the tags surrounded by dollar signs (\$) were programmematically replaced. The tags were replaced in the following fashion:
+To balance the dataset, new data needed to be introduced in the form of data points containing faithfulness hallucinations. This meant modifying the theme and topic, and including additional programming concepts in the existing data and appending it to the dataset. TODO: Source and explanation!!! Using LLMs to implant faithfulness hallucinations in the data proved to be a viable option. The model that was selected for planting the hallucinations was Qwen's Qwen2.5-72B-Instruct \cite{yang2024qwen2technicalreport}, since it was one of the largest models available and based on the results of small scale tests performed better than other models of the same scale. Iterations of testing different prompting techniques resulted in the prompts shown in listings \ref{lst:augment_system_prompt} and TODO: \ref{lst:augment_user_prompt}. The system prompt shown in listing \ref{lst:augment_system_prompt} contains the task instruction and the user prompt in listing \ref{lst:augment_user_prompt} was used to provide the context to the model in order to plant faithfulness hallucinations to the data. The user prompt was used as a template, where the tags surrounded by dollar signs (\$) were programmematically replaced. The tags were replaced in the following fashion:
 \begin{itemize}
     \item \$THEME\$: A value was selected from a list of themes \footnote{literature, handicrafts, food, classical music, board games, pop music, sports, art, pets, historical landmarks, cartoons, video games, outdoor activities, party games, nature destinations, Christmas} at random.
     \item \$TOPIC\$: A value that differs from the value of the original was randomly selected from a list of topics corresponding to the theme \footnote{Topics were extracted from the existing dataset. Each theme included 7-10 topics.}.
@@ -873,7 +873,7 @@ To balance the dataset, new data needed to be introduced in the form of data poi
 \end{itemize}
 The prompting techniques used by \textcite{ming2025faithevallanguagemodelstay} heavily influenced the structure of the prompts used in this thesis, although additional guard rails, which further clarified the form of the output, were included in the system prompt, which noticably reduced the number of model failures, i.e., invalid JSON outputs.
 
-The dataset, excluding the rows with 'partially' labels, was run through the model, producing 273 more rows. An exercise, consisting of a problem description and an example solution is shown in figure \ref{fig:og_ex}. The exercise, which was generated based on the exercise in figure \ref{fig:og_ex}, is shown in figure \ref{fig:ag_ex}. Comparing the two exercises, it can be seen that the LLM has successfully planted faithfulness hallucinations in the exercise: the exercise is no longer about Lingonberry sauce, but rather the composer Claudio Monteverdi, and usage of a while loop has been injected in the problem as well.
+The dataset, excluding the samples with 'partially' labels, was run through the model, producing 273 more rows. An exercise, consisting of a problem description and an example solution is shown in figure \ref{fig:og_ex}. The exercise, which was generated based on the exercise in figure \ref{fig:og_ex}, is shown in figure \ref{fig:ag_ex}. Comparing the two exercises, it can be seen that the LLM has successfully planted faithfulness hallucinations in the exercise: the exercise is no longer about Lingonberry sauce, but rather the composer Claudio Monteverdi, and usage of a while loop has been injected in the problem as well.
 
 \begin{figure*}
     \centering
@@ -1071,7 +1071,7 @@ All runs were conducted with the same decoding and generation hyperparameters: t
     \label{tab:confusion-matrix}
 \end{table}
 
-The questions stated in section \ref{sec:design} are yes/no questions, meaning that the task of predicting hallucinations is in essence binary classification of 3 labels. There are common metrics for evaluating the performance of binary classifiers, and they compare the true label with the predicted label. There are 4 types of classification in binary classification: True positive, False positive, True negative, and false negative, and their interpretation is shown in table \ref{tab:confusion-matrix}. Using the results, metrics can be calculated that describe the performance of the classifier more accurately. In this thesis, the models are evaluated based on the following metrics:
+The questions stated in section \ref{sec:design} are yes/no questions, meaning that the task of predicting hallucinations is in essence binary classification of 3 labels. There are common metrics for evaluating the performance of binary classifiers, comparing the true value with the predicted value. Depending on the values of true and predicted samples, binary classification is divided into 4 classes: True positive, False positive, True negative and False Negative. Their interpretation is shown in table \ref{tab:confusion-matrix} with regard to the sample values. Using the classes, metrics can be calculated that describe the performance of the classifier more accurately. In this thesis, the models are evaluated based on the following metrics defined in \cite{Fawcett2006-aj}:
 \begin{itemize}
     \item \textbf{Accuracy} is the rate of correct classifications. It is defined as:
     \begin{align*}
@@ -1082,16 +1082,20 @@ The questions stated in section \ref{sec:design} are yes/no questions, meaning t
     \begin{align*}
         precision = \frac{TP}{TP + FP}.
     \end{align*}
-    \item \textbf{Recall}, or Sensitivity, is the rate of all correctly identified positive samples.
+    Precision answers the question: Of all predicted positive samples, how many were correct?
+    \item \textbf{Recall}, or Sensitivity, is the rate of all correctly identified positive samples. Recall is defined as:
     \begin{align*}
         recall = \frac{TP}{P}.
     \end{align*}
-    Recall is especially useful when missing a positive sample is unwanted.
+    Recall answers the question: Of all positive samples, how many did the classifier correctly identify? Recall is especially descriptive when missing a positive sample is unwanted or detrimental.
     \item \textbf{F1 score} is the harmonic mean of precision and recall. It combines the two metrics into a single number:
     \begin{align*}
         F1 = \frac{2 TP}{2 TP + FP + FN} = \frac{2 \cdot precision \cdot recall}{precision + recall}.
     \end{align*}
+    TODO: F1 stuff
 \end{itemize}
+
+In model evaluations, hallucinatory label values are interpreted as positives in the population, i.e, TP denotes the model correctly detecting a faithfulness hallucination in the sample. Setting the hallucinatory labels as positives enables presenting the models' hallucination detection capabilities more accurately.
 
 \clearpage
 
@@ -1103,6 +1107,13 @@ How to present the results?? 6 models, 11 suites, 3 labels, x metrics (accuracy,
 
 \begin{figure}
     \centering
+    \includegraphics[width=\linewidth]{latex/images/f1_per_model.png}
+    \caption{Means of F1 scores in all suites by label and model}
+    \label{fig:placeholder}
+\end{figure}
+
+\begin{figure}
+    \centering
     \includegraphics[width=\textwidth]{latex/images/f1_per_suite.png}
     \caption{Means of F1 scores per model and suite}
     \label{fig:placeholder}
@@ -1110,8 +1121,15 @@ How to present the results?? 6 models, 11 suites, 3 labels, x metrics (accuracy,
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{latex/images/f1_per_model.png}
-    \caption{Means of F1 scores in all suites by label and model}
+    \includegraphics[width=\textwidth]{latex/images/precision_per_suite.png}
+    \caption{Means of precision scores per model and suite}
+    \label{fig:placeholder}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{latex/images/recall_per_suite.png}
+    \caption{Means of recall scores per model and suite}
     \label{fig:placeholder}
 \end{figure}
 
