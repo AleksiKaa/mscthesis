@@ -519,27 +519,26 @@ COT     & Chain-Of-Thought \\
 
 The recent advances in Language Models (LMs) have significantly extended the capabilities of computational Natural Language Processing (NLP) and text generation. Modern LMs are commonly transformer-based and pretrained on a Web-scale text corpora. These models are usually called Large Language Models (LLMs). LLMs, such as GPT-4 and Llama 4, have been shown to excel at a number of text-related tasks, including the generation of program code \cite{Minaee2024-fr}.
 
-Computer Science (CS) education and programming skills are usually obtained by completing sets of various exercises. These exercises are typically created by hand by the teaching staff. Distributing the same set of exercises to a large group of students may lead to the students sharing the answers, which hinders learning, or the lack of relevant context in the exercises might not inspire students to complete them. Personalizing and contextualizing the exercises has been shown to increase student's engagement and improve the learning outcome. However, personalizing each exercise is a laborious task and is unfeasible for most CS teachers.
+Computer Science (CS) education and programming skills are usually obtained by completing sets of various exercises \cite{10.1145/3501385.3543957}. These exercises are typically created by hand by the teaching staff. Distributing the same set of exercises to a large group of students may lead to the students sharing the answers, which hinders learning, or the lack of relevant context in the exercises might not inspire students to complete them. Personalizing and contextualizing the exercises has been shown to increase student's engagement and improve the learning outcome. However, personalizing each exercise is a laborious task and is unfeasible for most CS teachers.
 
 Since the emergence of LLMs, researchers, particularly in the field of CS education, have been interested in the models' ability to generate contextualized text, including computer program code, that is nearly indistinguishable from content written by humans. The use of LLMs in the creation of educational materials have a number of advantages compared to creating each exercise by hand: LLMs decrease the amount of time needed to create each exercise, they allow deep personalization of the exercises and can also be used to create the supporting artifacts in the assignments, including starter code, hints, and example solutions. 
 
 \textcite{10.1145/3632620.3671103} conducted a study on the generation of contextualized programming exercises using LLMs. The study focused on an introductory programming course offered to students on an online platform. For a given exercise on a specific programming concept, students were allowed to select the topic and theme of the exercise. An LLM generated the contextualized exercise in real time, outputting the exercise for the student to complete. Operating in real time, time-effectiveness and personalization are not the only important factors in creating educational content; it is also crucial to ensure that the materials offered to students are of high quality, error-free, and match the intended purpose.
 
-Various aspects of the training data, the training phase, and inference make LLMs prone to hallucinations. A hallucination in the context of LLMs is a model-generated output that is "either
-nonsensical or unfaithful to the provided source content". \cite{10.1145/3703155}. Hallucinations decrease the quality of the generated content, and in an educational environment, may make the content unusable \cite{10.1145/3769994.3770036}. Manually checking each output for hallucinatory content is time-consuming and prone to human-error, and for an LLM generation system offering generated content in real-time, it is unfeasible. For this reason, it would be highly advantageous to mitigate hallucinations produced or to have the ability to detect output containing hallucinations with a human-independent system capable of operating in real-time. 
+Various aspects of the training data, the training phase, and inference make LLMs prone to hallucinations. A hallucination in the context of LLMs is a model-generated output that is "either nonsensical or unfaithful to the provided source content". \cite{10.1145/3703155}. Hallucinations decrease the quality of the generated content, and in an educational environment, may make the content unusable \cite{10.1145/3769994.3770036}. Manually checking each output for hallucinatory content is time-consuming and prone to human-error, and for an LLM generation system offering generated content in real-time, it is unfeasible. For this reason, it would be highly advantageous to mitigate hallucinations produced or to have the ability to detect output containing hallucinations with a human-independent system capable of operating in real-time. 
 
-One promising method for detecting hallucinations is the use of LLMs with in-context learning (ICL). ICL is the practice of introducing examples for the model as a demonstration and letting the model learn from them \cite{dong-etal-2024-survey}. ICL has shown great promise in reasoning-heavy tasks, such as mathematical reasoning \cite{an2024learningmistakesmakesllm}. Extending ICL to a hallucination detection system could improve detection performance, allowing the development of more robust hallucination detection pipelines.
+Many methods of hallucination mitigation include some sort of model fine-tuning. However, the practise of fine-tuning LLMs is costly. Employing base models in detecting hallucinations would allow the development of cheaper detection pipelines, but place the detection performance in jeopardy. Therefore, it is of interest whether the performance could be improved during inference. One promising method for improving the performance of LLMs during inference is in-context learning (ICL). ICL is the practice of introducing examples for the model as a demonstration and letting the model learn from them \cite{dong-etal-2024-survey}. ICL has shown great promise in reasoning-heavy tasks, such as mathematical reasoning \cite{an2024learningmistakesmakesllm}. Extending ICL to a hallucination detection system could improve detection performance, allowing the development of more robust hallucination detection pipelines.
 
-This thesis investigates the use of LLMs for detecting hallucinations in educational CS content generated using LLMs. The study provides an empirical comparison of performance between models and various ICL setups with the task of detecting faithfulness hallucinations in LLM generated programming exercises. The main research questions in this thesis are as follows:
+It is well-known that model performance scales with respect to model size. Generally, for better results, it is advisable to use a large model. However, the inference of large models is resource-heavy and thus it is of interest to determine whether a smaller model could match or nearly achieve the performance of a large model in detecting hallucinations. This would not only allow for the development of robust but also lightweight hallucination detection pipelines.
 
+This thesis investigates the use of LLMs for detecting hallucinations in educational CS content generated using LLMs. The study provides an empirical comparison of performance between models of differing sizes and various ICL setups with the task of detecting faithfulness hallucinations in LLM generated programming exercises. The main research questions in this thesis are as follows:
 \begin{itemize}
-     \item \textbf{RQ1: Are out-of-the-box LLMs able to detect faithfulness hallucinations in LLM generated programming exercises?} Fine-tuning LLMs is costly. Employing base models in detecting hallucinations allow the development of cheaper pipelines. This study includes researching the capabilities and evaluating the performance of multiple base models in detecting faithfulness hallucinations in LLM generated programming exercises. 
-    \item \textbf{RQ2: Can smaller, lighter LLMs achieve the performance of larger models in detecting faithfulness hallucinations?} This would enable the development and use of less resource-intensive hallucination detection pipelines. The results of the models are compared, with an emphasis on the difference in the performance of larger and smaller models.
-    \item \textbf{RQ3: Can the performance of faithfulness hallucination performance of LLMs be improved using in-context learning?} Since fine-tuning a model is costly and time-consuming, it is of interest whether the performance of a model can be improved during inference, by only modifying the input and providing more context to the model. A baseline is obtained by prompting the models in a 0-shot fashion and then compared with the results of various ICL setups.
+     \item \textbf{RQ1: Are out-of-the-box LLMs able to detect faithfulness hallucinations in LLM generated programming exercises?} This study includes researching the capabilities and evaluating the performance of multiple base models in detecting faithfulness hallucinations in LLM generated programming exercises. 
+    \item \textbf{RQ2: Can smaller, lighter LLMs achieve the performance of larger models in detecting faithfulness hallucinations?} Models of varying parameter counts are considered in the experiment. The results of the models are compared, with an emphasis on the difference in the performance of larger and smaller models.
+    \item \textbf{RQ3: Can the performance of faithfulness hallucination performance of LLMs be improved using in-context learning?} A baseline is obtained by prompting the models in a 0-shot fashion and then compared with the results of various ICL setups.
 \end{itemize}
 
 These questions determine the course and content of the study. The thesis is structured as follows:
-
 \begin{itemize}
     \item \textbf{Background:} In this section, existing relevant literature is reviewed and past studies are explained in order to understand the current state of research and bring the readers to a common level of knowledge on the subject. The first topic covered is the Fundamentals of Large Language Models, then Hallucinations in LLMs. After that, a brief explanation on Hallucination Mitigation Methods, and LLMs in CS Education, and finally, existing research in Automatic exercise generation is covered.
     \item \textbf{Research material and methods:} \textbf{TODO: content}
@@ -654,7 +653,7 @@ In the context of LLMs, their versatility and usage in various fields of researc
 
 \subsubsection{Factuality hallucinations} \label{sec:factuality_hallucinations}
 
-Factuality hallucinations refer to generated content that deviates from established world knowledge, containing either inconsistentities that conflict real-world facts or unverifiable information. Factuality hallucinations are further divided into two subcategories:
+Factuality hallucinations refer to generated content that deviates from established world knowledge, containing either inconsistentities that conflict real-world facts or unverifiable information \cite{10.1145/3703155}. Factuality hallucinations are further divided into two subcategories:
 
 \begin{enumerate}
     \item \textit{Factual contradiction} refers to situations where the LLM generates an output presenting information contradicting established knowledge as facts. Factual contradictions can be divided into two subcategories: \textit{entity-error hallucinations} and \textit{relation-error hallucinations}. This categorization is not universal and variations exist. \textcite{li2024dawndarkempiricalstudy} include in the categorization \textit{incompleteness hallucinations} and \textit{outdatedness hallucinations} in addition to previously mentioned hallucination types. Entity-error hallucinations contain erroneous entities in the output, shown in figure \ref{fig:hallucination_types} when Thomas Edison was falsely credited as the inventor of the telephone, although it in fact was developed by Alexander Graham Bell. Relation-error hallucinations, on the other hand, contain misrepresented relations between entities. From \ref{fig:hallucination_types}, the model claiming that Thomas Edison was the inventor of the lightbulb, when in reality he made improvements to the existing design, is a relation-error hallucination. Incompleteness hallucination refers to situations where the LLM output is clearly incomplete. This occurs most often when generating long or listed responses. An example of an incompleteness hallucination is the LLM producing a list of 7 popular fantasy books when asked to produce a list of 10. Outdatedness hallucinations occur when the knowledge of the LLM is out-of-date, and no longer true. For example, an LLM trained before 2025 would answer "Joe Biden", when asked about the current president of the United States, when the current answer is "Donald Trump".
@@ -701,7 +700,7 @@ Referring to section \ref{sec:training}, SFT seeks to turn the capabilities of t
 
 Decoding is a crucial component in utilizing the capabilities obtained by an LLM during training to the fullest. However, there are weaknesses in decoding strategies that can induce hallucinations. As established in section \ref{sec:decoding}, the greedy search is deterministic and always outputs the same response for the same input by selecting the most probable token at each step. This in turn means that the greedy search produces bland, low-quality text, and repeats false information if it is most probable. Through stochastic sampling,  LLMs can produce diverse and rich content, circumventing the shortcomings of the greedy search. Although utilizing randomness in the selection process introduces a different reason for hallucinations, since sampling tokens includes the possibility of selecting those with false or unfaithful content.
 
-Although LLMs are equipped with breath-taking reasoning abilities, they may still fail completely on some tasks. Reasoning limits may be exceeded with complicated relations between objects in the prompt, even if the model possesses the knowledge needed for the task. Furthermore, \textcite{berglund2024reversalcursellmstrained} show a specific reasoning failure called the \textit{Reversal Curse}. The study shows that LLMs fail to generalize information and understand bidirectional relations. The Reversal Curse is exhibited when an LLM trained on a statement of the form "A is B" is asked to assess the truthfulness of the statement "B is A". For example, an LLM trained on "Homer Simpson is Bart Simpson's father." might fail to truthfully answer when asked "Who is Bart Simpson's father?", since the model cannot infer the relation from the training data.  
+Although LLMs are equipped with reasoning abilities, they may still completely fail at some tasks. Reasoning limits may be exceeded with complicated relations between objects in the prompt, even if the model possesses the knowledge needed for the task. Furthermore, \textcite{berglund2024reversalcursellmstrained} show a specific reasoning failure called the \textit{Reversal Curse}. The study shows that LLMs fail to generalize information and understand bidirectional relations. The Reversal Curse is exhibited when an LLM trained on a statement of the form "A is B" is asked to assess the truthfulness of the statement "B is A". For example, an LLM trained on "Homer Simpson is Bart Simpson's father." might fail to truthfully answer when asked "Who is Bart Simpson's father?", since the model cannot infer the relation from the training data.  
 
 %Over-confidence?
 
@@ -728,7 +727,7 @@ Figure \ref{fig:icl_faithfulness} shows the prompt design of the ICL evaluation 
 
 Various strategies are employed to mitigate hallucinations. Typical methods for hallucination mitigation include data filtering, model editing, and Retrieval-Augmented Generation (RAG). Data filtering seeks to decrease the frequency of LLM hallucinations arising from low quality pre-training data. By filtering out misinformation, biased information, and duplicate data among other unwanted data qualities from the pre-training data, the factual correctness of LLMs has been shown to improve \cite{gunasekar2023textbooksneed}. Additionally, diverse datasets consisting of multiple smaller high-quality datasets improve the generalization and cross-domain capabilities of LLMs \cite{gao2020pile800gbdatasetdiverse}, reducing hallucinations.
 
-TODO: source! Model editing aims to mitigate hallucinations by rectifying gaps in the model knowledge or behavior by introducing additional knowledge to the model. Usually, model editing methods consist of two steps: locating the buggy part of model parameters responsible for the unwanted behavior and updating it. While providing a targeted way to mitigate hallucinations caused by specific misinformation, studies have found that this type of model editing does not scale well \cite{yao2023editinglargelanguagemodels}. Large-scale updates are difficult to perform and may unintentionally weaken the model's performance in unrelated domains.
+Model editing aims to mitigate hallucinations by rectifying gaps in the model knowledge or behavior by introducing additional knowledge to the model \cite{10.1145/3703155}. Usually, model editing methods consist of two steps: locating the buggy part of model parameters responsible for the unwanted behavior and updating it. While providing a targeted way to mitigate hallucinations caused by specific misinformation, studies have found that this type of model editing does not scale well \cite{yao2023editinglargelanguagemodels}. Large-scale updates are difficult to perform and may unintentionally weaken the model's performance in unrelated domains.
 
 The RAG architecture \cite{NEURIPS2020_6b493230} consists of a retriever and a generator. The retriever employs an external non-parametric knowledge base, retrieving information relevant to input, and feeds it to the generator with the original prompt. The generator then produces an output conditioned by the prompt and the retrieved information. Using RAG targets specifically hallucinations caused by the knowledge boundaries of the model, mitigating them without impacting the performance of the model \cite{shuster-etal-2021-retrieval-augmentation}.
 
@@ -768,15 +767,22 @@ More recently, \textcite{alazraki-etal-2025-need} found that LLMs can learn impl
 \end{align}
 instead. In the study, \textcite{alazraki-etal-2025-need} compared the performance of LLM models in various  tasks in an ICL setting using demonstration examples of the forms \ref{eq:cot}, \ref{eq:explicit} and \ref{eq:implicit}. The results of the empirical study show that implicit in-context learning beats explicit ICL prompting in nearly all tasks and across all models. Although the answers produced using without corrective rationales are noticably shorter on average than with rationales, the answers were atleast equally exhaustive. \textcite{alazraki-etal-2025-need} hypothesize that the model is over-constrained by the rationale, allowing the implicit learning setting to exceed the performance of explicit prompting.
 
-\iffalse
-\begin{itemize}
-    \item ICL! \cite{alazraki-etal-2025-need, madaan2023selfrefineiterativerefinementselffeedback, vamshi2026manifoldbasedsamplingincontexthallucination, Jain_2023}
-\end{itemize}
-\fi
+\subsection{Adversarial context generation} \label{sec:context_gen}
+
+Many LLM benchmarks evaluate the model on input where all information is relevant to solving the task \cite{shi2023largelanguagemodelseasily}. However, in real-world information retrieval scenarios, e.g. RAG systems, the retrieved information passed as input to the model is often very long and might contain irrelevant information or contextual contradictions. To this end, \textcite{ming2025faithevallanguagemodelstay} created the FaithEval benchmark, which evaluates the faithfulness of an LLM in long and noisy contexts.
+
+As part of their work in creating the FaithEval benchmark, \textcite{ming2025faithevallanguagemodelstay} explored the concept of \textit{adversarial context generation}, where existing documents are modified by adding or replacing the existing context with a conflicting context. Their goal was to utilize an LLM to generate documents with unanswerable, inconsistent, and counterfactual contexts.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{latex/images/faitheval_prompt.png}
+\caption{An example of a system prompt that was used by \textcite{ming2025faithevallanguagemodelstay} for adversarial context generation}
+\label{fig:acg}
+\end{figure}
+Figure \ref{fig:acg} shows one of the prompts used to modify the context in the provided documents, which explicitly instructs the model of the task performed and specifies the output form. These modified documents were compiled into a dataset, resulting in almost 5000 human validated  LLM generated samples that simulate incomplete, contradictory, and fabricated information that sometimes surface in information retrieval present in current LLM systems.
 
 \subsection{LLMs in CS Education} \label{sec:cs_edu}
 
-The astounding capabilities of LLMs in an array of NLP tasks have garnered much attention in utilizing them in Computer Science education. Recently, the usage of LLMs in the support of novice programmers by providing code solutions for learning, producing learning resources, and exploring new pedagogical approaches has been studied \cite{10.1145/3545945.3569759}. The results of studies of such applications show great promise, highlighting their potential to enhance learning experiences, but have also revealed challenges concerning ethical issues, biases, and over-reliance on LLMs.
+The capabilities of LLMs in an array of NLP tasks have garnered much attention in utilizing them in Computer Science education. Recently, the usage of LLMs in the support of novice programmers by providing code solutions for learning, producing learning resources, and exploring new pedagogical approaches has been studied \cite{10.1145/3545945.3569759}. The results of studies of such applications show great promise, highlighting their potential to enhance learning experiences, but have also revealed challenges concerning ethical issues, biases, and over-reliance on LLMs.
 
 Students typically acquire their programming skills by completing a series of programming exercises for each topic. These exercises are usually automatically graded, but do not include any explanations for the assessments, leaving the student alone in figuring out the solution. To alleviate this problem, LLMs been used to develop coding assistants for students \cite{10.1145/3631802.3631830}. The coding assistant could be used to provide suggestions or a solution to the problem. Even when the student is successful in completing an exercise, the assistant could show the student improvement suggestions or alternative ways to complete the exercise. 
 
@@ -845,25 +851,10 @@ Simple data transformations were performed to improve the alignment of the data 
     \caption{Original data label distribution}
     \label{tb:original_data}
 \end{table}
-\begin{figure*}
-    \centering
-    \begin{subfigure}[b]{0.49\textwidth}
-        \centering
-    \inputminted{text}{./minted_inputs/augment_system_prompt.txt}
-    \caption{System prompt}
-    \label{lst:augment_system_prompt}
-    \end{subfigure}%
-    ~ 
-    \begin{subfigure}[b]{0.49\textwidth}
-        \centering
-    \inputminted{text}{./minted_inputs/augment_user_prompt.txt}
-    \caption{User prompt}
-    \label{lst:augment_user_prompt}
-    \end{subfigure}
-    \caption{Prompts used for planting hallucinations}
-\end{figure*}
 
-To balance the dataset, new data needed to be introduced in the form of data points containing faithfulness hallucinations. This meant modifying the theme and topic, and including additional programming concepts in the existing data and appending it to the dataset. TODO: Source and explanation!!! Using LLMs to implant faithfulness hallucinations in the data proved to be a viable option. The model that was selected for planting the hallucinations was Qwen's Qwen2.5-72B-Instruct \cite{yang2024qwen2technicalreport}, since it was one of the largest models available and based on the results of small scale tests performed better than other models of the same scale. Iterations of testing different prompting techniques resulted in the prompts shown in listings \ref{lst:augment_system_prompt} and TODO: \ref{lst:augment_user_prompt}. The system prompt shown in listing \ref{lst:augment_system_prompt} contains the task instruction and the user prompt in listing \ref{lst:augment_user_prompt} was used to provide the context to the model in order to plant faithfulness hallucinations to the data. The user prompt was used as a template, where the tags surrounded by dollar signs (\$) were programmematically replaced. The tags were replaced in the following fashion:
+To balance the dataset, new data needed to be introduced in the form of data points containing faithfulness hallucinations. This meant modifying the theme and topic, and including additional programming concepts in the existing data and appending it to the dataset. The process of creating new data with modified context is strongly inspired by the work of \textcite{ming2025faithevallanguagemodelstay} in adversarial context generation explained in section \ref{sec:context_gen}.
+
+TODO: Source and explanation!!! Using LLMs to implant faithfulness hallucinations in the data proved to be a viable option. The model that was selected for planting the hallucinations was Qwen's Qwen2.5-72B-Instruct \cite{yang2024qwen2technicalreport}, since it was one of the largest models available and based on the results of small scale tests performed better than other models of the same scale. Iterations of testing different prompting techniques resulted in the prompts shown in listings \ref{lst:augment_system_prompt} and \ref{lst:augment_user_prompt}. TODO: more abstract!!! The system prompt shown in listing \ref{lst:augment_system_prompt} contains the task instruction and the user prompt in listing \ref{lst:augment_user_prompt} was used to provide the context to the model in order to plant faithfulness hallucinations to the data. The user prompt was used as a template, where the tags surrounded by dollar signs (\$) were programmematically replaced. The tags were replaced in the following fashion:
 \begin{itemize}
     \item \$THEME\$: A value was selected from a list of themes \footnote{literature, handicrafts, food, classical music, board games, pop music, sports, art, pets, historical landmarks, cartoons, video games, outdoor activities, party games, nature destinations, Christmas} at random.
     \item \$TOPIC\$: A value that differs from the value of the original was randomly selected from a list of topics corresponding to the theme \footnote{Topics were extracted from the existing dataset. Each theme included 7-10 topics.}.
@@ -871,27 +862,11 @@ To balance the dataset, new data needed to be introduced in the form of data poi
     \item \$TEXT\$: The value of 'problemDescription' was inserted.
     \item \$CODE\$: The value of 'exampleSolution' was inserted.
 \end{itemize}
+
+
 The prompting techniques used by \textcite{ming2025faithevallanguagemodelstay} heavily influenced the structure of the prompts used in this thesis, although additional guard rails, which further clarified the form of the output, were included in the system prompt, which noticably reduced the number of model failures, i.e., invalid JSON outputs.
 
 The dataset, excluding the samples with 'partially' labels, was run through the model, producing 273 more rows. An exercise, consisting of a problem description and an example solution is shown in figure \ref{fig:og_ex}. The exercise, which was generated based on the exercise in figure \ref{fig:og_ex}, is shown in figure \ref{fig:ag_ex}. Comparing the two exercises, it can be seen that the LLM has successfully planted faithfulness hallucinations in the exercise: the exercise is no longer about Lingonberry sauce, but rather the composer Claudio Monteverdi, and usage of a while loop has been injected in the problem as well.
-
-\begin{figure*}
-    \centering
-    \begin{subfigure}[b]{0.49\textwidth}
-    \inputminted{text}{./minted_inputs/example_original_problem.txt}
-    \inputminted{dart}{./minted_inputs/example_original_solution.txt}
-    \caption{An example of an original exercise in the dataset}
-    \label{fig:og_ex}
-    \end{subfigure}%
-    ~ 
-    \begin{subfigure}[b]{0.49\textwidth}
-    \inputminted{text}{./minted_inputs/example_augmented_problem.txt}
-    \inputminted{dart}{./minted_inputs/example_augmented_solution.txt}
-    \caption{The augmented exercise generated based on the original exercise on the left}
-    \label{fig:ag_ex}
-    \end{subfigure}
-    \caption{An example from the augmented dataset, note that line breaks and splits have been added post-generation by the author to better fit the content into the document.}
-\end{figure*}
 
 A total of 11 rows were removed due to JSON parsing errors, resulting in a total of 262 valid generated rows. To use the generated data as ground-truth data, the augmented problem description and the example solution were set as originals, and the labels were modified. For columns 'The exercise description matched the selected theme' and 'The exercise description matched the selected topic' the label was changed to 'no' if the value injected in the generation prompt differs from the original, and otherwise the label was set as 'yes'. All values in column 'Included concepts that were too advanced' were set to "yes", since an advanced concept was injected into each exercise. The inclusion of the generated dataset, with the modified labels, resulted in a fairly balanced dataset, consisting of 535 rows, where the distribution of labels is listed in table \ref{tb:augmented_data}.
 
@@ -946,12 +921,8 @@ In addition to simply measuring the performance of a model in detecting faithful
         \item Llama-3.3-70B-Instruct \cite{grattafiori2024llama3herdmodels}
         \item Mistral-7B-Instruct-v0.3 \cite{jiang2023mistral7b}
         \item Mistral-Small-3.2-24B-Instruct-2506 \cite{Mistral3webpage}
-        %\item Mixtral-8x7B-Instruct-v0.1??? \cite{jiang2024mixtralexperts}
-        %\item Qwen2.5-7B-Instruct??? \cite{yang2024qwen2technicalreport}
-        %\item Qwen3-VL-8B-Instruct \cite{yang2025qwen3technicalreport}
         \item Qwen3-8B \cite{yang2025qwen3technicalreport}
         \item Qwen3-32B \cite{yang2025qwen3technicalreport}
-        %\item Qwen2.5-72B-Instruct \cite{yang2024qwen2technicalreport}
     \end{itemize}
     Although Mistral-Small-3.2-24B-Instruct-2506 is technically not from the same model family as Mistral-7B-Instruct-v0.3, it was selected as its larger counterpart, since it supersedes the model, creating a close enough match. Note that all citations to the model's technical reports are for the base models, not the patched versions, and that the technical report of Mistral-Small-3.2-24B-Instruct-2506 has not yet been published. The citation directs to the official webpage of the model instead.
     
@@ -964,35 +935,6 @@ In addition to simply measuring the performance of a model in detecting faithful
 
 \subsubsection{Prompt structure}
 
-\begin{figure}
-\sbox0{\begin{subfigure}[b]{\dimexpr 0.5\textwidth-0.5\columnsep}% measure height with caption
-    \inputminted{text}{./minted_inputs/detect_system_prompt.txt}% some argitrary height
-    \caption{System prompt}
-    \label{fig:detect_system_prompt}
-\end{subfigure}}%
-\usebox0\hfill\begin{minipage}[b][\ht0][s]{\wd0}% s=stretch
-\begin{subfigure}{\linewidth}
-    \inputminted{text}{./minted_inputs/demonstration_template.txt}
-    \caption{Demonstration template}
-    \label{fig:demo_template}
-\end{subfigure}\par
-\vspace{0.5cm}
-\begin{subfigure}{\linewidth}
-    \inputminted{text}{./minted_inputs/detect_system_template.txt}
-    \caption{System prompt template}
-    \label{fig:detect_template}
-\end{subfigure}\par
-\vfill% very important
-\begin{subfigure}[b]{\linewidth}
-    \inputminted{text}{./minted_inputs/detect_user_prompt.txt}
-    \caption{User prompt}
-    \label{fig:detect_user_prompt}
-\end{subfigure}
-\end{minipage}
-\caption{Prompt templates used for detecting faithfulness hallucinations}
-\label{fig:detect_prompts}
-\end{figure}
-
 As explained in \ref{sec:icl}, LLMs are sensitive to the settings and parameters of ICL, where minor changes in the ICL configuration may cause major changes in output quality. \textcite{cobbina2025demospromptpositionalbias} show that the position of the demonstrations provided in-context greatly affects the accuracy of the model. The position of demonstrations that yielded the best results varied between tasks, and they found that with most models, including 3 of the models considered in this thesis (Llama-3-8B, Llama-3-70B, Mistral-7B), and the predecessors of the used Qwen3 family, Qwen-7B and Qwen-72B, placing the demonstrations at the start of the system prompt yielded the best results across all classification datasets. For this reason, the use of the prompt structure, where the demonstrations are shown in the beginning of the system prompt, shown in figure \ref{fig:prompt_structure} is selected for the experiment.
 
 \begin{figure*}
@@ -1004,16 +946,17 @@ As explained in \ref{sec:icl}, LLMs are sensitive to the settings and parameters
     \label{fig:prompt_structure}
 \end{figure*}
 
-The prompts used for the detection task are shown in figure \ref{fig:detect_prompts}. They are used as the parts for building a structure matching the one in \ref{fig:prompt_structure}, and is built in the following way:
+The prompts used for the detection task are shown in figure \ref{fig:detect_prompts}. They are used as the parts for building a structure similar the one in \ref{fig:prompt_structure}, and is built in the following fashion:
 \begin{enumerate}
-    \item Hyperparameters: $N \geq 0$, $use\_instructions \in \{0, 1\}$, \\ $type\_of\_demonstrations \in \{negative, mixed, positive\}$
+    \item Let $N$ denote the number of demonstrations included in the prompt, $I$ denote use of implicit/explicit prompting, and $D$ denote the type of prompts used.
+    \item Require: $N \in \{0, 1, 6\}$, $I \in \{implicit, explicit\}$, \\ $D \in \{negative, mixed, positive\}$
     \item Build demonstrations:
         \begin{itemize}
-            \item Sample dataset for $N$ $type\_of\_demonstrations$ demonstrations.
+            \item Sample dataset for $N$ demonstrations of type $D$.
             \item Insert context in the demonstration template \ref{fig:demo_template}. Concatenate all demonstrations into a single string.
         \end{itemize}
     \item Inject demonstrations into \$DEMONSTRATIONS\$ in \ref{fig:detect_template}
-    \item If $use\_instructions = 1$, inject the system prompt \ref{fig:detect_system_prompt} into \$SYSTEMPROMPT\$ in \ref{fig:detect_template}, otherwise the tag is removed.
+    \item If $I = 1$, inject the system prompt \ref{fig:detect_system_prompt} into \$SYSTEMPROMPT\$ in \ref{fig:detect_template}, otherwise the tag is removed.
 \end{enumerate}
 However, in 0-shot runs, i.e., runs where $N = 0$, the procedure is skipped and only the system prompt \ref{fig:detect_system_prompt} is used. To avoid data leakage, for runs with $N > 0$, the rows that were used as demonstrations were removed from the dataset, so the total number of generated responses varies from 529 to 535 depending on the value of $N$.
 
@@ -1023,30 +966,14 @@ Another model specific configuration done relates to the Qwen3 models. They have
 
 \subsubsection{Final experiment setup}
 
+Based on the hyperparameters explained in section \ref{sec:desc} the suites visible in table \ref{tb:suites} were constructed. These suites were executed once for each model and once for each random seed \footnote{Used seeds: 1, 10, 42, 50, 100}, resulting in $6 * 5 * 11 = 330$ passes of the dataset. It was decided that 0-shot prompting would only run with included task instructions, since the context given to the model would not be sufficient without instructions, leading to excessive erroneous generations.
+
 \begin{table}
 \centering
-\begin{tabularx}{0.6\textwidth}{X|rrr}
-    \toprule
-     Suite ID & Demos (N) & Type & Instructions \\
-    \midrule
-    1 & 0 & none & yes \\
-    2 & 1 & negative & no \\
-    3 & 1 & positive & no \\
-    4 & 1 & negative & yes \\
-    5 & 1 & positive & yes \\
-    6 & 6 & negative & no \\
-    7 & 6 & mixed & no \\
-    8 & 6 & positive & no \\
-    9 & 6 & negative & yes \\
-    10 & 6 & mixed & yes \\
-    11 & 6 & positive & yes \\
-    \bottomrule
-\end{tabularx}
-\caption{The final suite of run parameters}
+\input{latex/tables/suites}
+\caption{The final suite of run hyperparameters}
 \label{tb:suites}
 \end{table}
-
-Based on the hyperparameters explained in section \ref{sec:desc} the suite visible in table \ref{tb:suites} was constructed. This suite was executed once for each model and once for each random seed \footnote{Used seeds: 1, 10, 42, 50, 100}, resulting in $6 * 5 * 11 = 330$ passes of the dataset. It was decided that 0-shot prompting would only run with included task instructions, since the context given to the model would not be sufficient without instructions, leading to excessive erroneous generations.
 
 All runs were conducted with the same decoding and generation hyperparameters: the model temperature was set to 0.3, top-$k$ to 20, and top-$p$ to 0.80, and the maximum number of generated tokens was set to 64. As explained in section \ref{sec:decoding}, a low temperature sharpens the output token probabilities, making high probability tokens even more likely. Combining this with top-$k$ = 20, the number of tokens considered is reduced to 20, and lastly applying top-p reduces the probability mass of the nucleus to 0.8 of the total of the top 20 tokens. This results in a distribution shape where the output is fairly predictable. These hyperparameters were selected to promote a controlled, conservative generation with mild variability in the model, since generating JSON is a task requiring accuracy, where even one falsely generated token, such as ',' at the wrong position, breaks the validity of the JSON, thus rendering the output useless. The maximum number of generated tokens is set to be strict, but still having room for the generation of the output according to the schema.
 
@@ -1143,18 +1070,7 @@ ERRORS:
     \label{tab:error_stats}
 \end{table}
 
-STDEV:
-
-\begin{table}[]
-    \tiny
-    \centering
-    \resizebox{\textwidth}{!}{%
-    \input{latex/tables/std_table}
-    }
-    \caption{Standard deviations of all executed suites per model, where the maximum value of each column per model is hihglighted}
-    \label{tab:stds}
-\end{table}
-
+STDEV table in appendix???
 
 \clearpage
 
@@ -1195,34 +1111,6 @@ your school. This template aims to help you meet these requirements.
 
 %%%%%%%%%% END BIBLATEX STUFF %%%%%%%%%%
 
-%% The hand-written bibliography
-%\thesisbibliography % Required to get the bibliography title in toc and to get
-                     % the page number hyperlink to the page correct.
-
-%\begin{thebibliography}{99}
-%
-%  \bibitem{aaltolib} Citation Guide: Making a bibliography, \textit{Aalto 
-%  	University Learning Centre}. Online article. Available  
-%    \url{https://libguides.aalto.fi/c.php?g=410674&p=2797572}
-%    (accessed on 14.7.2021)
-%
-%  \bibitem{Bringhurst} Bringhurst, R., \textit{Horizontal Motion. The Elements 
-%  	of Typographic Style}, Point Roberts, WA: Hartley \& Marks, 1992. p. 26, 
-%    pp.\ 25--36. Also available online as version 3.0 at  
-%    %\url{https://smallpressblog.files.wordpress.com/2017/11/bringhurstelementsselections1.pdf} (accessed on 7 May 2021).
-%
-%  \bibitem{Dyson} Dyson, M. C., and Kipping, G. J., ``The Effects of Line Length 
-%    and Method of Movement on Patterns of Reading from Screen,'' 
-%    \textit{Visible Language,} vol.~2, no.~2, pp. 150--181, 1998.
-%
-%  \bibitem{Wikilinelength} Wikipedia contributors, ``Line length,'' 
-%    \textit{Wikipedia: The Free Encyclopedia}, Wikimedia Foundation, Inc., 
-%    22 July 2004.
-%    \url{https://en.wikipedia.org/w/index.php?title=Line_length&oldid=997524503}
-%    (accessed on 7 May 2021).
-%
-%\end{thebibliography}
-
 %% Appendices
 %% If you don't have appendices, your thesis ends here. Remove \clearpage,
 %% \thesisappendix and the following text below. The last command of this file
@@ -1231,37 +1119,85 @@ your school. This template aims to help you meet these requirements.
 
 \thesisappendix
 
-\section{Contents of an appendix}
-\label{app:contents}
+\section{Appendix} \label{app:contents}
 
-Appendices are not essential in a thesis, and so you must plan the content of 
-your thesis as if it does not contain an appendix. The appendix cannot be used 
-as a dumping ground for text and ideas from an overgrown thesis.
+%Appendices are not essential in a thesis, and so you must plan the content of your thesis as if it does not contain an appendix. The appendix cannot be used as a dumping ground for text and ideas from an overgrown thesis.
 
-An appendix is an independent entity, even though it complements the thesis. 
-So, the appendix is not, say, just a list or image or table, but contains 
-explanatory text as well that indicates the purpose of its content. It can 
-contain code listings, like the one below for a simplified list of commands to 
-create an appendix.
+%An appendix is an independent entity, even though it complements the thesis.  So, the appendix is not, say, just a list or image or table, but contains  explanatory text as well that indicates the purpose of its content. It can contain code listings, like the one below for a simplified list of commands to create an appendix.
 
-The appendix can contain figures that do not fit in to complement the text in 
-the thesis. The numbering of figures is like that of equations: see figure~\ref{appfig:refraction}.
+\begin{figure*}[!h]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+    \inputminted{text}{./minted_inputs/example_original_problem.txt}
+    \inputminted{dart}{./minted_inputs/example_original_solution.txt}
+    \caption{An example of an original exercise in the dataset}
+    \label{fig:og_ex}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[b]{0.49\textwidth}
+    \inputminted{text}{./minted_inputs/example_augmented_problem.txt}
+    \inputminted{dart}{./minted_inputs/example_augmented_solution.txt}
+    \caption{The augmented exercise generated based on the original exercise on the left}
+    \label{fig:ag_ex}
+    \end{subfigure}
+    \caption{An example from the augmented dataset, note that line breaks and splits have been added post-generation by the author to better fit the content into the document.}
+\end{figure*}
 
-The numbering of tables is like that for equations and figures, as is evident 
-from the caption of table~\ref{apptab:schedule}.
+\begin{figure*}[!h]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+    \inputminted{text}{./minted_inputs/augment_system_prompt.txt}
+    \caption{System prompt}
+    \label{lst:augment_system_prompt}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+    \inputminted{text}{./minted_inputs/augment_user_prompt.txt}
+    \caption{User prompt}
+    \label{lst:augment_user_prompt}
+    \end{subfigure}
+    \caption{Prompts used for planting hallucinations}
+\end{figure*}
 
-%% Example of a table in the appendix. Note how h places the table in the
-%% current position.
-\begin{table}[htb]
-	\centering
-	\caption{Caption for the table.}
-	\label{apptab:schedule}
-	\sffamily% change the font in the table to sans serif
-	\fbox{
-		\begin{tabular}{lp{0.5\linewidth}}
-			9.00--9.55  & Safety instructions on the use of laboratories\\
-			9.55--10.00 & Transfer to the laboratory
-		\end{tabular}}
+\begin{figure}[!h]
+\sbox0{\begin{subfigure}[b]{\dimexpr 0.5\textwidth-0.5\columnsep}% measure height with caption
+    \inputminted{text}{./minted_inputs/detect_system_prompt.txt}% some argitrary height
+    \caption{System prompt}
+    \label{fig:detect_system_prompt}
+\end{subfigure}}%
+\usebox0\hfill\begin{minipage}[b][\ht0][s]{\wd0}% s=stretch
+\begin{subfigure}{\linewidth}
+    \inputminted{text}{./minted_inputs/demonstration_template.txt}
+    \caption{Demonstration template}
+    \label{fig:demo_template}
+\end{subfigure}\par
+\vspace{0.5cm}
+\begin{subfigure}{\linewidth}
+    \inputminted{text}{./minted_inputs/detect_system_template.txt}
+    \caption{System prompt template}
+    \label{fig:detect_template}
+\end{subfigure}\par
+\vfill% very important
+\begin{subfigure}[b]{\linewidth}
+    \inputminted{text}{./minted_inputs/detect_user_prompt.txt}
+    \caption{User prompt}
+    \label{fig:detect_user_prompt}
+\end{subfigure}
+\end{minipage}
+\caption{Prompt templates used for detecting faithfulness hallucinations}
+\label{fig:detect_prompts}
+\end{figure}
+
+\begin{table}[!h]
+    \tiny
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \input{latex/tables/std_table}
+    }
+    \caption{Standard deviations of all executed suites per model, where the maximum value of each column per model is hihglighted}
+    \label{tab:stds}
 \end{table}
 
 \end{document}
