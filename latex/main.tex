@@ -1115,21 +1115,21 @@ How to present the results?? 6 models, 11 suites, 3 labels, x metrics (accuracy,
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{latex/images/f1_per_suite.png}
-    \caption{Heatmaps for each label of means F1 scores per model and suite}
+    \caption{Heatmaps for each label of means of F1 scores per model and suite}
     \label{fig:placeholder}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=0.9\textwidth]{latex/images/precision_per_suite.png}
-    \caption{Heatmaps for each label of means precision scores per model and suite}
+    \caption{Heatmaps for each label of means of precision scores per model and suite}
     \label{fig:placeholder}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=0.9\textwidth]{latex/images/recall_per_suite.png}
-    \caption{Heatmaps for each label of means recall scores per model and suite}
+    \caption{Heatmaps for each label of means of recall scores per model and suite}
     \label{fig:placeholder}
 \end{figure}
 
@@ -1139,8 +1139,20 @@ ERRORS:
 \begin{table}
     \centering
     \input{latex/tables/err_table.tex}
-    \caption{Breakdown of errors in generated detection predictions}
+    \caption{Breakdown of errors in generated detection predictions, where each row is the sum of errors across all seeds}
     \label{tab:error_stats}
+\end{table}
+
+STDEV:
+
+\begin{table}[]
+    \tiny
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \input{latex/tables/std_table}
+    }
+    \caption{Standard deviations of all executed suites per model, where the maximum value of each column per model is hihglighted}
+    \label{tab:stds}
 \end{table}
 
 
