@@ -765,7 +765,7 @@ More recently, \textcite{alazraki-etal-2025-need} found that LLMs can learn impl
 \begin{align} \label{eq:implicit}
     e^{implicit} = (q, w, a)
 \end{align}
-instead. In the study, \textcite{alazraki-etal-2025-need} compared the performance of LLM models in various  tasks in an ICL setting using demonstration examples of the forms \ref{eq:cot}, \ref{eq:explicit} and \ref{eq:implicit}. The results of the empirical study show that implicit in-context learning beats explicit ICL prompting in nearly all tasks and across all models. Although the answers produced using without corrective rationales are noticably shorter on average than with rationales, the answers were atleast equally exhaustive. \textcite{alazraki-etal-2025-need} hypothesize that the model is over-constrained by the rationale, allowing the implicit learning setting to exceed the performance of explicit prompting.
+instead. In the study, \textcite{alazraki-etal-2025-need} compared the performance of LLM models in various  tasks in an ICL setting using demonstration examples of the forms \ref{eq:cot}, \ref{eq:explicit} and \ref{eq:implicit}. The results of the empirical study show that implicit in-context learning beats explicit ICL prompting in nearly all tasks and across all models. Although the answers produced using without corrective rationales are noticably shorter on average than with rationales, the answers were at least equally exhaustive. \textcite{alazraki-etal-2025-need} hypothesize that the model is over-constrained by the rationale, allowing the implicit learning setting to exceed the performance of explicit prompting.
 
 \subsection{Adversarial context generation} \label{sec:context_gen}
 
@@ -805,6 +805,10 @@ Randomly selecting 120 generated exercises from a total of 240, 75.0\% were sens
 
 \section{Methods}
 
+TODO: Short beginning paragraph!
+
+In this section, etc
+
 %This part is the core of your work, where you explain the methodological choices you made, its limitations, how you pick your research material or subjects, the implementation of your study and the methods used. This section determines the methodological strengths and weaknesses of your thesis. Any earlier description of the method should limit itself to work done earlier by others. Here you tell your reader what you have done.
 
 \subsection{Research design} \label{sec:design}
@@ -829,42 +833,15 @@ As stated in the previous section, this thesis utilizes a dataset produced by \t
 In total, the dataset consists of 283 rows and 18 columns. The data columns relevant to the experiment performed in this study are: 'problemDescription', 'exampleSolution', which contain the generated programming exercise described in the previous paragraph, 'theme', 'topic', which are the features used to contextualize the exercise, and 'concept' that was used as the programming concept the exercise required for completing the exercise. Additionally, the human-graded columns 'The exercise description matched the selected theme (Yes/Partially/No)', 'The exercise description matched the selected topic (Yes/Partially/No)', and 'Included concepts that were too advanced (Yes/No)' are used as labels. The features provide all the necessary context for the model, while the label columns are used as ground-truth in the evaluations, directly corresponding to the questions listed in \ref{sec:design}.
 
 Simple data transformations were performed to improve the alignment of the data with the experiment. The label columns of the dataset are human-graded, but 33 of the rows are inter-rated by a group of 5 researchers. For these rows, a majority vote was held to decide the final label. Table \ref{tb:original_data} shows the label distribution of the original dataset. Since the count of examples with negative labels ("partially" or "no") is low, the number had to be artificially increased to balance the dataset. Due to the ambiguity of "partially" labels, the exclusion of rows that include such labels was decided. This preprocessing filter removed 10 samples from the dataset in total. 
+
 \begin{table}
     \centering
-    \begin{tabularx}{\textwidth}{Xcccccc}
-        \toprule
-        Label name & \multicolumn{6}{c}{Label value} \\
-        \midrule
-        & \multicolumn{2}{c}{Yes} 
-        & \multicolumn{2}{c}{Partially} 
-        & \multicolumn{2}{c}{No} \\
-         & N & \% & N & \% & N & \% \\
-        \midrule
-        The exercise description matched the selected theme 
-        & 272 & 96.1 & 7 & 2.5 & 4 & 1.4 \\
-        The exercise description matched the selected topic 
-        & 270 & 95.4 & 9 & 3.2 & 4 & 1.4 \\
-        Included concepts that were too advanced 
-        & 13 & 4.6 & {} & {} & 270 & 95.4 \\
-        \bottomrule
-    \end{tabularx}
+    \input{latex/tables/original_data}
     \caption{Original data label distribution}
     \label{tb:original_data}
 \end{table}
 
-To balance the dataset, new data needed to be introduced in the form of data points containing faithfulness hallucinations. This meant modifying the theme and topic, and including additional programming concepts in the existing data and appending it to the dataset. The process of creating new data with modified context is strongly inspired by the work of \textcite{ming2025faithevallanguagemodelstay} in adversarial context generation explained in section \ref{sec:context_gen}.
-
-TODO: Source and explanation!!! Using LLMs to implant faithfulness hallucinations in the data proved to be a viable option. The model that was selected for planting the hallucinations was Qwen's Qwen2.5-72B-Instruct \cite{yang2024qwen2technicalreport}, since it was one of the largest models available and based on the results of small scale tests performed better than other models of the same scale. Iterations of testing different prompting techniques resulted in the prompts shown in listings \ref{lst:augment_system_prompt} and \ref{lst:augment_user_prompt}. TODO: more abstract!!! The system prompt shown in listing \ref{lst:augment_system_prompt} contains the task instruction and the user prompt in listing \ref{lst:augment_user_prompt} was used to provide the context to the model in order to plant faithfulness hallucinations to the data. The user prompt was used as a template, where the tags surrounded by dollar signs (\$) were programmematically replaced. The tags were replaced in the following fashion:
-\begin{itemize}
-    \item \$THEME\$: A value was selected from a list of themes \footnote{literature, handicrafts, food, classical music, board games, pop music, sports, art, pets, historical landmarks, cartoons, video games, outdoor activities, party games, nature destinations, Christmas} at random.
-    \item \$TOPIC\$: A value that differs from the value of the original was randomly selected from a list of topics corresponding to the theme \footnote{Topics were extracted from the existing dataset. Each theme included 7-10 topics.}.
-    \item \$CONCEPT\$: Each concept in the dataset was assigned to a chapter \footnote{Chapters and the concepts covered: (1: user input, program output, variables), (2: arithmetics), (3: conditional statements, logical operators), (4: for loops, while loops)}, creating an order of intended progression. A concept from chapters higher than the ground-truth concept was selected for insertion.
-    \item \$TEXT\$: The value of 'problemDescription' was inserted.
-    \item \$CODE\$: The value of 'exampleSolution' was inserted.
-\end{itemize}
-
-
-The prompting techniques used by \textcite{ming2025faithevallanguagemodelstay} heavily influenced the structure of the prompts used in this thesis, although additional guard rails, which further clarified the form of the output, were included in the system prompt, which noticably reduced the number of model failures, i.e., invalid JSON outputs.
+To balance the dataset, new data needed to be introduced in the form of data points containing faithfulness hallucinations. Inspired by the work of \textcite{ming2025faithevallanguagemodelstay} in adversarial context generation, see section \ref{sec:context_gen}, it was decided that the dataset is expanded by generating new samples based on existing samples. This meant modifying the theme and topic and including additional programming concepts in the existing samples and appending the modified samples to the dataset. The model that was selected for planting the hallucinations was Qwen's Qwen2.5-72B-Instruct \cite{yang2024qwen2technicalreport}, since it was one of the largest models available and based on the results of small scale tests performed better than other models of the same scale. Iterations of testing different prompting techniques resulted in a system prompt that instructed the model to modify the theme, topic, and concept of the input exercise, and a user prompt that provided the context, containing the programming exercise to be modified and the injected values, to the model. For more specific implementation details, including the prompts and the value selection procedure, see Appendix \ref{app:mod}. The prompting techniques used by \textcite{ming2025faithevallanguagemodelstay} heavily influenced the structure of the prompts used in this thesis, although additional guard rails, which further clarified the form of the output, were included in the system prompt. The inclusion of guard rails noticably reduced the number of model failures, i.e., the generation of invalid JSON.
 
 The dataset, excluding the samples with 'partially' labels, was run through the model, producing 273 more rows. An exercise, consisting of a problem description and an example solution is shown in figure \ref{fig:og_ex}. The exercise, which was generated based on the exercise in figure \ref{fig:og_ex}, is shown in figure \ref{fig:ag_ex}. Comparing the two exercises, it can be seen that the LLM has successfully planted faithfulness hallucinations in the exercise: the exercise is no longer about Lingonberry sauce, but rather the composer Claudio Monteverdi, and usage of a while loop has been injected in the problem as well.
 
@@ -872,18 +849,7 @@ A total of 11 rows were removed due to JSON parsing errors, resulting in a total
 
 \begin{table}
 \centering
-\begin{tabularx}{\textwidth}{Xcccc}
-\toprule
-    Label name & \multicolumn{4}{c}{Label value} \\
-    \midrule
-    & \multicolumn{2}{c}{Yes} & \multicolumn{2}{c}{No} \\
-    & N & \% & N & \% \\
-    \midrule
-    The exercise description matched the selected theme & 285 & 53.3 & 250 & 46.7 \\
-    The exercise description matched the selected topic & 269 & 50.3 & 266 & 49.7 \\
-    Included concepts that were too advanced & 275 & 51.4 & 260 & 48.6 \\
-    \bottomrule
-\end{tabularx}
+\input{latex/tables/augmented_data}
 \caption{Label distribution of the augmented dataset}
 \label{tb:augmented_data}
 \end{table}
@@ -894,28 +860,18 @@ As stated in section \ref{sec:design}, the aim of this study is to clarify wheth
 
 \begin{table}
 \centering
-\begin{tabularx}{\textwidth}{Xcc}
-    \toprule
-    Label name & \multicolumn{2}{c}{Label value} \\
-    \midrule
-    & Yes & No \\
-    \midrule
-    The exercise description matched the selected theme & non-hallucinatory & hallucinatory \\
-    The exercise description matched the selected topic & non-hallucinatory & hallucinatory \\
-    Included concepts that were too advanced & hallucinatory & non-hallucinatory \\
-    \bottomrule
-\end{tabularx}
+\input{latex/tables/label_interpretation}
 \caption{Interpretation of labels}
 \label{tb:labels_interpretation}
 \end{table}
 
 In addition to simply measuring the performance of a model in detecting faithfulness hallucinations, the performance is measured by the following aspects:
 \begin{itemize}   
-    \item \textbf{Model family:} Model families have different architectures that affect their performance in ways that are difficult to tract analytically TODO: cite. Additionally, the performance of a model can be task-specific, varying even intra-task depending on e.g. input data TODO: Cite. For this reason, an empirical experiment comparing the model families' performance in this specific task is justified. TODO: Lisää humppaa
-
-    For this experiment, the use of models from the Qwen3, Llama3, and Mistral families was decided.
+    \item \textbf{Model family:} Model families have different architectures that affect their performance in ways that are difficult to tract analytically \cite{alqahtani2019performanceanalysiscomparisondistributed}. Additionally, the performance of a model can be task-specific, varying even intra-task depending on e.g. input data \cite{zhang2023whydidmodelfail}. For this reason, an empirical experiment comparing the model families' performance in this specific task is justified. To make the study relevant and current, recent models from widely used and prominent model families are selected for evaluation. For this experiment, the use of models from the Qwen3, Llama-3, and Mistral families was decided.
     
-    \item \textbf{Model size:} It is well-known that model performance scales with respect to model size. Generally, for better results, it is advisable to use a large model. However, the inference of large models is resource-heavy, thus it is of interest to determine whether a smaller model could match or nearly achieve the performance of a large model in detecting faithfulness hallucinations. Furthermore, since this experiment utilizes ICL, which is an emergent ability of LLMs \cite{wei2022emergentabilitieslargelanguage}, it is of interest to discover how ICL affects hallucination detection performance both in small and large models. In this experiment, small models under 10 billion parameters, and larger models have many times more. It was decided, that for the model families used, the models are:
+    \item \textbf{Model size:} It is well-known that model performance scales with respect to model size. Generally, for better results, it is advisable to use a larger model. \textcite{wei2022emergentabilitieslargelanguage} found that LLMs exhibit \textit{emergent abilites}, meaning that the model's ability becomes apparent after a certain threshold (model scale in this case) is exceeded. One of these emergent abilities is ICL. Furthermore, \textcite{wei2023largerlanguagemodelsincontext} found that larger models are better at overriding semantic priors during inference, i.e., they are more capable of taking in information that conflicts the model's internal knowledge obtained during pretraining. This aspect makes larger models more viable in most ICL settings, since they are more capable of learning the task distribution from the demonstrations. However, the inference of large models is resource-heavy, thus it is of interest to determine whether a smaller model could match or nearly achieve the performance of a large model in detecting faithfulness hallucinations. Additionally, it is of interest to discover how ICL affects hallucination detection performance both in small and large models. 
+    
+    In this experiment, small models have under 10 billion parameters, and larger models have many times more. It was decided that for the model families used, the models are:
     \begin{itemize}
         \item Llama-3.1-8B-Instruct \cite{grattafiori2024llama3herdmodels}
         \item Llama-3.3-70B-Instruct \cite{grattafiori2024llama3herdmodels}
@@ -926,9 +882,13 @@ In addition to simply measuring the performance of a model in detecting faithful
     \end{itemize}
     Although Mistral-Small-3.2-24B-Instruct-2506 is technically not from the same model family as Mistral-7B-Instruct-v0.3, it was selected as its larger counterpart, since it supersedes the model, creating a close enough match. Note that all citations to the model's technical reports are for the base models, not the patched versions, and that the technical report of Mistral-Small-3.2-24B-Instruct-2506 has not yet been published. The citation directs to the official webpage of the model instead.
     
-    \item \textbf{Effect of ICL:} This experiment studies the effect of ICL in detecting faithfulness hallucinations in two ways: the effect of including demonstrations in the prompts, and the differences of implicit and explicit in-context learning. In this context, implicit in-context learning signifies the exclusion of task instructions in the prompt, requiring the model to implicitly draw the task distribution from the presented demonstrations, whereas in explicit ICL, task instructions are directly presented to the model. The effect of the number of demonstrations in the prompts is also studied. \textcite{chen-etal-2023-many} suggest, that random 1-shot prompting performs nearly as well in arithmetic tasks as prompts with 7-8 demonstrations. The aim of this study is to determine, whether these findings can be extended to multi-label classification tasks, by first drawing a baseline with 0-shot prompting and then comparing the performance of random 1-shot prompting and 6-shot prompting to the baseline.
+    \item \textbf{Effect of ICL:} This experiment studies the effect of ICL in detecting faithfulness hallucinations in two ways: the effect of including demonstrations in the prompts, and the differences of implicit and explicit in-context learning \cite{alazraki-etal-2025-need}. In this context, implicit in-context learning signifies the exclusion of task instructions in the prompt, requiring the model to implicitly draw the task distribution from the presented demonstrations, whereas in explicit ICL, task instructions are directly presented to the model.
     
-    \item \textbf{Type of demonstrations in ICL:} \textcite{chen-etal-2023-many} also compare the effect of negative and positive demonstrations in the prompts. In their study, demonstrations are labeled 'positive' or 'negative' for each query based on whether the demonstration leads the model to the correct answer. In this experiment, however, non-hallucinatory examples are classified as positive demonstrations and hallucinatory examples as negative demonstrations. The results of \textcite{wei2023largerlanguagemodelsincontext} suggest, that larger models are better at 'learning' the task distribution from the in-context demonstrations, while smaller models especially tend to underfit to demonstration examples, showing significantly lower ICL capabilities. Measuring the performance of the model with specific demonstration setups may give insight on under which circumstances the model performs the best. The performance of the models shown positive, negative, and mixed (only for 6-shot prompting) is measured.
+    The effect of the number of demonstrations on the prompts is also studied. \textcite{chen-etal-2023-many} suggest that random 1-shot prompting performs nearly as well in arithmetic tasks as prompts with 7-8 demonstrations. The aim of this study is to determine whether these findings can be extended to multi-label classification tasks, by first drawing a baseline with 0-shot prompting and then comparing the performance of random 1-shot prompting and 6-shot prompting to the baseline.
+    
+    \item \textbf{Type of demonstrations in ICL:} \textcite{chen-etal-2023-many} also compare the effect of negative and positive demonstrations in the prompts. In their study, demonstrations are labeled 'positive' or 'negative' for each query based on whether the demonstration leads the model to the correct answer. In this experiment, however, non-hallucinatory examples are classified as positive demonstrations and hallucinatory examples as negative demonstrations. This follows the findings of \textcite{alazraki-etal-2025-need}, where showing the models incorrect (hallucinatory) demonstrations yielded improved accuracy over showing correct demonstrations.
+    
+    The results of \textcite{wei2023largerlanguagemodelsincontext} suggest that larger models are better at 'learning' the task distribution from in-context demonstrations, where smaller models especially tend to underfit to demonstration examples, showing significantly lower ICL capabilities. Measuring the performance of the model with specific demonstration setups may give insight on under which circumstances the model performs the best. The performance of the models shown positive, negative, and mixed (only for 6-shot prompting) is measured.
     
     \item \textbf{Consistency:} Introducing randomness into the generation process enables the measure of model robustness to noise and decreases the effect of outliers. For this reason, each suite is executed 5 times on different seeds. The seed affects the random state of the demonstration selection process, not the model itself.
 \end{itemize}
@@ -982,18 +942,7 @@ All runs were conducted with the same decoding and generation hyperparameters: t
 \begin{table}
     \centering
     \renewcommand{\arraystretch}{1.3}
-    \begin{tabularx}{0.75\textwidth}{lXXX}
-        \toprule
-        & & \multicolumn{2}{c}{\textbf{Predicted value}} \\
-        \cmidrule(lr){3-4}
-        & \textbf{Total population (P + N)} & \textbf{Positive (P)} & \textbf{Negative (N)} \\
-        \midrule
-        \multirow{2}{*}{\textbf{True value}} 
-            & \textbf{Positive (P)} & True positive (TP) & False negative (FN) \\
-        \cmidrule(lr){2-4}
-            & \textbf{Negative (N)} & False positive (FP) & True negative (TN) \\
-        \bottomrule
-    \end{tabularx}
+    \input{latex/tables/binary_cls}
     \caption{Confusion matrix for binary classification}
     \label{tab:confusion-matrix}
 \end{table}
@@ -1019,18 +968,17 @@ The questions stated in section \ref{sec:design} are yes/no questions, meaning t
     \begin{align*}
         F1 = \frac{2 TP}{2 TP + FP + FN} = \frac{2 \cdot precision \cdot recall}{precision + recall}.
     \end{align*}
-    TODO: F1 stuff
+    A high F1 score is the result of high precision and sensitivity, whereas a low F1 score signifies that at least one of the metrics is low.
 \end{itemize}
-
 In model evaluations, hallucinatory label values are interpreted as positives in the population, i.e, TP denotes the model correctly detecting a faithfulness hallucination in the sample. Setting the hallucinatory labels as positives enables presenting the models' hallucination detection capabilities more accurately.
 
 \clearpage
 
 \section{Results}
 
-How to present the results?? 6 models, 11 suites, 3 labels, x metrics (accuracy, precision, recall, f1)? => at least 6 * 11 * 3 = 198 values
+In this section, the results obtained from executing the suites are explained and evaluated. The analysis is started from a more general level, and the most interesting points rising from the results are discussed and studied in more detail. For the sake of decluttering the document, all models are referred to by their family name and parameter count, e.g. Llama-8B refers to Llama-3.1-8B-Instruct.
 
-3 heatmaps, axis = (model, suite), values = f1???
+\subsection{Model evaluations}
 
 \begin{figure}
     \centering
@@ -1060,17 +1008,25 @@ How to present the results?? 6 models, 11 suites, 3 labels, x metrics (accuracy,
     \label{fig:placeholder}
 \end{figure}
 
+\subsection{Handling of erroneous samples}
 
-ERRORS:
+As stated in the previous section, a total of 330 passes of the dataset were executed, resulting in a total of 175350 predicted samples. Of the predicted samples, a total of 1253 contained errors. Table \ref{tab:error_stats} shows the distribution of errors. Parse errors refer to generated samples that were not valid JSON, and thus could not be parsed for further processing, and generation errors refer to instances, where the generated content was valid JSON, but did not follow the specified output schema. Most generation errors included an explanation alongside with the answer, when the model was instructed to include only the answer. Due to the low proportion of erroneous rows, they were simply discarded, and thus do not affect the evaluation metrics in any way.
+
+However, it is noteworthy that over 75\% of all errors were generated by two models: Llama-8B and Mistral-7B.
+
+implicit error rate
+
+gen error models
+
+mistral 24B across most suites
 
 \begin{table}
+    \small
     \centering
     \input{latex/tables/err_table.tex}
     \caption{Breakdown of errors in generated detection predictions, where each row is the sum of errors across all seeds}
     \label{tab:error_stats}
 \end{table}
-
-STDEV table in appendix???
 
 \clearpage
 
@@ -1119,12 +1075,66 @@ your school. This template aims to help you meet these requirements.
 
 \thesisappendix
 
-\section{Appendix} \label{app:contents}
+\section{Appendix: Context modification} \label{app:mod}
 
-%Appendices are not essential in a thesis, and so you must plan the content of your thesis as if it does not contain an appendix. The appendix cannot be used as a dumping ground for text and ideas from an overgrown thesis.
+\subsection{Themes, topics and concepts used in modifying context} \label{app:context_values}
 
-%An appendix is an independent entity, even though it complements the thesis.  So, the appendix is not, say, just a list or image or table, but contains  explanatory text as well that indicates the purpose of its content. It can contain code listings, like the one below for a simplified list of commands to create an appendix.
+Themes and topics:
+\begin{itemize}
+    \item literature: Dan Brown, Paulo Coelho, George RR Martin, Stephen King, Haruki Murakami, Margaret Atwood, Agatha Christie, JK Rowling, Chimamanda Ngozi Adichie, John Grisham
+    \item handicrafts: soap making, embroidery, candle making, paper quilling, beading, knitting, painting, macrame, pottery, origami
+    \item food: Rye bread, Mushroom soup, Lingonberry sauce, Karelian pasties, Salmon gravlax, Cloudberry jam, Salmon soup, Cinnamon buns
+    \item classical music: Ludwig van Beethoven, Antonio Vivaldi, Johann Sebastian Bach, Giovanni Pierluigi da Palestrina, Franz Joseph Haydn, Wolfgang Amadeus Mozart, Jean-Baptiste Lully, Claudio Monteverdi, Henry Purcell
+    \item board games: 7 Wonders, Scrabble, Dominion, Carcassonne, Codenames, Dixit, Monopoly, Catan
+    \item pop music: Ed Sheeran, Justin Bieber, Adele, Bruno Mars, Rihanna, David Guetta, Dua Lipa, Taylor Swift, Calvin Harris, Ariana Grande
+    \item sports: cross-country skiing, ice hockey, biathlon, football, skiing, handball, golf, badminton
+    \item art: Michelangelo, Leonardo da Vinci, Henri Matisse, Johannes Vermeer, Claude Monet, Salvador Dali, Rembrandt, Pablo Picasso, Vincent van Gogh
+    \item pets: lizards, rabbits, cats, dogs, hamsters, snakes, guinea pigs, birds, fish, turtles
+    \item historical landmarks: Grand Canal in Venice, Tower of London, Vatican City, Colosseum, Sagrada Familia, Acropolis of Athens, Charles Bridge
+    \item cartoons: Looney Tunes, SpongeBob SquarePants, The Powerpuff Girls, Tom and Jerry, Bugs Bunny, The Jetsons, Popeye, Mickey Mouse
+    \item video games: FIFA, The Legend of Zelda, Grand Theft Auto, Super Mario, Assassin's Creed, Overwatch, Minecraft, Pokémon, Fortnite, Call of Duty
+    \item outdoor activities: snowboarding, camping, skiing, canoeing, hiking, ice skating, wildlife spotting, berry picking, fishing
+    \item party games: Pass the Parcel, Duck Duck Goose, Pictionary, Charades, Treasure Hunt, Freeze Dance, Simon Says, Limbo, Pin the Tail on the Donkey
+    \item nature destinations: Pyhä-Luosto National Park, Repovesi National Park, Hossa National Park, Pallas-Yllästunturi National Park, Nuuksio National Park, Urho Kekkonen National Park, Koli National Park, Oulanka National Park
+    \item Christmas: lighting advent candles, singing carols, decorating the tree, making gingerbread houses, baking cookies, attending holiday parades, hanging stockings, writing letters to Santa, watching holiday movies, exchanging gifts
+\end{itemize}
 
+Concepts and their respective intended order of introduction:
+\begin{itemize}
+    \item 1: user input, program output, variables
+    \item 2: arithmetics
+    \item 3: for loops, while loops
+\end{itemize}
+
+\subsection{Prompts and value selection}
+\begin{figure*}[!h]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+    \inputminted{text}{./minted_inputs/augment_system_prompt.txt}
+    \caption{System prompt}
+    \label{fig:augment_system_prompt}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+    \inputminted{text}{./minted_inputs/augment_user_prompt.txt}
+    \caption{User prompt}
+    \label{fig:augment_user_prompt}
+    \end{subfigure}
+    \caption{Prompts used for planting hallucinations}
+\end{figure*}
+
+The system prompt shown in figure \ref{fig:augment_system_prompt} contains the task instruction and the user prompt in figure \ref{fig:augment_user_prompt} was used to provide the context to the model in order to plant faithfulness hallucinations to the data. The user prompt was used as a template, where the tags surrounded by dollar signs (\$) were programmematically replaced with values (\ref{app:context_values}) selected by the following procedure:
+\begin{itemize}
+    \item \$THEME\$: A value was selected from the list of themes at random. The theme may be equal to the theme of the original exercise.
+    \item \$TOPIC\$: A value from the list of topics corresponding to the selected themes was selected at random. It is ensured that the topic is not equal to the topic of the original exercise.
+    \item \$CONCEPT\$: Each concept in the dataset was assigned to a chapter, creating an order of intended progression. A concept from chapters beyond the ground-truth concept was selected for insertion.
+    \item \$TEXT\$: The exercice description of the sample was inserted.
+    \item \$CODE\$: The example solution of the sample was inserted.
+\end{itemize}
+
+\subsection{Result of context modification}
 \begin{figure*}[!h]
     \centering
     \begin{subfigure}[b]{0.49\textwidth}
@@ -1140,26 +1150,16 @@ your school. This template aims to help you meet these requirements.
     \caption{The augmented exercise generated based on the original exercise on the left}
     \label{fig:ag_ex}
     \end{subfigure}
-    \caption{An example from the augmented dataset, note that line breaks and splits have been added post-generation by the author to better fit the content into the document.}
+    \caption{An example of source (left) and result after modifying the context with values (theme: classical music, topic: Claudio Monteverdi, concept: while loops)}
 \end{figure*}
 
-\begin{figure*}[!h]
-    \centering
-    \begin{subfigure}[b]{0.49\textwidth}
-        \centering
-    \inputminted{text}{./minted_inputs/augment_system_prompt.txt}
-    \caption{System prompt}
-    \label{lst:augment_system_prompt}
-    \end{subfigure}%
-    ~ 
-    \begin{subfigure}[b]{0.49\textwidth}
-        \centering
-    \inputminted{text}{./minted_inputs/augment_user_prompt.txt}
-    \caption{User prompt}
-    \label{lst:augment_user_prompt}
-    \end{subfigure}
-    \caption{Prompts used for planting hallucinations}
-\end{figure*}
+\clearpage
+
+\section{Appendix: Hallucination detection} \label{app:B}
+
+%Appendices are not essential in a thesis, and so you must plan the content of your thesis as if it does not contain an appendix. The appendix cannot be used as a dumping ground for text and ideas from an overgrown thesis.
+
+%An appendix is an independent entity, even though it complements the thesis.  So, the appendix is not, say, just a list or image or table, but contains  explanatory text as well that indicates the purpose of its content. It can contain code listings, like the one below for a simplified list of commands to create an appendix.
 
 \begin{figure}[!h]
 \sbox0{\begin{subfigure}[b]{\dimexpr 0.5\textwidth-0.5\columnsep}% measure height with caption
@@ -1190,13 +1190,17 @@ your school. This template aims to help you meet these requirements.
 \label{fig:detect_prompts}
 \end{figure}
 
+\clearpage
+
+\section{Appendix: Results}
+
 \begin{table}[!h]
     \tiny
     \centering
     \resizebox{\textwidth}{!}{%
     \input{latex/tables/std_table}
     }
-    \caption{Standard deviations of all executed suites per model, where the maximum value of each column per model is hihglighted}
+    \caption{Standard deviations of all executed suites per model, where the maximum value of each column per model is highlighted}
     \label{tab:stds}
 \end{table}
 
