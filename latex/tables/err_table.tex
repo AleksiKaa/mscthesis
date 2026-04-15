@@ -1,56 +1,51 @@
-\begin{tabularx}{\textwidth}{lXXXXX}
+\begin{tabular}{llrr}
 \toprule
- &  &  &  & Parse Errors (N) & Generation Errors (N) \\
- 
- Model & Demos (N) & Type & Use Instructions &  &  \\
-\midrule
-\multirow[t]{5}{*}{Llama-8B} & \multirow[t]{2}{*}{1} & negative & no & 5 & 0 \\
-\cline{3-6}
- &  & positive & no & 508 & 0 \\
-\cline{2-6}
- & \multirow[t]{3}{*}{6} & mixed & no & 54 & 0 \\
-\cline{3-6}
- &  & negative & no & 3 & 0 \\
-\cline{3-6}
- &  & positive & no & 219 & 0 \\
-\cline{1-6}
-\multirow[t]{3}{*}{Llama-70B} & \multirow[t]{2}{*}{1} & negative & no & 5 & 0 \\
-\cline{3-6}
- &  & positive & no & 11 & 0 \\
-\cline{2-6}
- & 6 & positive & no & 2 & 0 \\
-\cline{1-6}
-\multirow[t]{5}{*}{Mistral-7B} & \multirow[t]{2}{*}{1} & negative & no & 121 & 0 \\
-\cline{3-6}
- &  & positive & no & 32 & 0 \\
-\cline{2-6}
- & \multirow[t]{3}{*}{6} & mixed & no & 1 & 0 \\
-\cline{3-6}
- &  & negative & no & 3 & 0 \\
-\cline{3-6}
- &  & positive & no & 1 & 18 \\
-\cline{1-6}
-\multirow[t]{9}{*}{Mistral-24B} & 0 & none & yes & 3 & 0 \\
-\cline{2-6} 
- & \multirow[t]{2}{*}{1} & negative & no & 22 & 0 \\
-\cline{3-6}
- &  & positive & no & 6 & 0 \\
-\cline{2-6} 
- & \multirow[t]{6}{*}{6} & \multirow[t]{2}{*}{mixed} & no & 15 & 0 \\
- &  &  & yes & 5 & 0 \\
-\cline{3-6}
- &  & \multirow[t]{2}{*}{negative} & no & 22 & 0 \\
- &  &  & yes & 7 & 0 \\
-\cline{3-6}
- &  & \multirow[t]{2}{*}{positive} & no & 7 & 0 \\
- &  &  & yes & 1 & 0 \\
-\cline{1-6} 
-\multirow[t]{3}{*}{Qwen3-32B} & 1 & negative & no & 0 & 31 \\
-\cline{2-6}
- & \multirow[t]{2}{*}{6} & \multirow[t]{2}{*}{negative} & no & 0 & 150 \\
- &  &  & yes & 1 & 0 \\
-\cline{1-6}
-Total sum &  &  &  & 1054 & 199 \\
-\cline{1-6}
+ &  & Parse Errors (N) & Generation Errors (N) \\
+Model & Suite &  &  \\
+\cline{1-4}
+\multirow[t]{5}{*}{Llama-8B} & 1-neg-impl & 5 & 0 \\
+ & 1-pos-impl & 508 & 0 \\
+ & 6-mix-impl & 54 & 0 \\
+ & 6-neg-impl & 3 & 0 \\
+ & 6-pos-impl & 219 & 0 \\
+\cline{2-4}
+ Sum & & 789 & 0 \\
+\cline{1-4}
+\multirow[t]{3}{*}{Llama-70B} & 1-neg-impl & 5 & 0 \\
+ & 1-pos-impl & 11 & 0 \\
+ & 6-pos-impl & 2 & 0 \\
+ \cline{2-4}
+  Sum & & 18 & 0 \\
+\cline{1-4}
+\multirow[t]{5}{*}{Mistral-7B} & 1-neg-impl & 121 & 0 \\
+ & 1-pos-impl & 32 & 0 \\
+ & 6-mix-impl & 1 & 0 \\
+ & 6-neg-impl & 3 & 0 \\
+ & 6-pos-impl & 1 & 18 \\
+ \cline{2-4}
+  Sum & & 158 & 18 \\
+\cline{1-4}
+\multirow[t]{9}{*}{Mistral-24B} & 0-non-expl & 3 & 0 \\
+ & 1-neg-impl & 22 & 0 \\
+ & 1-pos-impl & 6 & 0 \\
+ & 6-mix-expl & 5 & 0 \\
+ & 6-mix-impl & 15 & 0 \\
+ & 6-neg-expl & 7 & 0 \\
+ & 6-neg-impl & 22 & 0 \\
+ & 6-pos-expl & 1 & 0 \\
+ & 6-pos-impl & 7 & 0 \\
+ \cline{2-4}
+  Sum &  & 88 & 0 \\
+\cline{1-4}
+\multirow[t]{3}{*}{Qwen3-32B} & 1-neg-impl & 0 & 31 \\
+ & 6-neg-expl & 1 & 0 \\
+ & 6-neg-impl & 0 & 150 \\
+ \cline{2-4}
+  Sum & & 1 & 181 \\
+\cline{1-4}
+Sum impl & & 1037 & 199 \\
+Sum expl & & 17 & 0 \\
+Total sum & & 1054 & 199 \\
+Error rate & & 0.006 & 0.001 \\
 \bottomrule
-\end{tabularx}
+\end{tabular}
