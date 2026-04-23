@@ -985,7 +985,11 @@ In this section, the results obtained from the execution of the suites are expla
     \label{fig:f1_mean_per_model}
 \end{figure}
 
-Figure \ref{fig:f1_mean_per_model} shows a high-level summary of the results. The figure presents the means of the F1 scores for each predicted label aggregated in all suites per model. There are several key findings to be made from the figure. Firstly, it can be seen that on average Llama-70B and Qwen3-32B outperform the other models. The other 4 are quite similar in mean performance.  Llama-70B is much more consistent than Qwen3-32B, as proven by a much lower standard deviation across all labels, where as Qwen3.32B
+Figure \ref{fig:f1_mean_per_model} shows a high-level summary of the results. The figure presents the means of the F1 scores for each predicted label aggregated in all suites per model. The black line in each bar shows the standard deviation of the measurements. There are several key findings to be made from the figure. Firstly, it can be seen that Llama-70B and Qwen3-32B outperform the other models on average. The other 4 models are quite similar to each other in mean performance, but have standard deviations of differing magnitudes. Llama-70B is by far the most consistent model, having the smallest standard deviations across all labels.
+
+It can also be seen that predicting some of the labels was more difficult than others. Predicting whether additional disallowed concepts are present in the exercise proved to be more difficult than predicting the correctness of the theme and topic for most models.
+
+
 
 \subsection{Model evaluations}
 
@@ -996,6 +1000,10 @@ Figure \ref{fig:f1_mean_per_model} shows a high-level summary of the results. Th
     \caption{Heatmaps for each label of means of F1 scores per model and suite}
     \label{fig:f1_mean_per_suite}
 \end{figure}
+
+\input{latex/tables/top_10s}
+
+\input{latex/tables/top_models}
 
 \begin{figure}
     \centering
@@ -1016,7 +1024,7 @@ Figure \ref{fig:f1_mean_per_model} shows a high-level summary of the results. Th
 As stated in section \ref{sec:design}, a total of 330 passes of the dataset were executed, resulting in a total of 175350 predicted samples. Of the predicted samples, a total of 1253 contained errors. Table \ref{tab:error_stats} shows the distribution of errors. Parse errors refer to generated samples that were not valid JSON and thus could not be parsed for further processing, and generation errors refer to instances where the generated content was valid JSON but did not follow the specified output schema. Due to the low proportion of erroneous rows, they were simply discarded and thus do not affect the evaluation scores in any way.
 
 \begin{table}
-    \small
+    \footnotesize
     \centering
     \input{latex/tables/err_table.tex}
     \caption{Breakdown of errors in generated detection predictions, where each row is the sum of errors across all seeds}
