@@ -1,0 +1,85 @@
+\begin{table}
+    \centering
+    \tiny
+
+    \begin{tabular}{lrrrr}
+    \toprule
+    \multicolumn{5}{c}{\textbf{Llama-70B}} \\
+    \midrule
+    Suite & Theme & Topic & Concept & Sum \\
+    \midrule
+    0-non-expl & 0.944742 & \bfseries 0.977860 & 0.842520 & 2.765121 \\
+    6-pos-expl & \bfseries 0.948763 & 0.972256 & \bfseries 0.858634 & \bfseries 2.779652 \\
+    & & & & \\
+    \bottomrule
+    \end{tabular}
+    \quad
+    \begin{tabular}{lrrrr}
+    \toprule
+    \multicolumn{5}{c}{\textbf{Llama-8B}} \\
+    \midrule
+    Suite & Theme & Topic & Concept & Sum \\
+    \midrule
+    0-non-expl & 0.815870 & 0.776810 & 0.571063 & 2.163744 \\
+    6-mix-expl & \bfseries 0.895698 & 0.820526 & \bfseries 0.900185 & 2.616409 \\
+    6-pos-expl & 0.863260 & \bfseries 0.918095 & 0.897535 & \bfseries 2.678890 \\
+    \bottomrule
+    \end{tabular}
+
+    \quad
+    
+    \begin{tabular}{lrrrr}
+    \toprule
+    \multicolumn{5}{c}{\textbf{Mistral-24B}} \\
+    \midrule
+    Suite & Theme & Topic & Concept & Sum \\
+    \midrule
+    0-non-expl & 0.886340 & 0.892556 & 0.753824 & 2.532720 \\
+    1-neg-impl & 0.368521 & 0.271185 & \bfseries 0.792929 & 1.432634 \\
+    1-pos-expl & 0.863998 & \bfseries 0.908350 & 0.711425 & 2.483773 \\
+    6-mix-expl & \bfseries 0.903140 & 0.904576 & 0.790089 & \bfseries 2.597805 \\
+    \bottomrule
+    \end{tabular}
+    \quad
+    \begin{tabular}{lrrrr}
+    \toprule
+    \multicolumn{5}{c}{\textbf{Mistral-7B}} \\
+    \midrule
+    Suite & Theme & Topic & Concept & Sum \\
+    \midrule
+    0-non-expl & 0.746351 & 0.785973 & 0.660402 & 2.192726 \\
+    6-mix-expl & \bfseries 0.769594 & \bfseries 0.799157 & \bfseries 0.786032 & \bfseries 2.354783 \\
+    & & & & \\
+    & & & & \\
+    \bottomrule
+    \end{tabular}
+
+    \quad
+    
+    \begin{tabular}{lrrrr}
+    \toprule
+    \multicolumn{5}{c}{\textbf{Qwen3-32B}} \\
+    \midrule
+    Suite & Theme & Topic & Concept & Sum \\
+    \midrule
+    0-non-expl & 0.935841 & 0.966240 & 0.756583 & 2.658664 \\
+    6-mix-expl & \bfseries 0.946330 & \bfseries 0.970647 & 0.787478 & \bfseries 2.704454 \\
+    6-mix-impl & 0.854970 & 0.898218 & \bfseries 0.817661 & 2.570848 \\
+    \bottomrule
+    \end{tabular}
+    \quad
+    \begin{tabular}{lrrrr}
+    \toprule
+    \multicolumn{5}{c}{\textbf{Qwen3-8B}} \\
+    \midrule
+    Suite & Theme & Topic & Concept & Sum \\
+    \midrule
+    0-non-expl & \bfseries 0.851361 & \bfseries 0.896785 & 0.718242 & \bfseries 2.466388 \\
+    1-neg-expl & 0.808058 & 0.850961 & \bfseries 0.754833 & 2.413853 \\
+    & & & & \\
+    \bottomrule
+    \end{tabular}
+                
+    \caption{Top F1 scores per model for each metric shown alongside the baseline}
+    \label{tab:placeholder}
+\end{table}
