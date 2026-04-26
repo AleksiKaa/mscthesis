@@ -57,10 +57,10 @@ def calculate_metrics(
         # Then, the labels should be 0, 0, 1
         # Otherwise, measure correctly classified non-hallucinatory data points
         # Labels are thus 1, 1, 0
-        measure_label = np.abs(
-            int(measure_hallucination_detection) - 1
-        )  # True => 0, False => 1
-
+        label = 1 if POS_LABELS[i] == "yes" else 0
+        
+        measure_label = label if measure_hallucination_detection else np.abs(label - 1)
+        
         metrics[labels[i] + "_precision"] = precision_score(
             y_true, y_pred, pos_label=int(measure_label), zero_division=np.nan
         )
@@ -68,7 +68,7 @@ def calculate_metrics(
             y_true, y_pred, pos_label=int(measure_label), zero_division=np.nan
         )
         metrics[labels[i] + "_f1"] = f1_score(
-            y_true, y_pred, pos_label=int(np.abs(measure_label - 1)), zero_division=np.nan
+            y_true, y_pred, pos_label=int(measure_label), zero_division=np.nan
         )  # Flip label to match labeling scheme
 
     return metrics
