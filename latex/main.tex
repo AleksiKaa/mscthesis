@@ -992,7 +992,7 @@ It can also be seen that predicting some labels is more difficult than predictin
 
 \subsection{Model evaluations}
 
-Aggregating the results of all suites executed into one set of metrics is not the most accurate method to capture the performance of the model. A model might perform well under one set of parameters and considerably worse under another. This is even more true for ICL, as it is known to be unpredictably sensitive to settings and selected demonstrations (\ref{sec:icl}). In this subsection, a closer look is taken at the results of the individual suites per model. First, the F1 scores for each label for each model and suite are presented as a heatmap. Then, the top 10 combinations of model and suite are analyzed and compared with the top suite for each model. After that, a reason for the low F1 scores is sought by analyzing individual precision and recall scores. TODO: Is this good?
+Aggregating the results of all suites executed into one set of metrics is not the most accurate method to capture the performance of the model. A model might perform well under one set of parameters and considerably worse under another. This is even more true for ICL, as it is known to be unpredictably sensitive to settings and selected demonstrations (\ref{sec:icl}). In this subsection, a closer look is taken at the results of the individual suites per model. First, the F1 scores for each label for each model and suite are presented as a heatmap. Then, the top 10 combinations of model and suite are analyzed and compared with the top suite for each model. After that, a reason for the low F1 scores is sought by analyzing individual precision and recall scores. The complete set of results is listed in \ref{app:results}. TODO: Is this good? Is the order, and description correct?
 
 \begin{figure}
     \centering
@@ -1003,7 +1003,7 @@ Aggregating the results of all suites executed into one set of metrics is not th
 
 Figure \ref{fig:f1_mean_per_suite} shows the mean F1 score obtained for each combination of model and suite aggregated on each seed. Since 5 different seeds were used, the value in each cell is the mean of 5 sets of results. The models, from smallest to largest, are shown on the $y$-axis. The $x$-axis shows the executed suites. They have been grouped by the type of prompting used: explicit prompting suites are on the left and implicit ones on the right. The groups are then ordered by the number of demonstrations provided in the prompts. This layout is selected to make the differences in the performance of models based on the model size and prompting as visible as possible.
 
-It can be seen quite clearly from the figure that there is a distinct divide of scores on the $x$-axis: models perform better with explicit prompting than with implicit prompting in nearly all variations of suite parameters.
+It can be seen quite clearly from the figure that there is a distinct divide in scores on the $x$-axis: models perform better with explicit prompting than with implicit prompting in nearly all variations of suite parameters.
 
 \input{latex/tables/top_suites_against_baseline_per_model}
 
@@ -1223,7 +1223,7 @@ The system prompt shown in figure \ref{fig:augment_system_prompt} contains the t
 
 \clearpage
 
-\section{Appendix: Results}
+\section{Appendix: Results} \label{app:results}
 
 \begin{table}[!h]
     \tiny
