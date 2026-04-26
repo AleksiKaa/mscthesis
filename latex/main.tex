@@ -992,18 +992,32 @@ It can also be seen that predicting some labels is more difficult than predictin
 
 \subsection{Model evaluations}
 
-Aggregating the results of all suites executed into one set of metrics is not the most accurate method to capture the performance of the model. A model might perform well under one set of parameters and considerably worse under another. This is even more true for ICL, as it is known to be unpredictably sensitive to settings and selected demonstrations (\ref{sec:icl}). In this subsection, a closer look is taken at the results of the individual suites per model. First, the F1 scores for each label for each model and suite are presented as a heatmap. Then, the top 10 combinations of model and suite are analyzed and compared with the top suite for each model. After that, a reason for the low F1 scores is sought by analyzing individual precision and recall scores. The complete set of results is listed in \ref{app:results}. TODO: Is this good? Is the order, and description correct?
+Aggregating the results of all suites executed into one set of metrics is not the most accurate method to capture the performance of the model. A model might perform well under one set of parameters and considerably worse under another. This is even more true for ICL, as it is known to be unpredictably sensitive to settings and selected demonstrations (\ref{sec:icl}). In this subsection, a closer look is taken at the results of the individual suites per model. First, the F1 scores for each label for each model and suite are presented as a heatmap. Then, the top 10 combinations of model and suite are analyzed and compared with the top suite for each model. After that, a reason for the low F1 scores is sought by analyzing individual precision and recall scores. The complete set of results is listed in appendix \ref{app:results}. TODO: Is this good? Is the order and description correct?
 
-\begin{figure}
+\begin{figure}[!h]
     \centering
     \includegraphics[width=\textwidth]{latex/images/f1_per_suite_v2.png}
     \caption{The means of F1 scores per model and suite, one heatmap for each label}
     \label{fig:f1_mean_per_suite}
 \end{figure}
 
-Figure \ref{fig:f1_mean_per_suite} shows the mean F1 score obtained for each combination of model and suite aggregated on each seed. Since 5 different seeds were used, the value in each cell is the mean of 5 sets of results. The models, from smallest to largest, are shown on the $y$-axis. The $x$-axis shows the executed suites. They have been grouped by the type of prompting used: explicit prompting suites are on the left and implicit ones on the right. The groups are then ordered by the number of demonstrations provided in the prompts. This layout is selected to make the differences in the performance of models based on the model size and prompting as visible as possible.
+Figure \ref{fig:f1_mean_per_suite} shows the mean F1 score obtained for each combination of model and suite aggregated on each seed. The value in each cell is the mean of 5 sets of results, one for each seed used. The models, from smallest to largest, are shown on the $y$-axis. The $x$-axis shows the executed suites. They have been grouped by the type of prompting used: explicit prompting suites are on the left and implicit ones on the right. The groups are then ordered by the number of demonstrations provided in the prompts. This layout is selected to make the differences in the performance of models based on the model size and prompting as visible as possible.
 
-It can be seen quite clearly from the figure that there is a distinct divide in scores on the $x$-axis: models perform better with explicit prompting than with implicit prompting in nearly all variations of suite parameters.
+It can be seen quite clearly from the figure that there is a distinct divide in scores on the $x$-axis: models perform better with explicit prompting than with implicit prompting in nearly all variations of suite parameters. In fact, implicit prompting performs worse than baseline 0-shot prompting in most suites. For theme prediction, implicit prompting performs equally to or worse than baseline across all 30 suites. Implicit prompting exceeded the baseline in topic prediction in 1 suite: a minor improvement from 0.78 to 0.83 with implicit negative prompting using 6 demonstrations on Llama-8B. Implicit prompting had more impact on predicting the concept, however. A total of 14 configurations, including suites from all models except Llama-70B, improved the baseline score. Most of the improvements were quite minor, improving the score by 0.05-0.10, but maybe the most notable was the improvement of Mistral-7B: from the baseline score of 0.054, a total model failure, to a mediocre score of 0.69, the highest score obtained by the model.
+
+Explicit prompting yielded better results than implicit prompting. Almost all baseline scores were exceeded with explicit prompting. Those that were not exceeded, did come very close to the baseline \footnote{Llama-70B Topic F1, Qwen3-8B Theme F1, Qwen3-8B Topic F1}. In fact, some type of explicit prompting was able to obtain the highest score in most of the measured metrics. Table \ref{tab:top_model_scores} shows the baseline and the suite that resulted in the best scores for each label, as well as the sum of the scores. The sum can be used as a measure of general performance. The maximum scores for each model and label are bolded in the tables. In total, a type of explicit prompting (excluding the baseline) obtained the best score in 17 out of the 24 values (6 models and 4 metrics).
+
+
+
+%The only F1 score baselines that were not exceeded with explicit prompting were: Llama-70B, Topic F1 0.98; Qwen3-8B, Theme F1 0.85; Qwen3-8B, Topic F1 0.90. 
+
+
+The number of demonstrations in the prompt seemingly has an even larger effect: 19/24 top scores were obtained with 6 demonstration prompts.
+
+\begin{itemize}
+    \item Llama models more resilient to implicit prompting?
+    \item Implicit prompting with 6 negative demonstrations improves concept prediction on all except llama models, although it collapses the scores of theme and topic.
+\end{itemize}
 
 \input{latex/tables/top_suites_against_baseline_per_model}
 
@@ -1076,6 +1090,8 @@ your school. This template aims to help you meet these requirements.
 
 \subsection{Limitations}
 \begin{itemize}
+    \item Small subset of models, some model may perform better
+    \item With more careful prompt configurations and prompt selection, better results coudl be achieved
     \item Factuality hallucinations, some generated exercises have false information in it.
 \end{itemize}
 
