@@ -986,9 +986,9 @@ In this section, the results obtained from the execution of the suites are expla
     \label{fig:f1_mean_per_model}
 \end{figure}
 
-Figure \ref{fig:f1_mean_per_model} shows a high-level summary of the results. The figure presents the means of the F1 scores for each predicted label aggregated in all suites per model. The black line in each bar shows the standard deviation of the measurements. There are several key findings to be made from the figure. Firstly, it can be seen that Llama-70B and Qwen3-32B outperform the other models on average. The other 4 models are quite similar to each other in mean performance, but have standard deviations of differing magnitudes. Mistral-24B is the most inconsistent across all models, while Llama-70B is by far the most consistent model, having the smallest standard deviations across all labels. 
+Figure \ref{fig:f1_mean_per_model} shows a high-level summary of the results. The figure presents the means of the F1 scores for each predicted label. The means are calculated over all suites executed per model. The black line in each bar shows the standard deviation of the measurements. There are several key findings to be made from the figure. Firstly, it can be seen that Llama-70B and Qwen3-32B outperform the other models on average. The other 4 models are quite similar to each other in mean performance, but have standard deviations of differing magnitudes. Mistral-24B is the most inconsistent across all models, while Llama-70B is by far the most consistent model, having the smallest standard deviations for predicting the correctness of theme and topic and the deviation in concept prediction is similar to other models. 
 
-It can also be seen that predicting some labels is more difficult than predicting others. For Llama-70B, Mistral-7B, Qwen3-32B, and Qwen3-8B, predicting whether additional disallowed concepts are present in the exercise was clearly more difficult than predicting the correctness of the theme and topic. The same group of models also have a slightly higher mean F1 score for the correctness of the topic than for the theme.
+It can also be seen that predicting some labels is more difficult than predicting others. For Llama-70B, Mistral-24B, Mistral-7B, Qwen3-32B, and Qwen3-8B, predicting whether additional disallowed concepts are present in the exercise was clearly more difficult than predicting the correctness of the theme and topic. Llama-8B is the only model in which the highest mean F1 score is for the concepts. The mean F1 scores for the theme and the topic are similar to each other for all models. This is quite expected, since the labels are strongly connected to each other in meaning.
 
 \subsection{Model evaluations}
 
@@ -1229,7 +1229,7 @@ The system prompt shown in figure \ref{fig:augment_system_prompt} contains the t
     \tiny
     \centering
     \resizebox{\textwidth}{!}{%
-    \input{latex/tables/means_table}
+    \input{latex/tables/means_table_v2}
     }
     \caption{Means of all executed suites per model, where the maximum value of each column per model is highlighted}
     \label{tab:means}
@@ -1239,7 +1239,7 @@ The system prompt shown in figure \ref{fig:augment_system_prompt} contains the t
     \tiny
     \centering
     \resizebox{\textwidth}{!}{%
-    \input{latex/tables/std_table}
+    \input{latex/tables/std_table_v2}
     }
     \caption{Standard deviations of all executed suites per model, where the maximum value of each column per model is highlighted}
     \label{tab:stds}
