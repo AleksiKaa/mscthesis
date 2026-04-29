@@ -959,7 +959,7 @@ The questions stated in section \ref{sec:design} are yes/no questions, meaning t
     \begin{align*}
         precision = \frac{TP}{TP + FP}.
     \end{align*}
-    Precision answers the question: Of all predicted positive samples, how many were correct?
+    Precision answers the question: Of all predicted positive samples, how many were correct? The precision of the model can be seen as a measure of its trustworthiness, since precision measures how often the model is correct in predicting the positive class. 
     \item \textbf{Recall}, or Sensitivity, is the rate of all correctly identified positive samples. Recall is defined as:
     \begin{align*}
         recall = \frac{TP}{P}.
@@ -969,7 +969,8 @@ The questions stated in section \ref{sec:design} are yes/no questions, meaning t
     \begin{align*}
         F1 = \frac{2 TP}{2 TP + FP + FN} = \frac{2 \cdot precision \cdot recall}{precision + recall}.
     \end{align*}
-    A high F1 score is the result of high precision and sensitivity, while a low F1 score signifies that at least one of the metrics is low.
+    A high F1 score is the result of high precision and recall, while a low F1 score signifies that at least one of the metrics is low. If a classifier's precision is high, while the recall is low, the classifier is conservative in positive predictions. This means that the classifier's decision threshold is too high, which results in the model being correct in positive predictions, but predicting positive far too rarely. A low precision and a high recall signifies the opposite behavior: the classifier is over-eager, predicting positives easily, but making lots of false predictions.
+    
 \end{itemize}
 In model evaluations, hallucinatory label values are interpreted as positives in the population, i.e, TP denotes the model correctly detecting a faithfulness hallucination in the sample. Setting the hallucinatory labels as positives enables presenting the models' hallucination detection capabilities more accurately.
 
@@ -1001,11 +1002,21 @@ Aggregating the results of all suites executed into one set of metrics is not th
     \label{fig:f1_mean_per_suite}
 \end{figure}
 
-Figure \ref{fig:f1_mean_per_suite} shows the mean F1 score obtained for each combination of model and suite aggregated on each seed. The value in each cell is the mean of 5 sets of results, one for each seed used. The models, from smallest to largest, are shown on the $y$-axis. The $x$-axis shows the executed suites. They have been grouped by the type of prompting used: explicit prompting suites are on the left and implicit ones on the right. The groups are then ordered by the number of demonstrations provided in the prompts. This layout is selected to make the differences in the performance of models based on the model size and prompting as visible as possible.
+Figure \ref{fig:f1_mean_per_suite} shows the mean F1 score obtained for each combination of model and suite aggregated on each seed. The value in each cell is the mean of 5 sets of results, one for each seed used. Each cell also has a background color, where a darker color denotes a larger value. The models, from smallest to largest, are shown on the $y$-axis. The $x$-axis shows the executed suites. They have been grouped by the type of prompting used: explicit prompting suites are on the left and implicit ones on the right. The groups are then ordered by the number of demonstrations provided in the prompts. This layout is selected to make the differences in the performance of models based on the model size and prompt type as clear as possible.
 
-It can be seen quite clearly from the figure that there is a distinct divide in scores on the $x$-axis: models perform better with explicit prompting than with implicit prompting in nearly all variations of suite parameters. In fact, implicit prompting performs worse than baseline 0-shot prompting in most suites. For theme prediction, implicit prompting performs equally to or worse than baseline across all 30 suites. Implicit prompting exceeded the baseline in topic prediction in 1 suite: a minor improvement from 0.78 to 0.83 with implicit negative prompting using 6 demonstrations on Llama-8B. Implicit prompting had more impact on predicting the concept, however. A total of 14 configurations, including suites from all models except Llama-70B, improved the baseline score. Most of the improvements were quite minor, improving the score by 0.05-0.10, but maybe the most notable was the improvement of Mistral-7B: from the baseline score of 0.054, a total model failure, to a mediocre score of 0.69, the highest score obtained by the model.
+It can be seen quite clearly from the figure that there is a distinct divide in scores on the $x$-axis: models perform better with explicit prompting than with implicit prompting in nearly all variations of suite parameters. Larger models also perform better on average than smaller models. The highest F1 scores thus concentrate in the top-left quadrants of the heatmaps, but there are exceptions as well: of the small models, Llama-8B is the only one that achieves mean F1 scores in the 0.9 range for all labels.
 
-Explicit prompting yielded better results than implicit prompting. Almost all baseline scores were exceeded with explicit prompting. Those that were not exceeded, did come very close to the baseline \footnote{Llama-70B Topic F1, Qwen3-8B Theme F1, Qwen3-8B Topic F1}. In fact, some type of explicit prompting was able to obtain the highest score in most of the measured metrics. Table \ref{tab:top_model_scores} shows the baseline and the suite that resulted in the best scores for each label, as well as the sum of the scores. The sum can be used as a measure of general performance. The maximum scores for each model and label are bolded in the tables. In total, a type of explicit prompting (excluding the baseline) obtained the best score in 17 out of the 24 values (6 models and 4 metrics).
+
+
+
+
+
+In fact, implicit prompting performs worse than baseline 0-shot prompting in most suites. For theme prediction, implicit prompting performs equally to or worse than baseline across all 30 suites. Implicit prompting exceeded the baseline in topic prediction in 1 suite: a minor improvement from 0.78 to 0.83 with implicit negative prompting using 6 demonstrations on Llama-8B. Implicit prompting had more impact on predicting the concept, however. A total of 14 configurations, including suites from all models except Llama-70B, improved the baseline score. Most of the improvements were quite minor, improving the score by 0.05-0.10, but maybe the most notable was the improvement of Mistral-7B: from the baseline score of 0.054, a total model failure, to a mediocre score of 0.69, the highest score obtained by the model.
+
+Explicit prompting yielded better results than implicit prompting. Almost all baseline scores were exceeded with explicit prompting. 
+The only baselines that were not exceeded were Llama-70B Topic F1 (score 0.98), Qwen3-8B Theme F1 (0.85), Qwen3-8B Topic F1 (0.9). The highest scores after the baselines were all within 0.01, meaning that the measured performances were very close to the baseline.
+
+Even stronger evidence of the stronger performance of explicit prompting is that some type of explicit prompting was able to obtain the highest score in most of the measured metrics. Table \ref{tab:top_model_scores} shows the baseline and the suite that resulted in the best scores for each label, as well as the sum of the scores. The sum can be used as a measure of general performance. The maximum scores for each model and label are bolded in the tables. In total, a type of explicit prompting (excluding the baseline) obtained the best score in 17 of the total 24 measured metrics (4 metrics for each of the 6 models).
 
 
 
@@ -1039,7 +1050,7 @@ The number of demonstrations in the prompt seemingly has an even larger effect: 
 
 \subsection{Handling of erroneous outputs}
 
-As stated in section \ref{sec:design}, a total of 330 passes of the dataset were executed, resulting in a total of 175350 predicted samples. Of the predicted samples, a total of 1253 contained errors. Table \ref{tab:error_stats} shows the distribution of errors. Parse errors refer to generated samples that were not valid JSON and thus could not be parsed for further processing, and generation errors refer to instances where the generated content was valid JSON but did not follow the specified output schema. Due to the low proportion of erroneous rows, they were simply discarded and thus do not affect the evaluation scores in any way.
+As stated in section \ref{sec:design}, a total of 330 passes of the dataset were executed, resulting in a total of 175350 predicted samples. Of the predicted samples, a total of 1253 contained errors. Table \ref{tab:err_table} shows the distribution of errors. Parse errors refer to generated samples that were not valid JSON and thus could not be parsed for further processing, and generation errors refer to instances where the generated content was valid JSON but did not follow the specified output schema. Due to the low proportion of erroneous rows, they were simply discarded and thus do not affect the evaluation scores in any way.
 
 \input{latex/tables/err_table_v2.tex}
 
