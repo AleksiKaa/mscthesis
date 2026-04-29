@@ -1,0 +1,100 @@
+\begin{table}
+    \centering
+    \tiny
+
+    \begin{tabular}{lrr}
+    \toprule
+    \multicolumn{3}{c}{\textbf{Llama-8B}} \\
+    \midrule
+    Suite & Parse errors & Generation errors \\
+    \midrule
+    1-neg-impl & 5 & 0 \\
+    1-pos-impl & 508 & 0 \\
+    6-mix-impl & 54 & 0 \\
+    6-neg-impl & 3 & 0 \\
+    6-pos-impl & 219 & 0 \\
+    \bottomrule
+    \end{tabular}
+    \quad
+    \begin{tabular}{lrr}
+    \toprule
+    \multicolumn{3}{c}{\textbf{Llama-70B}} \\
+    \midrule
+    Suite & Num parse errors & Num gen errors \\
+    \midrule
+    1-neg-impl & 5 & 0 \\
+    1-pos-impl & 11 & 0 \\
+    6-pos-impl & 2 & 0 \\
+    & & \\
+    & & \\
+    \bottomrule
+    \end{tabular}
+    
+    \quad
+    
+    \begin{tabular}{lrr}
+    \toprule
+    \multicolumn{3}{c}{\textbf{Mistral-7B}} \\
+    \midrule
+    Suite & Num parse errors & Num gen errors \\
+    \midrule
+    1-neg-impl & 121 & 0 \\
+    1-pos-impl & 32 & 0 \\
+    6-mix-impl & 1 & 0 \\
+    6-neg-impl & 3 & 0 \\
+    6-pos-impl & 1 & 18 \\
+    & & \\
+    & & \\
+    & & \\
+    & & \\
+    \bottomrule
+    \end{tabular}
+    \quad
+    \begin{tabular}{lrr}
+    \toprule
+    \multicolumn{3}{c}{\textbf{Mistral-24B}} \\
+    \midrule
+    Suite & Num parse errors & Num gen errors \\
+    \midrule
+    0-non-expl & 3 & 0 \\
+    1-neg-impl & 22 & 0 \\
+    1-pos-impl & 6 & 0 \\
+    6-mix-expl & 5 & 0 \\
+    6-mix-impl & 15 & 0 \\
+    6-neg-expl & 7 & 0 \\
+    6-neg-impl & 22 & 0 \\
+    6-pos-expl & 1 & 0 \\
+    6-pos-impl & 7 & 0 \\
+    \bottomrule
+    \end{tabular}
+    
+    \quad
+    
+    \begin{tabular}{lrr}
+    \toprule
+    \multicolumn{3}{c}{\textbf{Qwen3-32B}} \\
+    \midrule
+    Suite & Num parse errors & Num gen errors \\
+    \midrule
+    1-neg-impl & 0 & 31 \\
+    6-neg-expl & 1 & 0 \\
+    6-neg-impl & 0 & 150 \\
+    \bottomrule
+    \end{tabular}
+    \quad
+    \begin{tabular}{lrr}
+    \toprule
+    \multicolumn{3}{c}{\textbf{Total}} \\
+    \midrule
+    Suite & Num parse errors & Num gen errors \\
+    \midrule
+    *-*-impl & 1037 & 199 \\
+    *-*-expl & 17 & 0 \\
+    All & 1054 & 199 \\
+    \bottomrule
+    \end{tabular}
+    
+                
+    \caption{Errors produced}
+    \label{tab:err_table}
+\end{table}
