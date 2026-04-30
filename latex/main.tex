@@ -993,7 +993,7 @@ It can also be seen that predicting some labels is more difficult than predictin
 
 \subsection{Model evaluations}
 
-Aggregating the results of all suites executed into one set of metrics is not the most accurate method to capture the performance of the model. A model might perform well under one set of parameters and considerably worse under another. This is even more true for ICL, as it is known to be unpredictably sensitive to settings and selected demonstrations (\ref{sec:icl}). In this subsection, a closer look is taken at the results of the individual suites per model. First, the F1 scores for each label for each model and suite are presented as a heatmap. Then, the top 10 combinations of model and suite are analyzed and compared with the top suite for each model. After that, a reason for the low F1 scores is sought by analyzing individual precision and recall scores. The complete set of results is listed in appendix \ref{app:results}. TODO: Is this good? Is the order and description correct?
+Aggregating the results of all suites executed into one set of metrics is not the most accurate method to capture the performance of the model. A model might perform well under one set of parameters and considerably worse under another. This is even more true for ICL, as it is known to be unpredictably sensitive to settings and selected demonstrations (\ref{sec:icl}). In this subsection, a closer look is taken at the results of the individual suites per model. First, the F1 scores for each label for each model and suite are presented as a heatmap. Then, the top 10 combinations of model and suite are analyzed and compared with the top suite for each model. After that, a reason for the low F1 scores is sought by analyzing individual precision and recall scores. The complete set of results is listed in Appendix \ref{app:results}. TODO: Is this good? Is the order and description correct?
 
 \begin{figure}[!h]
     \centering
@@ -1002,7 +1002,7 @@ Aggregating the results of all suites executed into one set of metrics is not th
     \label{fig:f1_mean_per_suite}
 \end{figure}
 
-\subsubsection{Mean performance evaluations}
+\subsubsection{Mean performance evaluations} % Model family and size, state raw results
 
 Figure \ref{fig:f1_mean_per_suite} shows the mean F1 score obtained for each combination of model and suite aggregated on each seed. The value in each cell is the mean of 5 sets of results, one for each seed used. Each cell also has a background color, where a darker color denotes a larger value. The models, from smallest to largest, are shown on the $y$-axis. The $x$-axis shows the executed suites. They have been grouped by the type of prompting used: explicit prompting suites are on the left and implicit ones on the right. The groups are then ordered by the number of demonstrations provided in the prompts. This layout is selected to make the differences in the performance of models based on the model size and prompt type as clear as possible.
 
@@ -1010,26 +1010,46 @@ Two clear trends are visible in the figure: the F1 score for each label increase
 
 \input{latex/tables/top_10s}
 
-Table \ref{tab:top10s} shows the top 10 F1 scores for each label, as well as the top 10 sums of each label's F1 scores. The sum of F1 scores can be viewed as a measure of general performance across all labels. The top 10 for each label are dominated by Llama-70B, Llama-8B, and Qwen3-32B. Qwen-8B or either of the two Mistral models does not perform well enough to populate the top 10 on any metric. Qwen3-32B is very competitive in theme and topic predictions, but is missing from the top 10 in concept prediction, which results in the model's absence in the top 10 sums of scores. Llama-70B is clearly the best all-around performer, but it loses to its smaller counterpart in concept prediction.
+To highlight the best performing models, the top 10 F1 scores for each label are compiled in table \ref{tab:top10s}. Alongside the 3 labels, it also presents their sum, which can be viewed as a measure of general performance across all labels. The top 10 for each label are populated only by Llama-70B, Llama-8B, and Qwen3-32B. Qwen-8B or either of the two Mistral models does not perform well enough to populate the top 10 on any metric. Qwen3-32B is very competitive in theme and topic predictions, but is missing from the top 10 in concept prediction, which results in the model's absence in the top 10 sums of scores as well. Llama-70B is clearly the best all-around performer, populating 26 of the total 40 spots in the top 10s, but it loses to its smaller counterpart in concept prediction. Llama-8B does not perform well enough to populate the top 10s in topic or theme prediction, but is the most performant model in concept prediction.
 
-\subsubsection{Implicit prompting and explicit prompting compared}
+\subsubsection{Implicit prompting and explicit prompting compared} % Effect of ICL, interpret the results
 
-It can be seen quite clearly from figure \ref{fig:f1_mean_per_suite} that there is a distinct divide in scores on the $x$-axis: models perform better with explicit prompting than with implicit prompting in nearly all variations of suite parameters. In fact, implicit prompting performs worse than baseline 0-shot prompting in most suites. For theme prediction, implicit prompting performs equally to or worse than baseline across all 30 suites. Implicit prompting exceeded the baseline in topic prediction in 1 suite: a minor improvement from 0.78 to 0.83 with implicit negative prompting using 6 demonstrations on Llama-8B. Implicit prompting had a greater impact on predicting the concept. A total of 14 configurations, including suites from all models except Llama-70B, improved the baseline score. Most of the improvements were quite minor, improving the score by 0.05-0.10, but maybe the most notable was the improvement of Mistral-7B: from the baseline score of 0.054, a total model failure, to a mediocre score of 0.69, the highest score obtained by the model.
+A point of interest in the study was the effect that ICL has on the models. To discover the effect, a baseline was obtained with 0-shot prompting and various ICL setups were executed for performance comparison. In this section, the effects of implicit and explicit prompting are compared. Of interest is how the prompting methods compare to the obtained baseline, as well as which prompting type yields better results.
 
-Explicit prompting yielded better results than implicit prompting. Almost all baseline scores were exceeded with explicit prompting. 
-The only baselines that were not exceeded were Llama-70B Topic F1 (score 0.98), Qwen3-8B Theme F1 (0.85), Qwen3-8B Topic F1 (0.9). The highest scores after the baselines were all within 0.01, meaning that the measured performances were very close to the baseline.
+It can be seen quite clearly from figure \ref{fig:f1_mean_per_suite} that there is a distinct divide in scores on the $x$-axis: models perform better with explicit prompting than with implicit prompting in nearly all variations of suite parameters. In fact, implicit prompting performs worse than baseline 0-shot prompting in most suites. For theme prediction, implicit prompting performs equally well or worse than baseline in all 30 suites. Implicit prompting exceeded the baseline in topic prediction in 1 suite: Llama-8b experienced a minor improvement from 0.78 to 0.83 with implicit negative prompting using 6 demonstrations. Implicit prompting had a positive impact on predicting the concept: a total of 14 configurations, including suites from all models except Llama-70B, improved the baseline score. Most of the improvements were quite minor, improving the score by 0.05-0.10, but perhaps the most notable was the improvement of Mistral-7B: from the baseline score of 0.054, a total model failure, to a mediocre score of 0.69, the highest score obtained by the model.
+
+Explicit prompting yielded better results than implicit prompting. Almost all baseline scores were exceeded with explicit prompting. The only baselines that were not exceeded were Llama-70B Topic F1 (score 0.98), Qwen3-8B Theme F1 (0.85), Qwen3-8B Topic F1 (0.9). The scores second to baselines were all within 0.01, meaning that the measured performances were very close to the baseline, and could be due to model variance.
 
 \input{latex/tables/top_suites_against_baseline_per_model}
 
-Even stronger evidence of the stronger performance of explicit prompting is that some type of explicit prompting was able to obtain the highest score in most of the measured metrics. Table \ref{tab:top_model_scores} shows the baseline and the suite that resulted in the best scores for each label, as well as the sum of the scores. The maximum scores for each model and label are in bold in the tables. In total, a type of explicit prompting (excluding the baseline) obtained the best score in 17 of the total 24 measured metrics (4 metrics for each of the 6 models).
+To better show the positive effect ICL caused in prediction performance, table \ref{tab:top_model_scores} was compiled. It consists of a subtable for each model showing the baseline and suite that resulted in the best score for each label, as well as the sum of the scores. The maximum scores for each model and label are in bold in the tables. The final row in each subtable shows the percentual improvement of the top score compared to the label's baseline.
 
-\subsubsection{The effect of the number and type of demonstration examples}
+
+
+
+
+%The table shows that the highest concept F1 score is significantly lower for all models, except Llama-8B, compared to the F1 scores for theme and topic prediction.
+
+
+%The inclusion of additional concepts was clearly the most difficult label to predict. The baselines for concept prediction are significantly lower than for the other two labels for all models and show greater variance between suites, which suggests that ICL has a significant effect on the accuracy of the models.
+
+
+Even stronger evidence of the stronger performance of explicit prompting is that some type of explicit prompting was able to obtain the highest score in most of the measured metrics. Table \ref{tab:top_model_scores} shows that in total, a type of explicit prompting (excluding the baseline) obtained the best score in 17 of the total 24 measured metrics (4 metrics for each of the 6 models).
+
+\subsubsection{The effect of the number and type of demonstration examples} % Type of demonstrations, continuation to interpretation
 
 The number of demonstrations in the prompt seemingly has an even larger effect: 19/24 top scores were obtained with 6 demonstration prompts.
 
+\subsubsection{Consistency of models} % Effect of random seed
+
+\subsubsection{TODO: list of interesting points and ideas}
+
 \begin{itemize}
+    \item Maybe handle individual recall and precision scores in consistency subsection for interesting points?
     \item Llama models more resilient to implicit prompting?
     \item Why does Llama-8 perform better in concept prediction than Llama-70B?
+    \item Small models are not confident: High prec, low rec => Marks many positives as negative since decision threshold too high    
+    \item Some models (e.g. Qwen3-8b) may overfit to the demonstrations: in baseline: very low recall, high precision. When shown demonstrations (implicitly): high recall, low precision
     \item Implicit prompting with 6 negative demonstrations improves concept prediction on all except llama models, although it collapses the scores of theme and topic.
 \end{itemize}
 
@@ -1046,11 +1066,6 @@ The number of demonstrations in the prompt seemingly has an even larger effect: 
     \caption{Heatmaps for each label of means of recall scores per model and suite}
     \label{fig:recall_mean_per_suite}
 \end{figure}
-
-\begin{itemize}
-    \item Small models are not confident: High prec, low rec => Marks many positives as negative since decision threshold too high    
-    \item Some models (e.g. Qwen3-8b) may overfit to the demonstrations: in baseline: very low recall, high precision. When shown demonstrations (implicitly): high recall, low precision
-\end{itemize}
 
 \subsection{Handling of erroneous outputs}
 
