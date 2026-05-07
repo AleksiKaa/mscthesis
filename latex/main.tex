@@ -1026,15 +1026,15 @@ A point of interest in the study was the effect that ICL has on the models. To d
 
 \input{latex/tables/baselines_compared_with_best_worst}
 
-TODO: How to present the differences? Should another table be constructed? Do the percentages add any value?
-
 To accurately show the effect ICL caused in prediction performance, table \ref{tab:baselines_compared} was compiled. It consists of a subtable for each model showing the baseline and suite that resulted in both the best and worst score for each label, as well as the sum of the scores. The highest scores for each model and label are in bold in the tables, and the lowest in bold and italicized. TODO: OK sentence $\rightarrow$? The final 2 rows in each subtable show the difference of the baseline and the best score obtained using ICL as absolute values and percentages.
 
 Generally, larger models saw a smaller increase ($<5\%$) in F1 scores using ICL than smaller models, which contradicts the findings of \textcite{wei2023largerlanguagemodelsincontext} explained in section \ref{sec:desc}. This may be due to the fact that the larger models perform significantly better than the smaller ones without the use of ICL, leaving less room for improvement. The greatest improvement in the scores of larger models was with Qwen3-32B, where its concept prediction F1 score increased more than 30\% using ICL compared to baseline. An improvement of this scale suggests that ICL clearly affects the prediction performance in the task even with larger models.
 
 As stated in the previous paragraph, smaller models experienced larger performance gains using ICL compared to larger models. The magnitude of the increases in scores also varies more compared to larger models. For theme and topic predictions, Mistral-7B experienced a slight increase in F1 scores, Qwen3-8B a slight decrease, and Llama-8B a significant increase. The concept prediction scores saw a more extreme development: the F1 score of Llama-8B increased more than 20\%, resulting in a score exceeding 0.90, Qwen3-8B went from 0.41 to almost 0.68 (65\% increase), and Mistral-7B went from 0.054 to 0.69 (almost 1200\% increase). These results suggest that ICL affects the decision boundaries of the models, further developing their capabilities in classification tasks.
 
-Does ICL hinder the performance? Is it detrimental in some cases? By how much? Why?
+%Does ICL hinder the performance? Is it detrimental in some cases? By how much? Why?
+
+The results presented in table \ref{tab:baselines_compared} show that ICL can also be detrimental. Only one baseline score (Mistral-7B concept F1) resulted in the lowest score between all models, meaning that for all other metrics, at least one form of ICL scored lower than the baseline. In a number of cases, the lowest score is many times lower than the baseline. For example, the baseline score of Mistral-24B in topic prediction is $\approx 0.89$, and the lowest score is $\approx 0.09$, meaning that the ICL setup was able to turn a well performing model into a useless classifier. This phenomenon is a clear trend across models with reasonably high baseline scores. ICL did not have a great hindering effect on two models: Llama-70B and Mistral-7B. With Llama-70B, the lowest scores for theme and topic prediction are $\approx 0.05$ lower than the baseline. The hindering effect is much greater for concept prediction, where the lowest score is $\approx 0.42$ lower than the baseline. As with Llama-70B, the lowest score obtained with Mistral-7B with ICL is only moderately lower for both theme and topic prediction than the respective baselines. As stated in the beginning of this paragraph, the lowest concept prediction score with Mistral-7b with ICL is the only lower score that improved the baseline. However, the improvement is very minor, from $\approx 0.05$ to $\approx 0.10$, which is still a very poor result.
 
 \subsubsection{Implicit and explicit prompting compared} \label{sec:implicit_explicit_compared} % Compare explicit, implicit prompting
 
@@ -1058,6 +1058,7 @@ The number of demonstrations in the prompt seemingly has an even larger effect: 
 \subsubsection{TODO: list of interesting points and ideas}
 
 \begin{itemize}
+    \item negative prompting may disable model, likely due to convincing the model that it should always answer with the negative label -> F1 score collapses
     \item Maybe handle individual recall and precision scores in consistency subsection for interesting points?
     \item Llama models more resilient to implicit prompting?
     \item Why does Llama-8 perform better in concept prediction than Llama-70B?
