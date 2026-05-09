@@ -1018,6 +1018,15 @@ Where figure \ref{fig:f1_mean_per_model} showed the mean performance for each mo
 
 Table \ref{tab:ordered_models} also shows the weakest performers: both Mistral models and Qwen3-8B. Although the larger of the two Mistral models, Mistral-24B, performs decently in predicting the theme and the topic, it cannot match the top models in concept prediction. The scores only decrease with the other two models: Qwen3-8B performs slightly worse than Mistral-24B in predicting all three labels, and Mistral-7B is clearly the worst of all in predicting the theme and the topic, and narrowly exceeds the lowest score in concept prediction obtained by Qwen3-8B. These results suggest that Mistral-7B is the least appropriate model for the task studied in this experiment.
 
+\subsubsection{Statistical significance} \label{sec:stats_sig}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=\textwidth]{latex/images/.png}
+    \caption{The means of F1 scores per model and suite, one heatmap for each label}
+    \label{fig:f1_mean_per_suite}
+\end{figure}
+
 \subsubsection{Effect of ICL in prediction performance} \label{sec:effect_of_icl} % Effect of ICL, interpret the results
 
 A point of interest in the study was the effect that ICL has on the models. To discover this effect, a baseline was obtained with 0-shot prompting and various ICL setups were executed for performance comparison. In the following sections, the effects of ICL prompting are studied. Of interest is how the prompting methods compare to the obtained baseline, as well as which prompting type yields better results.
