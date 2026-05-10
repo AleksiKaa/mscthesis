@@ -948,8 +948,6 @@ Based on the hyperparameters explained in section \ref{sec:desc} the suites visi
 
 All runs were conducted with the same decoding and generation hyperparameters: the model temperature was set to 0.3, top-$k$ to 20, and top-$p$ to 0.80, and the maximum number of generated tokens was set to 64. As explained in section \ref{sec:decoding}, a low temperature sharpens the output token probabilities, making high probability tokens even more likely. Combining this with top-$k$ = 20, the number of tokens considered is reduced to 20, and lastly applying top-p reduces the probability mass of the nucleus to 0.8 of the total of the top 20 tokens. This results in a distribution shape where the output is fairly predictable. These hyperparameters were selected to promote a controlled, conservative generation with mild variability in the model, since generating JSON is a task requiring accuracy, where even one falsely generated token, such as ',' at the wrong position, breaks the validity of the JSON, thus rendering the output useless. The maximum number of generated tokens is set to be strict, but still having room for the generation of the output according to the schema.
 
-\subsection{Evaluation metrics}
-
 \begin{table}
     \centering
     \renewcommand{\arraystretch}{1.3}
@@ -1006,8 +1004,6 @@ which approximately follows a chi-square distribution with one degree of freedom
 \end{align*}
 in favor of the hypothesis that the classifiers have significantly different error rates. When comparing multiple classifiers, it is usually beneficial to use some sort of correction method, such as the Holm-Bonferroni method \cite{29def780-e117-38f0-8afb-edf384af3fad}, to combat the multiple comparisons problem \cite{westfall2011multiple}.
 
-
-
 \clearpage
 
 \section{Results}
@@ -1024,6 +1020,14 @@ In this section, the results obtained from the execution of the suites are expla
 Figure \ref{fig:f1_mean_per_model} shows a high-level summary of the results. The figure presents the means of the F1 scores for each predicted label. The means are calculated over all suites executed per model. The black line in each bar shows the standard deviation of the measurements. There are several key findings to be made from the figure. Firstly, it can be seen that Llama-70B and Qwen3-32B outperform the other models on average. The other 4 models are quite similar to each other in mean performance, but have standard deviations of differing magnitudes. Mistral-24B is the most inconsistent across all models, while Llama-70B is by far the most consistent model, having the smallest standard deviations for predicting the correctness of theme and topic and the deviation in concept prediction is similar to other models. 
 
 It can also be seen that predicting some labels is more difficult than predicting others. For Llama-70B, Mistral-24B, Mistral-7B, Qwen3-32B, and Qwen3-8B, predicting whether additional disallowed concepts are present in the exercise was clearly more difficult than predicting the correctness of the theme and topic. Llama-8B is the only model in which the highest mean F1 score is for the concepts. The mean F1 scores for the theme and the topic are similar to each other for all models. This is quite expected, since the labels are strongly connected to each other in meaning.
+
+\subsection{Baseline performance (RQ1)}
+
+\subsection{Effect of Model Size and family (RQ2)}
+
+\subsection{Effect of In-Context Learning (RQ3)}
+
+\subsection{Evaluation metrics}
 
 \subsection{Model evaluations}
 
