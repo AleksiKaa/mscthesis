@@ -1033,7 +1033,7 @@ A point of interest in the study was the effect that ICL has on the models. To d
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{latex/images/f1_per_suite.png}
+    \includegraphics[width=\textwidth]{latex/images/f1_per_suite_v3.png}
     \caption{The means of F1 scores per model and suite, one heatmap for each label}
     \label{fig:f1_mean_per_suite}
 \end{figure}
@@ -1048,7 +1048,7 @@ Explicit prompting yielded better results than implicit prompting, exceeding alm
 
 \subsubsection{The effect of the number and type of demonstrations} \label{sec:effect_icl_types} % Type of demonstrations, continuation to interpretation
 
-In figure \ref{fig:f1_mean_per_suite}, focusing on the changes in model F1 scores across suites, it can be said that the severity of the effect that ICL has on a model's prediction performance generally increases as the number of demonstrations increases. That is, if an ICL setup with 1 demonstration impacts the score in some way compared to the baseline, increasing the number of demonstrations to 6 while keeping the rest of the hyperparameters unchanged, the effect on the score is further amplified. This suggests that the raw number of demonstrations presented to the model affects the magnitude of change in the model's decision boundaries, at least when the number of provided demonstrations is sufficiently small. This phenomenon is visible in the scores of Llama-8B: the baseline concept prediction F1 score (0.46) increases to 0.67 on 1 demonstration and increases even further with 6 demonstrations (0.90).
+In figure \ref{fig:f1_mean_per_suite}, focusing on the changes in model F1 scores across suites, it can be said that the severity of the effect that ICL has on a model's prediction performance generally increases as the number of demonstrations increases. That is, if an ICL setup with 1 demonstration impacts the score in some way compared to the baseline, increasing the number of demonstrations to 6 while keeping the rest of the hyperparameters unchanged, the effect on the score is further amplified. This suggests that the raw number of demonstrations presented to the model affects the magnitude of change in the model's decision boundaries, at least when the number of provided demonstrations is sufficiently small. This phenomenon is visible in the scores of Llama-8B: the baseline concept prediction F1 score (0.75) increases to 0.79 on 1 demonstration and increases even further with 6 demonstrations (0.89) when positive demonstrations are provided in an explicit prompting setting.
 
 pos > mix > neg or mix > pos > neg
 
