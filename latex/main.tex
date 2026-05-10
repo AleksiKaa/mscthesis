@@ -535,8 +535,8 @@ It is well-known that model performance scales with respect to model size. Gener
 This thesis investigates the use of LLMs for detecting hallucinations in educational CS content generated using LLMs. The study provides an empirical comparison of performance between models of differing sizes and various ICL setups with the task of detecting faithfulness hallucinations in LLM generated programming exercises. The main research questions in this thesis are as follows:
 \begin{itemize}
      \item \textbf{RQ1: Are out-of-the-box LLMs able to detect faithfulness hallucinations in LLM generated programming exercises?} This study includes researching the capabilities and evaluating the performance of multiple base models in detecting faithfulness hallucinations in LLM generated programming exercises. 
-    \item \textbf{RQ2: Can smaller, lighter LLMs achieve the performance of larger models in detecting faithfulness hallucinations?} Models of varying parameter counts are considered in the experiment. The results of the models are compared, with an emphasis on the difference in the performance of larger and smaller models.
-    \item \textbf{RQ3: Can the performance of faithfulness hallucination performance of LLMs be improved using in-context learning?} A baseline is obtained by prompting the models in a 0-shot fashion and then compared with the results of various ICL setups.
+    \item \textbf{RQ2: Can the performance of faithfulness hallucination detection of LLMs be improved using in-context learning?} A baseline is obtained by prompting the models in a 0-shot fashion and then compared with the results of various ICL setups.
+    \item \textbf{RQ3: Can smaller, lighter LLMs achieve the performance of larger models in detecting faithfulness hallucinations?} Models of varying parameter counts are considered in the experiment. It is of interest whether ICL can enable smaller models, reducing the need for the use of larger models.
 \end{itemize}
 
 These questions determine the course and content of the study. The thesis is structured as follows:
@@ -1008,30 +1008,28 @@ in favor of the hypothesis that the classifiers have significantly different err
 
 \section{Results}
 
-In this section, the results obtained from the execution of the suites are explained and evaluated. The analysis is started from a more general level, and the most interesting points rising from the results are discussed and studied in more detail with respect to the research questions. For the sake of decluttering the document, all models are referred to by their family name and parameter count, e.g. Llama-8B refers to Llama-3.1-8B-Instruct.
+In this section, the results obtained from the execution of the experiment are explained and evaluated. The analysis is started from a more general level, and the most interesting points rising from the results are discussed and studied in more detail with respect to the research questions. The experiment evaluated multiple LLM families and parameter scales on the task of detecting faithfulness hallucinations in LLM-generated programming exercises. The models were first evaluated in a zero-shot setting, after which multiple in-context learning configurations were tested. Performance was measured using accuracy, precision, recall, F1-score, and statistical significance was measured with McNemar's tests. For the sake of decluttering the document, all models are referred to by their family name and parameter count, e.g. Llama-8B refers to Llama-3.1-8B-Instruct.
+
+\subsection{Baseline performance (RQ1)} \label{sec:rq1}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\linewidth]{latex/images/f1_per_model_bar.png}
-    \caption{Means of F1 scores in all suites by label and model}
-    \label{fig:f1_mean_per_model}
+    \includegraphics[width=\linewidth]{latex/images/baselines_f1.png}
+    \caption{Means of F1 scores for each predicted label for baseline models}
+    \label{fig:f1_mean_per_baseline}
 \end{figure}
 
-Figure \ref{fig:f1_mean_per_model} shows a high-level summary of the results. The figure presents the means of the F1 scores for each predicted label. The means are calculated over all suites executed per model. The black line in each bar shows the standard deviation of the measurements. There are several key findings to be made from the figure. Firstly, it can be seen that Llama-70B and Qwen3-32B outperform the other models on average. The other 4 models are quite similar to each other in mean performance, but have standard deviations of differing magnitudes. Mistral-24B is the most inconsistent across all models, while Llama-70B is by far the most consistent model, having the smallest standard deviations for predicting the correctness of theme and topic and the deviation in concept prediction is similar to other models. 
+Figure \ref{fig:f1_mean_per_baseline} shows the means of the F1 scores of the baselines of the model for each predicted label. The means are calculated over all the seeds executed. The black line in each bar shows the standard deviation of the measurements. There are several key findings to be made from the figure. Firstly, it can be seen that all models perform well (F1 at least $\approx 0.8$) in predicting the theme and topic. Additionally, the mean F1 scores for the theme and the topic are similar to each other for all models. This is quite expected, since the labels are strongly connected to each other in meaning. 
 
-It can also be seen that predicting some labels is more difficult than predicting others. For Llama-70B, Mistral-24B, Mistral-7B, Qwen3-32B, and Qwen3-8B, predicting whether additional disallowed concepts are present in the exercise was clearly more difficult than predicting the correctness of the theme and topic. Llama-8B is the only model in which the highest mean F1 score is for the concepts. The mean F1 scores for the theme and the topic are similar to each other for all models. This is quite expected, since the labels are strongly connected to each other in meaning.
+Predicting the faithfulness of the programming concepts included in the exercise is clearly the most difficult label across all models' baselines, since the mean F1 score of it is the lowest of the three labels for all models. Only the two Llama models performed well in the concept prediction, while the other models performed poorly in the task. Due to the other models poor performance in the concept prediction, it can be said that the Llama models baselines' perform the best in the overall task, followed by Mistral-24b and the two Qwen models, leaving Mistral-7B as the worst baseline performer.
 
-\subsection{Baseline performance (RQ1)}
+The low standard deviation bars on each label suggest that the models are consistent with their predictions, rather than affected by internal randomness. However, some variations can be found in the baselines' consistencies: Mistral-24B is the most inconsistent across all models, as shown by the greatest standard deviations across labels. 
 
-\subsection{Effect of Model Size and family (RQ2)}
+Of interest is the cause of the poor performance of Qwen3-8B and Mistral-7B in the predictions of the concepts. Figures \ref{fig:precision_mean_per_suite} and \ref{fig:recall_mean_per_suite} show that the precision and recall values for the models are $(1, 0.26)$, $(1, 0.028)$, respectively. These values suggest that the models are too conservative out-of-the-box, resulting in positive predictions only when the models are absolutely sure of the predictions correctness. This results in the models scoring a high number of false negatives, letting a great number of unfaithful samples go undetected.
 
-\subsection{Effect of In-Context Learning (RQ3)}
+\subsection{Effect of In-Context Learning (RQ2)} \label{sec:rq2}
 
-\subsection{Evaluation metrics}
-
-\subsection{Model evaluations}
-
-Aggregating the results of all suites executed into one set of metrics is not the most accurate method to capture the performance of the model. A model might perform well under one set of parameters and considerably worse under another. This is even more true for ICL, as it is known to be unpredictably sensitive to settings and selected demonstrations (\ref{sec:icl}). In this subsection, a closer look is taken at the results of the individual suites per model. First, the F1 scores for each label for each model and suite are presented as a heatmap, and the findings of it are discussed. Then, the top 10 combinations of model and suite are analyzed and compared with the top suite for each model. After that, a reason for the low F1 scores is sought by analyzing individual precision and recall scores. The complete set of results is listed in Appendix \ref{app:results}. TODO: Is this good? Is the order and description correct?
+A point of interest in the study was the effect that ICL has on the models. To discover this effect, various ICL setups were executed and in this section the results are compared to the baselines presented in section \ref{sec:rq1}. Of interest is how the prompting methods compare to the obtained baseline, as well as which prompting type yields better results.
 
 \begin{figure}
     \centering
@@ -1040,11 +1038,39 @@ Aggregating the results of all suites executed into one set of metrics is not th
     \label{fig:f1_mean_per_suite}
 \end{figure}
 
-\subsubsection{Mean performance evaluations} \label{sec:mean_eval} % Model family and size, state raw results
+\subsubsection{Implicit and explicit prompting compared} \label{sec:implicit_explicit_compared} % Compare explicit, implicit prompting
 
-Figure \ref{fig:f1_mean_per_suite} shows the mean F1 score obtained for each combination of model and suite aggregated on each seed. The value in each cell is the mean of 5 sets of results, one for each seed used. Each cell also has a background color, where a darker color denotes a larger value. The models, from smallest to largest, are shown on the $y$-axis. The $x$-axis shows the executed suites. They have been grouped by the type of prompting used: explicit prompting suites are on the left and implicit ones on the right. The groups are then ordered by the number of demonstrations provided in the prompts. This layout is selected to make the differences in the performance of models based on the model size and prompt type as clear as possible.
+Figure \ref{fig:f1_mean_per_suite} shows the mean F1 score obtained for each combination of model and suite aggregated on each seed. The value in each cell is the mean of 5 sets of results, one for each seed used. Each cell also has a background color, where a darker color denotes a larger value. The models, from smallest to largest, are shown on the $y$-axis. The $x$-axis shows the executed suites. They have been grouped by the type of prompting used: explicit prompting suites are on the left and implicit ones on the right. The groups are then ordered by the number of demonstrations provided in the prompts. This layout is selected to make the differences in the performance of models based on the model size and prompt type as clear as possible. It can be seen quite clearly from figure \ref{fig:f1_mean_per_suite} that there is a distinct divide in scores on the $x$-axis: models perform better with explicit prompting than with implicit prompting in nearly all variations of suite parameters.
 
-Two clear trends are visible in the figure: the F1 score for each label increases with model size, and explicit prompting performs better than implicit prompting. The highest F1 scores thus concentrate in the top-left quadrants of the heatmaps, but there are exceptions as well: of the small models, Llama-8B is the only one that achieves mean F1 scores in the 0.9 range for all labels. The other two small models, Qwen3-8B and Mistral-7B, show strong performance in predicting the theme and topic in various different suites, but show poor scores in predicting the faithfulness of the concepts, likely due to insufficient reasoning capability.
+In fact, implicit prompting performs worse than baseline 0-shot prompting in most suites. For theme prediction, implicit prompting performs equally well or worse than baseline in all 30 suites. Implicit prompting exceeded the baseline in topic prediction in 1 suite: Llama-8B experienced a minor improvement from 0.78 to 0.83 with implicit negative prompting using 6 demonstrations. However, implicit prompting had a positive impact on predicting the concept: a total of 14 configurations, including suites from all models except Llama-70B, improved the baseline score. Most of the improvements were quite minor, improving the score by 0.05-0.10, but perhaps the most notable was the improvement of Mistral-7B: from the baseline score of 0.054, a total model failure, to a mediocre score of 0.69, the highest score obtained by the model.
+
+Explicit prompting yielded better results than implicit prompting, exceeding almost all baseline scores. The only baselines that were not exceeded were Llama-70B topic F1 (score 0.98), Qwen3-8B theme F1 (0.85), and Qwen3-8B topic F1 (0.9). The scores second to baselines were all within 0.01, meaning that the measured performances were very close to the baseline, and the differences could be explained with model variance.
+
+\subsubsection{The effect of the number and type of demonstrations} \label{sec:effect_icl_types} % Type of demonstrations, continuation to interpretation
+
+In figure \ref{fig:f1_mean_per_suite}, focusing on the changes in model F1 scores across suites, it can be said that the severity of the effect that ICL has on a model's prediction performance generally increases as the number of demonstrations increases. That is, if an ICL setup with 1 demonstration impacts the score in some way compared to the baseline, increasing the number of demonstrations to 6 while keeping the rest of the hyperparameters unchanged, the effect on the score is further amplified. This suggests that the raw number of demonstrations presented to the model affects the magnitude of change in the model's decision boundaries, at least when the number of provided demonstrations is sufficiently small. This phenomenon is visible in the scores of Llama-8B: the baseline concept prediction F1 score (0.46) increases to 0.67 on 1 demonstration and increases even further with 6 demonstrations (0.90).
+
+pos > mix > neg or mix > pos > neg
+
+\subsubsection{Comparison to baselines}
+
+\input{latex/tables/baselines_compared_with_best_worst_v2.tex}
+
+To accurately show the effect of ICL on prediction performance, table \ref{tab:baselines_compared} was compiled. It consists of a subtable for each model showing the baseline and suite that resulted in both the best and worst score for each label, as well as the sum of the scores. The highest scores for each model and label are in bold in the tables, and the lowest in bold and italicized. The final rows in each subtable show the differences of the compared values (high/baseline, low/baseline, high/low) as absolute values and percentages.
+
+Generally, larger models saw a smaller increase ($<5\%$) in F1 scores using ICL than smaller models, which contradicts the findings of \textcite{wei2023largerlanguagemodelsincontext} explained in section \ref{sec:desc}. This may be due to the fact that the larger models perform significantly better than the smaller ones without the use of ICL, leaving less room for improvement. The greatest improvement in the scores of larger models was with Qwen3-32B, where its concept prediction F1 score increased more than 30\% using ICL compared to baseline. An improvement of this scale suggests that ICL clearly affects the prediction performance in the task even with larger models.
+
+As stated in the previous paragraph, smaller models experienced larger performance gains using ICL compared to larger models. The magnitude of the increases in scores also varies more compared to larger models. For theme and topic predictions, Mistral-7B experienced a slight increase in F1 scores, Qwen3-8B a slight decrease, and Llama-8B a significant increase. The concept prediction scores saw a more extreme development: the F1 score of Llama-8B increased more than 20\%, resulting in a score exceeding 0.90, Qwen3-8B went from 0.41 to almost 0.68 (65\% increase), and Mistral-7B went from 0.054 to 0.69 (almost 1200\% increase). These results suggest that ICL affects the decision boundaries of the models, further developing their capabilities in classification tasks.
+
+The results presented in table \ref{tab:baselines_compared} show that ICL can also be detrimental. Only one baseline score (Mistral-7B concept F1) resulted in the lowest score between all models, meaning that for all other metrics, at least one form of ICL scored lower than the baseline. In a number of cases, the lowest score is many times lower than the baseline. For example, the baseline score of Mistral-24B in topic prediction is $\approx 0.89$, and the lowest score is $\approx 0.09$, meaning that the ICL setup was able to turn a well performing model into a useless classifier. This phenomenon is a clear trend across models with reasonably high baseline scores. ICL did not have a great hindering effect on two models: Llama-70B and Mistral-7B. With Llama-70B, the lowest scores for theme and topic prediction are $\approx 0.05$ lower than the baseline. The hindering effect is much greater for concept prediction, where the lowest score is $\approx 0.42$ lower than the baseline. As with Llama-70B, the lowest score obtained with Mistral-7B with ICL is only moderately lower for both theme and topic prediction than the respective baselines. As stated in the beginning of this paragraph, the lowest concept prediction score with Mistral-7B with ICL is the only lower score that improved the baseline. However, the improvement is very minor, from $\approx 0.05$ to $\approx 0.10$, which is still a very poor result.
+
+TODO: Find a place for this! Even stronger evidence for the stronger performance of explicit prompting is that some type of explicit prompting was able to obtain the highest score in most of the measured metrics. Table \ref{tab:baselines_compared} shows that, in total, a type of explicit prompting (excluding the baseline) obtained the best score in 17 of the total 24 measured metrics (4 metrics for each of the 6 models).
+
+TODO: And this! The number of demonstrations in the prompt appears to have an even larger effect (on what?): 19 top scores and 14 lowest scores were obtained with suites including 6 demonstrations in the prompts. 6 demos affect the decision boundary of the model more than 1 demo
+
+\subsection{Performance of Smaller vs Larger Models (RQ3)} \label{sec:rq3} % Model family and size, state raw results
+
+Two clear trends are visible in figure \ref{fig:f1_mean_per_suite}: the F1 score for each label increases with model size, and explicit prompting performs better than implicit prompting. The highest F1 scores thus concentrate in the top-left quadrants of the heatmaps, but there are exceptions as well: of the small models, Llama-8B is the only one that achieves mean F1 scores in the 0.9 range for all labels. The other two small models, Qwen3-8B and Mistral-7B, show strong performance in predicting the theme and topic in various different suites, but show poor scores in predicting the faithfulness of the concepts, likely due to insufficient reasoning capability.
 
 \input{latex/tables/top_10s}
 
@@ -1065,40 +1091,22 @@ Table \ref{tab:ordered_models} also shows the weakest performers: both Mistral m
 
 Figure \ref{fig:mcnemar_sig} shows a heatmap of the statistical significance labels obtained from performing McNemar's test on each model and suite against the model's baseline. In the table, 0 denotes "not significant" and 1 "significant". The values are obtained from Holm-Bonferroni corrected $p$-values, comparing them against $\alpha = 0.05$. As can be seen from the table, most of the results have significance, meaning that the prompting technique had an effect on the models decision boundaries. However, this does not automatically mean that the model performed better than the baseline. The full results of the McNemar tests are listed in \ref{tab:mcnemar}.
 
-\subsubsection{Effect of ICL in prediction performance} \label{sec:effect_of_icl} % Effect of ICL, interpret the results
+% Effect of Model Size on Performance
 
-A point of interest in the study was the effect that ICL has on the models. To discover this effect, a baseline was obtained with 0-shot prompting and various ICL setups were executed for performance comparison. In the following sections, the effects of ICL prompting are studied. Of interest is how the prompting methods compare to the obtained baseline, as well as which prompting type yields better results.
-
-%\input{latex/tables/top_suites_against_baseline_per_model}
-
-\input{latex/tables/baselines_compared_with_best_worst_v2.tex}
-
-To accurately show the effect ICL caused in prediction performance, table \ref{tab:baselines_compared} was compiled. It consists of a subtable for each model showing the baseline and suite that resulted in both the best and worst score for each label, as well as the sum of the scores. The highest scores for each model and label are in bold in the tables, and the lowest in bold and italicized. TODO: OK sentence $\rightarrow$? The final 2 rows in each subtable show the difference of the baseline and the best score obtained using ICL as absolute values and percentages.
-
-Generally, larger models saw a smaller increase ($<5\%$) in F1 scores using ICL than smaller models, which contradicts the findings of \textcite{wei2023largerlanguagemodelsincontext} explained in section \ref{sec:desc}. This may be due to the fact that the larger models perform significantly better than the smaller ones without the use of ICL, leaving less room for improvement. The greatest improvement in the scores of larger models was with Qwen3-32B, where its concept prediction F1 score increased more than 30\% using ICL compared to baseline. An improvement of this scale suggests that ICL clearly affects the prediction performance in the task even with larger models.
-
-As stated in the previous paragraph, smaller models experienced larger performance gains using ICL compared to larger models. The magnitude of the increases in scores also varies more compared to larger models. For theme and topic predictions, Mistral-7B experienced a slight increase in F1 scores, Qwen3-8B a slight decrease, and Llama-8B a significant increase. The concept prediction scores saw a more extreme development: the F1 score of Llama-8B increased more than 20\%, resulting in a score exceeding 0.90, Qwen3-8B went from 0.41 to almost 0.68 (65\% increase), and Mistral-7B went from 0.054 to 0.69 (almost 1200\% increase). These results suggest that ICL affects the decision boundaries of the models, further developing their capabilities in classification tasks.
-
-The results presented in table \ref{tab:baselines_compared} show that ICL can also be detrimental. Only one baseline score (Mistral-7B concept F1) resulted in the lowest score between all models, meaning that for all other metrics, at least one form of ICL scored lower than the baseline. In a number of cases, the lowest score is many times lower than the baseline. For example, the baseline score of Mistral-24B in topic prediction is $\approx 0.89$, and the lowest score is $\approx 0.09$, meaning that the ICL setup was able to turn a well performing model into a useless classifier. This phenomenon is a clear trend across models with reasonably high baseline scores. ICL did not have a great hindering effect on two models: Llama-70B and Mistral-7B. With Llama-70B, the lowest scores for theme and topic prediction are $\approx 0.05$ lower than the baseline. The hindering effect is much greater for concept prediction, where the lowest score is $\approx 0.42$ lower than the baseline. As with Llama-70B, the lowest score obtained with Mistral-7B with ICL is only moderately lower for both theme and topic prediction than the respective baselines. As stated in the beginning of this paragraph, the lowest concept prediction score with Mistral-7b with ICL is the only lower score that improved the baseline. However, the improvement is very minor, from $\approx 0.05$ to $\approx 0.10$, which is still a very poor result.
-
-\subsubsection{Implicit and explicit prompting compared} \label{sec:implicit_explicit_compared} % Compare explicit, implicit prompting
-
-It was briefly mentioned in section \ref{sec:mean_eval} that explicit prompting performs better than implicit prompting. Continuing from this observation, it can be seen quite clearly from figure \ref{fig:f1_mean_per_suite} that there is a distinct divide in scores on the $x$-axis: models perform better with explicit prompting than with implicit prompting in nearly all variations of suite parameters. In fact, implicit prompting performs worse than baseline 0-shot prompting in most suites. For theme prediction, implicit prompting performs equally well or worse than baseline in all 30 suites. Implicit prompting exceeded the baseline in topic prediction in 1 suite: Llama-8B experienced a minor improvement from 0.78 to 0.83 with implicit negative prompting using 6 demonstrations. However, implicit prompting had a positive impact on predicting the concept: a total of 14 configurations, including suites from all models except Llama-70B, improved the baseline score. Most of the improvements were quite minor, improving the score by 0.05-0.10, but perhaps the most notable was the improvement of Mistral-7B: from the baseline score of 0.054, a total model failure, to a mediocre score of 0.69, the highest score obtained by the model.
-
-Explicit prompting yielded better results than implicit prompting. Almost all baseline scores were exceeded with explicit prompting. The only baselines that were not exceeded were Llama-70B topic F1 (score 0.98), Qwen3-8B theme F1 (0.85), and Qwen3-8B topic F1 (0.9). The scores second to baselines were all within 0.01, meaning that the measured performances were very close to the baseline, and the differences could be explained with model variance. Even stronger evidence for the stronger performance of explicit prompting is that some type of explicit prompting was able to obtain the highest score in most of the measured metrics. Table \ref{tab:baselines_compared} shows that, in total, a type of explicit prompting (excluding the baseline) obtained the best score in 17 of the total 24 measured metrics (4 metrics for each of the 6 models).
+% Interaction Between Model Family and Size
 
 
-%The table shows that the highest concept F1 score is significantly lower for all models, except Llama-8B, compared to the F1 scores for theme and topic prediction.
+%\subsection{Evaluation metrics}
 
 
-%The inclusion of additional concepts was clearly the most difficult label to predict. The baselines for concept prediction are significantly lower than for the other two labels for all models and show greater variance between suites, which suggests that ICL has a significant effect on the accuracy of the models.
+%Figure \ref{fig:f1_mean_per_model} shows a high-level summary of the results. The figure presents the means of the F1 scores for each predicted label. The means are calculated over all suites executed per model. The black line in each bar shows the standard deviation of the measurements. There are several key findings to be made from the figure. Firstly, it can be seen that Llama-70B and Qwen3-32B outperform the other models on average. The other 4 models are quite similar to each other in mean performance, but have standard deviations of differing magnitudes. Mistral-24B is the most inconsistent across all models, while Llama-70B is by far the most consistent model, having the smallest standard deviations for predicting the correctness of theme and topic and the deviation in concept prediction is similar to other models. 
 
+%It can also be seen that predicting some labels is more difficult than predicting others. For Llama-70B, Mistral-24B, Mistral-7B, Qwen3-32B, and Qwen3-8B, predicting whether additional disallowed concepts are present in the exercise was clearly more difficult than predicting the correctness of the theme and topic. Llama-8B is the only model in which the highest mean F1 score is for the concepts. The mean F1 scores for the theme and the topic are similar to each other for all models. This is quite expected, since the labels are strongly connected to each other in meaning.
 
-\subsubsection{The effect of the number and type of demonstration examples} \label{sec:effect_icl_types} % Type of demonstrations, continuation to interpretation
+%\subsection{Model evaluations}
 
-The number of demonstrations in the prompt appears to have an even larger effect (on what?): 19 top scores and 14 lowest scores were obtained with suites including 6 demonstrations in the prompts. 6 demos affect the decision boundary of the model more than 1 demo
+%Aggregating the results of all suites executed into one set of metrics is not the most accurate method to capture the performance of the model. A model might perform well under one set of parameters and considerably worse under another. This is even more true for ICL, as it is known to be unpredictably sensitive to settings and selected demonstrations (\ref{sec:icl}). In this subsection, a closer look is taken at the results of the individual suites per model. First, the F1 scores for each label for each model and suite are presented as a heatmap, and the findings of it are discussed. Then, the top 10 combinations of model and suite are analyzed and compared with the top suite for each model. After that, a reason for the low F1 scores is sought by analyzing individual precision and recall scores. The complete set of results is listed in Appendix \ref{app:results}. TODO: Is this good? Is the order and description correct?
 
-\subsubsection{Consistency of models} % Effect of random seed
 
 \subsubsection{TODO: list of interesting points and ideas}
 
@@ -1111,20 +1119,6 @@ The number of demonstrations in the prompt appears to have an even larger effect
     \item Some models (e.g. Qwen3-8b) may overfit to the demonstrations: in baseline: very low recall, high precision. When shown demonstrations (implicitly): high recall, low precision
     \item Implicit prompting with 6 negative demonstrations improves concept prediction on all except llama models, although it collapses the scores of theme and topic.
 \end{itemize}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.9\textwidth]{latex/images/precision_per_suite.png}
-    \caption{Heatmaps for each label of means of precision scores per model and suite}
-    \label{fig:precision_mean_per_suite}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.9\textwidth]{latex/images/recall_per_suite.png}
-    \caption{Heatmaps for each label of means of recall scores per model and suite}
-    \label{fig:recall_mean_per_suite}
-\end{figure}
 
 \subsection{Handling of erroneous outputs}
 
@@ -1322,6 +1316,20 @@ The system prompt shown in figure \ref{fig:augment_system_prompt} contains the t
 \clearpage
 
 \section{Appendix: Results} \label{app:results}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{latex/images/precision_per_suite.png}
+    \caption{Heatmaps for each label of means of precision scores per model and suite}
+    \label{fig:precision_mean_per_suite}
+\end{figure}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{latex/images/recall_per_suite.png}
+    \caption{Heatmaps for each label of means of recall scores per model and suite}
+    \label{fig:recall_mean_per_suite}
+\end{figure}
 
 \begin{table}[!h]
     \tiny
