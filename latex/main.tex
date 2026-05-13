@@ -167,6 +167,8 @@ linenos=false
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 
+\usepackage{siunitx}
+\sisetup{output-exponent-marker=\ensuremath{\mathrm{e}}}
 
 %% For tables that span multiple pages; used to split a paraphrasing example in
 %% the appendix. If you don't need it, remove it.
@@ -1006,9 +1008,9 @@ in favor of the hypothesis that the classifiers have significantly different err
 
 \clearpage
 
-\section{Results}
+\section{Results} \label{sec:results}
 
-In this section, the results obtained from the execution of the experiment are explained and evaluated. The analysis is started from a more general level, and the most interesting points rising from the results are discussed and studied in more detail with respect to the research questions. The experiment evaluated multiple LLM families and parameter scales on the task of detecting faithfulness hallucinations in LLM-generated programming exercises. The models were first evaluated in a zero-shot setting, after which multiple in-context learning configurations were tested. Performance was measured using accuracy, precision, recall, F1-score, and statistical significance was measured with McNemar's tests. For the sake of decluttering the document, all models are referred to by their family name and parameter count, e.g. Llama-8B refers to Llama-3.1-8B-Instruct.
+In this section, the results obtained from the execution of the experiment are explained and evaluated. The analysis is started from a more general level, and the most interesting points rising from the results are discussed and studied in more detail with respect to the research questions. The experiment evaluated multiple LLM families and parameter scales on the task of detecting faithfulness hallucinations in LLM-generated programming exercises. The models were first evaluated in a zero-shot setting, after which multiple in-context learning configurations were tested. Performance was measured using accuracy, precision, recall, F1-score, McNemar's tests. McNemar's tests were conducted to measure the statistical significance of the performance change for a given ICL configuration compared to the model's baseline with the significance threshold $\alpha = 0.05$. The results obtained were corrected for multiple comparisons using the Holm-Bonferroni method. For the sake of decluttering the document, all models are referred to by their family name and parameter count, e.g. Llama-8B refers to Llama-3.1-8B-Instruct.
 
 \subsection{Baseline performance (RQ1)} \label{sec:rq1}
 
@@ -1027,7 +1029,22 @@ The low standard deviation on each label suggests that the models are consistent
 
 \subsection{Effect of In-Context Learning (RQ2)} \label{sec:rq2}
 
-A point of interest in the study was the effect that ICL has on the models. To discover this effect, various ICL setups were executed and in this section the results are compared to the baselines presented in section \ref{sec:rq1}. Of interest is how the prompting methods compare to the obtained baseline, as well as which prompting type yields better results.
+A point of interest in the study was the effect that ICL has on the models. To discover this effect, various ICL setups were executed and in this section the results are compared to the baselines presented in section \ref{sec:rq1}.
+
+Figure \ref{fig:mcnemar_sig} shows a heatmap of the statistical significance labels obtained from performing McNemar's test on each model and suite against the model's baseline. In the table, the light background color indicates that the results of the suite are not statistically significant. This means that the ICL configuration did not alter the model's decision boundaries enough to make the model behave in a significantly different way, rather making the same kind of mistakes in predictions. Conversely, the cells marked with a dark background color show statistical significance, suggesting that the behavior of the model was changed by the ICL configuration. The significance threshold used for the decision is $\alpha = 0.05$, as was stated in \ref{sec:results}. Each cell also includes the Holm-Bonferroni corrected $p$-values of the test that were compared with $\alpha$ cut off at two decimals. The full results of the McNemar tests are listed in \ref{tab:mcnemar}.
+
+\begin{figure}
+    \centering
+     \includegraphics[
+        width=\textwidth,
+        height=0.9\textheight,
+        keepaspectratio,
+    ]{latex/images/mcnemar_significance.png}
+    \caption{Heatmap of the statistical significance of the model/suite against the baseline.}
+    \label{fig:mcnemar_sig}
+\end{figure}
+
+As can be seen in the table, most of the results have significance. The results of all except a few suites executed on the smaller models (Llama-8B, Qwen3-8B, Mistral-7B) and implicit prompting suites are significant, meaning that the prompting techniques had an effect on the models' decision boundaries. However, this does not automatically mean that the model performed better than the baseline. In the following subsections, the results of the experiment are studied in more detail, with focus on how the prompting methods compare to the obtained baseline, as well as which prompting type yields better results.
 
 \begin{figure}
     \centering
@@ -1038,15 +1055,15 @@ A point of interest in the study was the effect that ICL has on the models. To d
 
 \subsubsection{Implicit and explicit prompting compared} \label{sec:implicit_explicit_compared} % Compare explicit, implicit prompting
 
-Figure \ref{fig:f1_mean_per_suite} shows the mean F1 score obtained for each combination of model and suite aggregated on each seed, i.e., the value in each cell is the mean of 5 sets of results, one for each seed used. Each cell also has a background color, where a darker color denotes a larger value. The models, from smallest to largest, are shown on the $y$-axis. The $x$-axis shows the executed suites. They have been grouped by the type of prompting used: explicit prompting suites are on the left and implicit ones on the right. The groups are then ordered by the number of demonstrations provided in the prompts. This layout is selected to make the differences in the performance of models based on the model size and prompt type as clear as possible. It can be seen quite clearly from figure \ref{fig:f1_mean_per_suite} that there is a distinct divide in scores on the $x$-axis: models perform better with explicit prompting than with implicit prompting in nearly all variations of suite parameters.
+Figure \ref{fig:f1_mean_per_suite} shows the mean F1 score obtained for each combination of model and suite aggregated on each seed, i.e., the value in each cell is the mean of 5 sets of results, one for each seed used. Each cell also has a background color, where a darker color denotes a larger value. The models, from smallest to largest, are shown on the $y$-axis. The $x$-axis states the  executed suites. They have been grouped by the type of prompting used: explicit prompting suites are on the left and implicit ones on the right. The groups are then ordered by the number of demonstrations provided in the prompts. This layout is selected to make the differences in the performance of models based on the model size and prompt type as clear as possible. It can be seen quite clearly from figure \ref{fig:f1_mean_per_suite} that there is a distinct divide in scores on the $x$-axis: models perform better with explicit prompting than with implicit prompting in nearly all variations of suite parameters.
 
-In fact, implicit prompting performs worse than baseline 0-shot prompting in most suites. For theme prediction, implicit prompting performs equally well or worse than baseline in all 30 suites. Implicit prompting exceeded the baseline in topic prediction in 1 suite: Llama-8B experienced a minor improvement from 0.78 to 0.83 with implicit negative prompting using 6 demonstrations. However, implicit prompting had a positive impact on predicting the concept: a total of 14 configurations, including suites from all models except Llama-70B, improved the baseline score. Most of the improvements were quite minor, improving the score by 0.05-0.10, but perhaps the most notable was the improvement of Mistral-7B: from the baseline score of 0.054, a total model failure, to a mediocre score of 0.69, the highest score obtained by the model.
+In fact, implicit prompting performs worse than baseline 0-shot prompting in most suites. For theme prediction, implicit prompting performs equally well or worse than baseline in all 30 suites. Implicit prompting exceeded the baseline in topic prediction in 1 suite: Llama-8B experienced a minor improvement from 0.78 to 0.83 with implicit negative prompting using 6 mixed demonstrations. However, McNemar’s test indicated that the improvement was not statistically significant ($p=1$). Implicit prompting had a positive impact on predicting the concept, however: a total of 14 configurations (of which 12 have statistical significance), including suites from all models except Llama-70B, improved the baseline score. Most of the improvements were quite minor, improving the score by 0.05-0.10, but perhaps the most notable was the improvement of Mistral-7B: from the baseline score of 0.054, a total model failure, to a mediocre score of 0.69, the highest score obtained by the model. The $p$-value of \num{1.11e-16} for this suite, 6-neg-impl, suggests a very strong statistical significance.
 
 Explicit prompting yielded better results than implicit prompting, exceeding almost all baseline scores. The only baselines that were not exceeded were Llama-70B topic F1 (score 0.98), Qwen3-8B theme F1 (0.85), and Qwen3-8B topic F1 (0.9). The scores second to baselines were all within 0.01, meaning that the measured performances were very close to the baseline, and the differences could be explained with model variance.
 
 \subsubsection{The effect of the number and type of demonstrations} \label{sec:effect_icl_types} % Type of demonstrations, continuation to interpretation
 
-In figure \ref{fig:f1_mean_per_suite}, focusing on the changes in model F1 scores across suites, it can be said that the severity of the effect that ICL has on a model's prediction performance generally increases as the number of demonstrations increases. That is, if an ICL setup with 1 demonstration impacts the score in some way compared to the baseline, increasing the number of demonstrations to 6 while keeping the rest of the hyperparameters unchanged, the effect on the score is further amplified. This suggests that the raw number of demonstrations presented to the model affects the magnitude of change in the model's decision boundaries, at least when the number of provided demonstrations is sufficiently small. This phenomenon is visible in the scores of Llama-8B: the baseline concept prediction F1 score (0.75) increases to 0.79 on 1 demonstration and increases even further with 6 demonstrations (0.89) when positive demonstrations are provided in an explicit prompting setting.
+In figure \ref{fig:f1_mean_per_suite}, focusing on the changes in model F1 scores across suites, it can be said that the severity of the effect that ICL has on a model's prediction performance generally increases as the number of demonstrations increases. That is, if an ICL setup with 1 demonstration impacts the score in some way compared to the baseline, increasing the number of demonstrations to 6 while keeping the rest of the hyperparameters unchanged, the effect on the score is further amplified. This suggests that the raw number of demonstrations presented to the model affects the magnitude of change in the model's decision boundaries, at least when the number of provided demonstrations is sufficiently small. This phenomenon is visible in the scores of Llama-8B: the baseline concept prediction F1 score (0.75) increases to 0.79 on 1 demonstration and increases even further with 6 demonstrations (0.89) when positive demonstrations are provided in an explicit prompting setting. McNemar's test supports the hypothesis as well: while $p_{\text{\tiny(Llama-8B, 1-pos-expl)}} = \num{1e-09}$ already indicates a very strong statistical significance, $p_{\text{\tiny(Llama-8B, 6-pos-expl)}} = \num{5.15e-66}$ suggests an extremely strong significance.
 
 pos > mix > neg or mix > pos > neg
 
@@ -1079,19 +1096,6 @@ To highlight the best performing models, the top 10 F1 scores for each label are
 Where figure \ref{fig:f1_mean_per_model} showed the mean performance for each model, comparing the best scores obtained by each model in each metric better describes the models' capabilities. Table \ref{tab:ordered_models} shows the relative ranking of the models per label, as well as the difference of each model from the highest score between all models. Contrary to the impression given by figure \ref{fig:f1_mean_per_model}, where the clear best performers are Llama-70B and Qwen3-32B, this table shows that the ranking is not that obvious. Llama-70B is still the best performer, as was already stated in the previous paragraph, but the second best performing model could, depending on interpretation, be Qwen3-32B or Llama-8B, because they perform better than the other in predicting different labels. On the one hand, Llama-8B performs significantly better in concept prediction than Qwen3-32B, improving the F1 score of Qwen3-32B by more than 0.15. On the other hand, Qwen3-32B performs slightly better ($\approx 0.05$) in predicting both the theme and the topic than Llama-8B.
 
 Table \ref{tab:ordered_models} also shows the weakest performers: both Mistral models and Qwen3-8B. Although the larger of the two Mistral models, Mistral-24B, performs decently in predicting the theme and the topic, it cannot match the top models in concept prediction. The scores only decrease with the other two models: Qwen3-8B performs slightly worse than Mistral-24B in predicting all three labels, and Mistral-7B is clearly the worst of all in predicting the theme and the topic, and narrowly exceeds the lowest score in concept prediction obtained by Qwen3-8B. These results suggest that Mistral-7B is the least appropriate model for the task studied in this experiment.
-
-\begin{figure}
-    \centering
-     \includegraphics[
-        width=\textwidth,
-        height=0.9\textheight,
-        keepaspectratio,
-    ]{latex/images/mcnemar_significance.png}
-    \caption{Heatmap of the statistical significance of the model/suite against the baseline.}
-    \label{fig:mcnemar_sig}
-\end{figure}
-
-Figure \ref{fig:mcnemar_sig} shows a heatmap of the statistical significance labels obtained from performing McNemar's test on each model and suite against the model's baseline. In the table, 0 denotes "not significant" and 1 "significant". The values are obtained from Holm-Bonferroni corrected $p$-values, comparing them against $\alpha = 0.05$. As can be seen from the table, most of the results have significance, meaning that the prompting technique had an effect on the models decision boundaries. However, this does not automatically mean that the model performed better than the baseline. The full results of the McNemar tests are listed in \ref{tab:mcnemar}.
 
 % Effect of Model Size on Performance
 
@@ -1321,14 +1325,14 @@ The system prompt shown in figure \ref{fig:augment_system_prompt} contains the t
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=0.9\textwidth]{latex/images/precision_per_suite.png}
+    \includegraphics[width=0.9\textwidth]{latex/images/precision_per_suite_v2.png}
     \caption{Heatmaps for each label of means of precision scores per model and suite}
     \label{fig:precision_mean_per_suite}
 \end{figure}
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[width=0.9\textwidth]{latex/images/recall_per_suite.png}
+    \includegraphics[width=0.9\textwidth]{latex/images/recall_per_suite_v2.png}
     \caption{Heatmaps for each label of means of recall scores per model and suite}
     \label{fig:recall_mean_per_suite}
 \end{figure}
@@ -1367,8 +1371,6 @@ The system prompt shown in figure \ref{fig:augment_system_prompt} contains the t
     \label{tab:mcnemar}
 \end{table}
 
-Table \ref{tab:mcnemar} should be interpreted as follows: Accuracy, difference of accuracy to baseline, corrections made by the model, new mistakes made by the model, Chi-distribution, raw $p$-value, Holm corrected $p$-value, and mark of statistical significance (Holm $p$ < 0.05). Note that the accuracy values may differ a little  from the values in table \ref{tab:means}, since some rows had to be excluded from the results, so that pairwise connections could be formed. The rows dropped were: erroneous rows from both set of results, and the rows from the result set of the baseline, that were used as demonstrations in the comparison model/suite setup.
-
-
+Table \ref{tab:mcnemar} should be interpreted as follows: Accuracy, difference of accuracy to baseline, corrections made by the model, new mistakes made by the model, Chi-distribution, $p$-value, Holm corrected $p$-value, and mark of statistical significance (Holm $p$ < 0.05). Note that the accuracy values may differ slightly from the values in table \ref{tab:means}, since some rows had to be excluded from the McNemar's tests, so that pairwise connections could be formed. The rows dropped were: erroneous rows from both set of results, and the rows from the result set of the baseline, that were used as demonstrations in the comparison model/suite setup.
 
 \end{document}
