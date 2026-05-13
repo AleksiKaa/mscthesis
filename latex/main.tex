@@ -1048,9 +1048,18 @@ As can be seen in the table, most of the results have significance. The results 
 
 \subsubsection{Overall effect of ICL}
 
-\input{latex/tables/baselines_compared_with_best_worst_v2.tex}
+TODO: talk about general ICL performance between models, ref fig 12
 
-To accurately show the effect of ICL on prediction performance, table \ref{tab:baselines_compared} was compiled. It consists of a subtable for each model showing the baseline and suite that resulted in both the best and worst score for each label, as well as the sum of the scores, which can be viewed as a measure of general performance across all labels. The highest scores for each model and label are in bold in the tables, and the lowest in bold and italicized. The final rows in each subtable show the differences of the compared values (high/baseline, low/baseline, high/low) as absolute values and percentages.
+\begin{figure}
+    \centering
+     \includegraphics[width=\textwidth]{latex/images/f1_per_model_scatter.png}
+    \caption{Scatterplot of each executed suites F1 score. Grouped by model and label, and the baseline score is highlighted with a red color.}
+    \label{fig:f1_scatter}
+\end{figure}
+
+\input{latex/tables/best_and_worst_without diffs}
+
+To accurately show the effect of ICL on prediction performance, table \ref{tab:baselines_compared} was compiled. It consists of a subtable for each model showing the baseline and suite that resulted in both the best and worst score for each label, as well as the sum of the scores, which can be viewed as a measure of general performance across all labels. The highest scores for each model and label are in bold in the tables, and the lowest in bold and italicized.
 
 TODO: Improvements on a general level: Which setups worked best
 
