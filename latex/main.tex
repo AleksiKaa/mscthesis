@@ -1104,9 +1104,9 @@ As stated in the previous paragraph, smaller models experienced larger performan
 
 \subsubsection{Comparison of best scoring models}
 
-\input{latex/tables/top_10s}
+\input{latex/tables/top10s_v2}
 
-\input{latex/tables/best_with_mcnemar}
+\input{latex/tables/best_with_mcnemar_v3}
 
 To highlight the best performing models, the top 10 F1 scores for each label are compiled in table \ref{tab:top10s}. In addition to the 3 F1 scores, it also presents their sum. The top 10 for each label are populated only by Llama-70B, Llama-8B, and Qwen3-32B. Qwen-8B or either of the two Mistral models does not perform well enough to populate the top 10 on any metric. Qwen3-32B is very competitive in theme and topic predictions, but is missing from the top 10 in concept prediction, which results in the model's absence in the top 10 sums of scores as well. Llama-70B is clearly the best all-around performer, populating 26 of the total 40 spots in the top 10s, but it loses to its smaller counterpart in concept prediction. Llama-8B does not perform well enough to populate the top 10s in topic or theme prediction, but is the most performant model in concept prediction.
 
