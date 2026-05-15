@@ -1,0 +1,79 @@
+\begin{table}
+    \centering
+    \scriptsize
+    \begin{tabular}{ll|rrr}
+    \toprule
+    \multicolumn{5}{c}{\textbf{Theme}} \\
+    \midrule
+    Model & Suite & F1 & Holm $p$ & $S$ \\
+    \midrule
+    Llama-70B & 6-pos-expl & 0.949 & 1 & ns \\
+    Qwen3-32B & 6-mix-expl & 0.946 & 0.039 & * \\
+    Llama-70B & 6-mix-expl & 0.946 & 1 & ns \\
+    Llama-70B & 0-non-expl & 0.945 &  &  \\
+    Qwen3-32B & 6-pos-expl & 0.945 & 0.15 & ns \\
+    Llama-70B & 6-neg-expl & 0.945 & 1 & ns \\
+    Qwen3-32B & 1-pos-expl & 0.941 & 1 & ns \\
+    Llama-70B & 6-neg-impl & 0.936 & 0.039 & * \\
+    Qwen3-32B & 0-non-expl & 0.936 &  &  \\
+    Llama-70B & 6-mix-impl & 0.935 & 0.0184 & * \\
+    \bottomrule
+    \end{tabular}
+    \begin{tabular}{ll|rrr}
+    \toprule
+    \multicolumn{5}{c}{\textbf{Topic}} \\
+    \midrule
+    Model & Suite & F1 & Holm $p$ & $S$ \\
+    \midrule
+    Llama-70B & 0-non-expl & 0.978 &  &  \\
+    Llama-70B & 6-mix-expl & 0.974 & 1 & ns \\
+    Llama-70B & 6-neg-expl & 0.973 & 0.716 & ns \\
+    Llama-70B & 6-pos-expl & 0.972 & 0.73 & ns \\
+    Qwen3-32B & 6-mix-expl & 0.971 & 1 & ns \\
+    Qwen3-32B & 0-non-expl & 0.966 &  &  \\
+    Qwen3-32B & 6-neg-expl & 0.963 & 1 & ns \\
+    Llama-70B & 6-neg-impl & 0.962 & <0.01 & * \\
+    Qwen3-32B & 6-pos-expl & 0.961 & 1 & ns \\
+    Llama-70B & 6-mix-impl & 0.96 & <0.01 & * \\
+    \bottomrule
+    \end{tabular}
+
+    \begin{tabular}{ll|rrr}
+    \toprule
+    \multicolumn{5}{c}{\textbf{Concept}} \\
+    \midrule
+    Model & Suite & F1 & Holm $p$ & $S$ \\
+    \midrule
+    Llama-8B & 6-mix-expl & 0.902 & <0.01 & * \\
+    Llama-8B & 6-pos-expl & 0.887 & <0.01 & * \\
+    Llama-8B & 6-neg-expl & 0.877 & <0.01 & * \\
+    Llama-70B & 6-pos-expl & 0.875 & <0.01 & * \\
+    Llama-70B & 1-pos-expl & 0.862 & 1 & ns \\
+    Llama-70B & 0-non-expl & 0.858 &  &  \\
+    Llama-70B & 6-mix-expl & 0.856 & 1 & ns \\
+    Llama-70B & 1-neg-expl & 0.831 & <0.01 & * \\
+    Llama-70B & 6-neg-expl & 0.819 & <0.01 & * \\
+    Llama-8B & 1-pos-expl & 0.787 & <0.01 & * \\
+    \bottomrule
+    \end{tabular}
+    \begin{tabular}{ll|rrr}
+    \toprule
+    \multicolumn{5}{c}{\textbf{Sum}} \\
+    \midrule
+    Model & Suite & F1 & \phantom{Holm $p$} & $S$ \\
+    \midrule
+    Llama-70B & 6-pos-expl & 2.8 &  & * \\
+    Llama-70B & 0-non-expl & 2.78 &  & ns \\
+    Llama-70B & 6-mix-expl & 2.78 &  & ns \\
+    Llama-70B & 1-pos-expl & 2.76 &  & ** \\
+    Llama-70B & 6-neg-expl & 2.74 &  & * \\
+    Llama-8B & 6-pos-expl & 2.67 &  & *** \\
+    Llama-70B & 6-neg-impl & 2.67 &  & *** \\
+    Llama-70B & 1-neg-expl & 2.65 &  & *** \\
+    Llama-8B & 6-mix-expl & 2.62 &  & *** \\
+    Llama-70B & 6-pos-impl & 2.62 &  & *** \\
+    \bottomrule
+    \end{tabular}
+    \caption{Top 10 F1 scores between all models and suites for each label}
+    \label{tab:top10s}
+\end{table}
