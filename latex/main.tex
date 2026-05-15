@@ -166,6 +166,9 @@ linenos=false
 \usepackage{rotating}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{longtable}     % multipage tables
+\usepackage{caption}       % captions
+\usepackage{pdflscape}     % optional: landscape pages
 
 \usepackage{siunitx}
 \sisetup{output-exponent-marker=\ensuremath{\mathrm{e}}}
@@ -1039,7 +1042,7 @@ Figure \ref{fig:mcnemar_sig} shows a heatmap of the statistical significance lab
         width=\textwidth,
         height=0.9\textheight,
         keepaspectratio,
-    ]{latex/images/mcnemar_significance.png}
+    ]{latex/images/mcnemar_significance_v2.png}
     \caption{Heatmap of the statistical significance of the model/suite against the baseline.}
     \label{fig:mcnemar_sig}
 \end{figure}
@@ -1104,9 +1107,9 @@ As stated in the previous paragraph, smaller models experienced larger performan
 
 \subsubsection{Comparison of best scoring models}
 
-\input{latex/tables/top10s_v2}
+\input{latex/tables/top10s_v3}
 
-\input{latex/tables/best_with_mcnemar_v3}
+\input{latex/tables/best_with_mcnemar_v4}
 
 To highlight the best performing models, the top 10 F1 scores for each label are compiled in table \ref{tab:top10s} with the calculated Holm-Bonferroni corrected $p$-values and label of statistical significance. The $p$-values are omitted in the subtable for the sum, since 
 
@@ -1115,7 +1118,7 @@ In the columns labeled $S$, the label "ns" represents not significant, and "*" r
 
 In addition to the 3 F1 scores, the table also contains their sum as an additional subtable. The top 10 for each label are populated only by Llama-70B, Llama-8B, and Qwen3-32B. Qwen-8B or either of the two Mistral models does not perform well enough to populate the top 10 on any metric. Qwen3-32B is very competitive in theme and topic predictions, but is missing from the top 10 in concept prediction, which results in the model's absence in the top 10 sums of scores as well. Llama-70B is clearly the best all-around performer, populating 26 of the total 40 spots in the top 10s, but it loses to its smaller counterpart in concept prediction. Llama-8B does not perform well enough to populate the top 10s in topic or theme prediction, but is the most performant model in concept prediction.
 
-Although the top 10 scores are dominated by two of the larger models, the $p$-values in table \ref{top10s} suggest that the models behave similarly to the baseline. 
+Although the top 10 scores are dominated by two of the larger models, the $p$-values in table \ref{tab:top10s} suggest that the models behave similarly to the baseline. 
 
 Where figure \ref{fig:f1_scatter} showed the distribution of F1 scores for each model, comparing the best scores obtained by each model in each metric better describes the models' capabilities. Table \ref{tab:best_with_mcnemar} shows the baseline, the best F1 scores, and their difference for each model, with the suite that resulted in the score together with the result of McNemar's test. In the columns labeled $S$, the label "ns" represents not significant, and "*" represents "significant". In the case of the sum label, in the column $S$, the number of stars denotes the number of labels that are significant for the given suite. 
 
@@ -1372,16 +1375,8 @@ The system prompt shown in figure \ref{fig:augment_system_prompt} contains the t
 
 \clearpage
 
-\begin{table}[!h]
-    \tiny
-    \centering
-    \resizebox{\textwidth}{!}{%
-    \input{latex/tables/mcnemar_v2}
-    }
-    \caption{McNemar scores for each model and label}
-    \label{tab:mcnemar}
-\end{table}
+\input{latex/tables/mcnemar_v3}
 
-Table \ref{tab:mcnemar} should be interpreted as follows: Accuracy, difference of accuracy to baseline, corrections made by the model, new mistakes made by the model, Chi-distribution, $p$-value, Holm corrected $p$-value, and mark of statistical significance (Holm $p$ < 0.05). Note that the accuracy values may differ slightly from the values in table \ref{tab:means}, since some rows had to be excluded from the McNemar's tests, so that pairwise connections could be formed. The rows dropped were: erroneous rows from both set of results, and the rows from the result set of the baseline, that were used as demonstrations in the comparison model/suite setup.
+Columns of table \ref{tab:mcnemar} should be interpreted as follows: Accuracy, difference of accuracy to baseline, corrections made by the model, new mistakes made by the model, Chi-distribution, $p$-value, Holm corrected $p$-value, and mark of statistical significance ($\alpha$ = 0.05). Note that the accuracy values may differ slightly from the values in table \ref{tab:means}, since some rows had to be excluded from the McNemar's tests, so that pairwise connections could be formed. The rows dropped were: erroneous rows from both set of results, and the rows from the result set of the baseline, that were used as demonstrations in the comparison model/suite setup.
 
 \end{document}
