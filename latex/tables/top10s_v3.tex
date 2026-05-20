@@ -1,7 +1,9 @@
 \begin{table}
     \centering
     \scriptsize
-    \begin{tabular}{ll|rrr}
+
+    
+    \begin{tabular}{ll|lll}
     \toprule
     \multicolumn{5}{c}{\textbf{Theme}} \\
     \midrule
@@ -19,7 +21,7 @@
     Llama-70B & 6-mix-impl & 0.935 & 0.0184 & * \\
     \bottomrule
     \end{tabular}
-    \begin{tabular}{ll|rrr}
+    \begin{tabular}{ll|lll}
     \toprule
     \multicolumn{5}{c}{\textbf{Topic}} \\
     \midrule
@@ -37,8 +39,8 @@
     Llama-70B & 6-mix-impl & 0.96 & <0.01 & * \\
     \bottomrule
     \end{tabular}
-
-    \begin{tabular}{ll|rrr}
+    
+    \begin{tabular}{ll|lll}
     \toprule
     \multicolumn{5}{c}{\textbf{Concept}} \\
     \midrule
@@ -56,24 +58,25 @@
     Llama-8B & 1-pos-expl & 0.787 & <0.01 & * \\
     \bottomrule
     \end{tabular}
-    \begin{tabular}{ll|rrr}
+    \begin{tabular}{ll|lll}
     \toprule
     \multicolumn{5}{c}{\textbf{Sum}} \\
     \midrule
-    Model & Suite & F1 & \phantom{Holm $p$} & $S$ \\
+    Model & Suite & F1 & Holm $p$ & $S$ \\
     \midrule
-    Llama-70B & 6-pos-expl & 2.8 &  & * \\
-    Llama-70B & 0-non-expl & 2.78 &  & ns \\
-    Llama-70B & 6-mix-expl & 2.78 &  & ns \\
-    Llama-70B & 1-pos-expl & 2.76 &  & ** \\
-    Llama-70B & 6-neg-expl & 2.74 &  & * \\
-    Llama-8B & 6-pos-expl & 2.67 &  & *** \\
-    Llama-70B & 6-neg-impl & 2.67 &  & *** \\
-    Llama-70B & 1-neg-expl & 2.65 &  & *** \\
-    Llama-8B & 6-mix-expl & 2.62 &  & *** \\
-    Llama-70B & 6-pos-impl & 2.62 &  & *** \\
+    Llama-70B & 6-pos-expl & 2.8 & <0.01 & * \\
+    Llama-70B & 0-non-expl & 2.78 &  &  \\
+    Llama-70B & 6-mix-expl & 2.78 & 1 & ns \\
+    Llama-70B & 1-pos-expl & 2.76 & 1 & ns \\
+    Llama-70B & 6-neg-expl & 2.74 & <0.01 & * \\
+    Llama-8B & 6-pos-expl & 2.67 & <0.01 & * \\
+    Llama-70B & 6-neg-impl & 2.67 & 0.621 & ns \\
+    Llama-70B & 1-neg-expl & 2.65 & <0.01 & * \\
+    Llama-8B & 6-mix-expl & 2.62 & <0.01 & * \\
+    Llama-70B & 6-pos-impl & 2.62 & <0.01 & * \\
     \bottomrule
     \end{tabular}
+
     \caption{Top 10 F1 scores between all models and suites for each label}
     \label{tab:top10s}
 \end{table}
