@@ -841,24 +841,24 @@ To balance the dataset, new data needed to be introduced in the form of data poi
 
 The dataset, excluding the samples with 'partially' labels, was run through the model, producing 273 more rows. An exercise, consisting of a problem description and an example solution is shown in figure \ref{fig:og_ex}. The exercise, which was generated based on the exercise in figure \ref{fig:og_ex}, is shown in figure \ref{fig:ag_ex}. Comparing the two exercises, it can be seen that the LLM has successfully planted faithfulness hallucinations in the exercise: the exercise is no longer about Lingonberry sauce, but rather the composer Claudio Monteverdi, and usage of a while loop has been injected in the problem as well.
 
-A total of 11 rows were removed due to JSON parsing errors, resulting in a total of 262 valid generated rows. To use the generated data as ground-truth data, the augmented problem description and the example solution were set as originals, and the labels were modified. For columns 'The exercise description matched the selected theme' and 'The exercise description matched the selected topic' the label was changed to 'no' if the value injected in the generation prompt differs from the original, and otherwise the label was set as 'yes'. All values in column 'Included concepts that were too advanced' were set to "yes", since an advanced concept was injected into each exercise. The inclusion of the generated dataset, with the modified labels, resulted in a fairly balanced dataset, consisting of 535 rows, where the distribution of labels is listed in table \ref{tb:augmented_data}.
-
 \begin{table}
-\centering
-\input{latex/tables/augmented_data}
-\caption{Label distribution of the augmented dataset}
-\label{tb:augmented_data}
+    \centering
+    \input{latex/tables/augmented_data}
+    \caption{Label distribution of the augmented dataset}
+    \label{tb:augmented_data}
 \end{table}
+
+A total of 11 rows were removed due to JSON parsing errors, resulting in a total of 262 valid generated rows. To use the generated data as ground-truth data, the augmented problem description and the example solution were set as originals, and the labels were modified. For columns 'The exercise description matched the selected theme' and 'The exercise description matched the selected topic' the label was changed to 'no' if the value injected in the generation prompt differs from the original, and otherwise the label was set as 'yes'. All values in column 'Included concepts that were too advanced' were set to "yes", since an advanced concept was injected into each exercise. The inclusion of the generated dataset, with the modified labels, resulted in a fairly balanced dataset, consisting of 535 rows, where the distribution of labels is listed in table \ref{tb:augmented_data}.
 
 \subsection{Description of Experiment} \label{sec:desc}
 
 As stated in section \ref{sec:design}, the aim of this study is to clarify whether an LLM could be used as an AI-judge to detect faithfulness hallucinations in LLM generated programming exercises. The model's answers to the questions listed in \ref{sec:design} directly correspond to the labels in \ref{tb:labels_interpretation}, where the interpretation of the labels is stated. If any of the labels are hallucinatory, the whole exercise is deemed to contain faithfulness hallucinations.
 
 \begin{table}
-\centering
-\input{latex/tables/label_interpretation}
-\caption{Interpretation of labels}
-\label{tb:labels_interpretation}
+    \centering
+    \input{latex/tables/label_interpretation}
+    \caption{Interpretation of labels}
+    \label{tb:labels_interpretation}
 \end{table}
 
 In addition to simply measuring the performance of a model in detecting faithfulness hallucinations, the performance is measured by the following aspects:
@@ -900,8 +900,6 @@ Introducing randomness into the generation process enables the measure of model 
 
 \subsubsection{Prompt structure}
 
-As explained in \ref{sec:icl}, LLMs are sensitive to the settings and parameters of ICL, where minor changes in the ICL configuration may cause major changes in output quality. \textcite{cobbina2025demospromptpositionalbias} show that the position of the demonstrations provided in-context greatly affects the accuracy of the model. The position of demonstrations that yielded the best results varied between tasks, and they found that with most models, including 3 of the models considered in this thesis (Llama-3-8B, Llama-3-70B, Mistral-7B), and the predecessors of the used Qwen3 family, Qwen-7B and Qwen-72B, placing the demonstrations at the start of the system prompt yielded the best results across all classification datasets. For this reason, the use of the prompt structure, where the demonstrations are shown in the beginning of the system prompt, shown in figure \ref{fig:prompt_structure} is selected for the experiment.
-
 \begin{figure*}
     \centering
     \begin{subfigure}{0.6\textwidth}
@@ -910,6 +908,8 @@ As explained in \ref{sec:icl}, LLMs are sensitive to the settings and parameters
     \caption{ICL prompt structure yielding the best results in \cite{cobbina2025demospromptpositionalbias}}
     \label{fig:prompt_structure}
 \end{figure*}
+
+As explained in \ref{sec:icl}, LLMs are sensitive to the settings and parameters of ICL, where minor changes in the ICL configuration may cause major changes in output quality. \textcite{cobbina2025demospromptpositionalbias} show that the position of the demonstrations provided in-context greatly affects the accuracy of the model. The position of demonstrations that yielded the best results varied between tasks, and they found that with most models, including 3 of the models considered in this thesis (Llama-3-8B, Llama-3-70B, Mistral-7B), and the predecessors of the used Qwen3 family, Qwen-7B and Qwen-72B, placing the demonstrations at the start of the system prompt yielded the best results across all classification datasets. For this reason, the use of the prompt structure, where the demonstrations are shown in the beginning of the system prompt, shown in figure \ref{fig:prompt_structure} is selected for the experiment.
 
 The prompts used for the detection task are shown in figure \ref{fig:detect_prompts}. They are used as the parts for building a structure similar the one in \ref{fig:prompt_structure}, and is built in the following fashion:
 \begin{enumerate}
@@ -943,6 +943,8 @@ Based on the hyperparameters explained in section \ref{sec:desc} the suites visi
 
 All runs were conducted with the same decoding and generation hyperparameters: the model temperature was set to 0.3, top-$k$ to 20, and top-$p$ to 0.80, and the maximum number of generated tokens was set to 64. As explained in section \ref{sec:decoding}, a low temperature sharpens the output token probabilities, making high probability tokens even more likely. Combining this with top-$k$ = 20, the number of tokens considered is reduced to 20, and lastly applying top-p reduces the probability mass of the nucleus to 0.8 of the total of the top 20 tokens. This results in a distribution shape where the output is fairly predictable. These hyperparameters were selected to promote a controlled, conservative generation with mild variability in the model, since generating JSON is a task requiring accuracy, where even one falsely generated token, such as ',' at the wrong position, breaks the validity of the JSON, thus rendering the output useless. The maximum number of generated tokens is set to be strict, but still having room for the generation of the output according to the schema.
 
+The questions stated in section \ref{sec:design} are yes/no questions, meaning that the task of predicting hallucinations is in essence binary classification of 3 labels. There are common metrics for evaluating the performance of binary classifiers, comparing the true value with the predicted value. Depending on the values of true and predicted samples, binary classification is divided into 4 classes: True positive, False positive, True negative and False Negative. Their interpretation is shown in table \ref{tab:confusion-matrix} with regard to the sample values. In model evaluations, hallucinatory label values are interpreted as positives in the population, i.e, TP denotes the model correctly detecting a faithfulness hallucination in the sample. Setting the hallucinatory labels as positives enables presenting the models' hallucination detection capabilities more accurately. Using the classes, metrics can be calculated that describe the performance of the classifier more accurately. In this thesis, the models are evaluated based on the following metrics defined in \cite{Fawcett2006-aj, 6790639}:
+
 \begin{table}
     \centering
     \renewcommand{\arraystretch}{1.3}
@@ -950,8 +952,6 @@ All runs were conducted with the same decoding and generation hyperparameters: t
     \caption{Confusion matrix for binary classification}
     \label{tab:confusion-matrix}
 \end{table}
-
-The questions stated in section \ref{sec:design} are yes/no questions, meaning that the task of predicting hallucinations is in essence binary classification of 3 labels. There are common metrics for evaluating the performance of binary classifiers, comparing the true value with the predicted value. Depending on the values of true and predicted samples, binary classification is divided into 4 classes: True positive, False positive, True negative and False Negative. Their interpretation is shown in table \ref{tab:confusion-matrix} with regard to the sample values. In model evaluations, hallucinatory label values are interpreted as positives in the population, i.e, TP denotes the model correctly detecting a faithfulness hallucination in the sample. Setting the hallucinatory labels as positives enables presenting the models' hallucination detection capabilities more accurately. Using the classes, metrics can be calculated that describe the performance of the classifier more accurately. In this thesis, the models are evaluated based on the following metrics defined in \cite{Fawcett2006-aj, 6790639}:
 
 \subsubsection*{Accuracy} 
 Accuracy is the rate of correct classifications. It is defined as:
