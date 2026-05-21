@@ -483,12 +483,6 @@ $\chi^2$  & The Chi-squared distribution \\
 $\chi^2_{k, n}$ & The $n$th quantile of the Chi-squared distribution with $k$ degrees of freedom \\
 \end{tabular}
 
-\subsection*{Operators}
-
-\begin{tabular}{ll}
-place & holder \\
-\end{tabular}
-
 \subsection*{Abbreviations}
 
 \begin{tabular}{ll}
@@ -546,18 +540,18 @@ This thesis investigates the use of LLMs for detecting hallucinations in educati
 
 These questions determine the course and content of the study. The thesis is structured as follows:
 \begin{itemize}
-    \item \textbf{Background:} In this section, existing relevant literature is reviewed and past studies are explained in order to understand the current state of research and bring the readers to a common level of knowledge on the subject. The first topic covered is the Fundamentals of Large Language Models, then Hallucinations in LLMs. After that, a brief explanation on Hallucination Mitigation Methods, and LLMs in CS Education, and finally, existing research in Automatic exercise generation is covered.
-    \item \textbf{Research material and methods:} \textbf{TODO: content}
-    \item \textbf{Results:} \textbf{TODO: content}
-    \item \textbf{Conclusions:} \textbf{TODO: content}
-\end{itemize}
+    \item \textbf{Background:} In this section, existing relevant literature is reviewed and past studies are explained in order to understand the current state of research and bring the readers to a common level of knowledge on the subject. The first topic covered is the Fundamentals of Large Language Models, then Hallucinations in LLMs. After that, a brief explanation on Hallucination Mitigation Methods, Adversarial Context Generation, and LLMs in CS Education, and finally, existing research in Automatic exercise generation is covered.
+    \item \textbf{Methods:} This section gives an outline of the research design. The data used in the experiment are explained along with a detailed description of the experiment itself.
+    \item \textbf{Results \& Discussion:} The results of the experiment are presented, interpreted, and discussed in this section. The research questions are answered, and implications of the answers are discussed.
+    \item \textbf{Conclusions:} In the final section of the thesis, a conclusion is drawn. The achievements and implications of the thesis are summarized and an outline for future work is discussed.
+    \end{itemize}
 
 %% In a thesis, every section/chapter starts a new page, hence the \clearpage
 \clearpage
 
 \section{Background}
 
-This chapter explains the \textbf{TODO: finish paragraph!}
+This chapter explains the basics of large language models and in-context learning and the current understanding of hallucinations in large language models. The causes of hallucinations are briefly explained and then relevant methods of hallucination prevention methods are presented. In the end of this section, the uses of LLMs in computer science are briefly reviewed.
 
 \subsection{Fundamentals of Large Language Models}
 
@@ -576,7 +570,7 @@ The Transformer model consists of an encoder stack and a decoder stack, pictured
 
 However, many LLMs, most notably the GPT-family and the Llama-family, omit the encoder completely and are strictly \textit{Decoder-Only models} \cite{Minaee2024-fr}. These models function purely as auto-regressive language models, predicting the next token based only on previous tokens. Decoder-Only models have been shown to excel in different text generation tasks, such as answering questions and generating program code \cite{Chen2021EvaluatingLL}.
 
-\subsubsection{Training Stages of LLMs} \label{sec:training}
+\subsubsection{Training stages of LLMs} \label{sec:training}
 
 In order for any neural LM to be able to take text as input, the text first has to be converted to a form that the LM can understand. Tokenization is the practice of breaking down text into smaller chunks, called tokens. A token is the basic unit of operation in LMs. The most basic tokenizers split text on whitespace, but more advanced tokenizers break each individual word into subwords, or even into single characters. Using smaller tokens enables combining multiple tokens to form words, effectively increasing the size of the vocabulary and decreasing the chance of out-of-vocabulary encounters \cite{Minaee2024-fr}.
 
@@ -678,11 +672,11 @@ Faithfulness hallucinations refer to generated content that does not follow the 
     \item \textit{Logical inconsistency} hallucinations can be detected most often in reasoning tasks. They show logical contradictions in the output. These inconsistencies can be found between inside reasoning steps and between steps and the final result of the reasoning task. The example in figure \ref{fig:hallucination_types} shows the logical inconsistency inside a reasoning step: Dividing both sides of $2x = 8$ by 2 incorrectly yields $x = 3$.
 \end{enumerate}
 
-\subsection{Causes of hallucinations} \label{sec:hallucination_causes}
+\subsection{Causes of Hallucinations} \label{sec:hallucination_causes}
 
 The root-causes for hallucinations are multi-faceted, spanning the LLM ability obtaining process comprehensively. This section covers the three main elements from which hallucinations originate: data, training, and inference. 
 
-\subsubsection{Hallucination from Data} \label{sec:data_hallucination}
+\subsubsection{Hallucination from data} \label{sec:data_hallucination}
 
 Training LLMs require data in two forms: raw textual data used in the pre-training phase, which lays the foundation for the abilities and world knowledge of the model, and alignment data, in the form of $(\texttt{instruction, output})$ pairs, which trains the model to conform to and follow user instructions. While diverse data expands the abilities of LLMs, it is also one of the primary causes for LLM hallucinations \cite{Kalai2025-fl}. The hallucinations are caused by misinformation and biases in the pre-training data, as well as the knowledge boundaries of the pre-training data, and low-quality alignment data used in the SFT phase.
 
@@ -692,7 +686,7 @@ Some hallucinations, mainly factual contradictions, are caused by the knowledge 
 
 Alignment data of low quality used in the SFT phase can also cause hallucinations. \textcite{gekhman2024doesfinetuningllmsnew} show that LLMs struggle to take in new information during SFT compared to pre-training. They also find, that the tendency of LLMs to hallucinate grows linearly with the amount of new information obtained during SFT.
 
-\subsubsection{Hallucination from Training} \label{sec:training_hallucination}
+\subsubsection{Hallucination from training} \label{sec:training_hallucination}
 
 As explained in more detail in section \ref{sec:training}, an LLM obtains it's capabilities through a 3-step training process, with general world-knowledge and language understanding being obtained in pre-training, task completion in SFT, and alignment with human preferences in RLHF. Although these phases are crucial for equipping LLMs with their exceptional language understanding capabilities, each phase has its pitfalls that may induce hallucinations.
 
@@ -702,7 +696,7 @@ Referring to section \ref{sec:training}, SFT seeks to turn the capabilities of t
 
 \textcite{azaria2023internalstatellmknows} propose that LLMs may have an internal mechanism to know the truthfulness of the responses generated. Despite that, LLMs consistently output unfactual responses. In addition, models have been shown to conform to and affirm users' beliefs over truthful ones. The root for this kind of behavior might be learned by the model during RLHF. While RLHF is used to teach the model to avoid generating harmful content and to follow values and behave in a specific way, studies \cite{sharma2025understandingsycophancylanguagemodels, wei2024simplesyntheticdatareduces} have shown that RLHF also encourages this sycophantic behavior in the model.
 
-\subsubsection{Hallucination from Inference} \label{sec:inference_hallucination}
+\subsubsection{Hallucination from inference} \label{sec:inference_hallucination}
 
 Decoding is a crucial component in utilizing the capabilities obtained by an LLM during training to the fullest. However, there are weaknesses in decoding strategies that can induce hallucinations. As established in section \ref{sec:decoding}, the greedy search is deterministic and always outputs the same response for the same input by selecting the most probable token at each step. This in turn means that the greedy search produces bland, low-quality text, and repeats false information if it is most probable. Through stochastic sampling,  LLMs can produce diverse and rich content, circumventing the shortcomings of the greedy search. Although utilizing randomness in the selection process introduces a different reason for hallucinations, since sampling tokens includes the possibility of selecting those with false or unfaithful content.
 
@@ -773,7 +767,7 @@ More recently, \textcite{alazraki-etal-2025-need} found that LLMs can learn impl
 \end{align}
 instead. In the study, \textcite{alazraki-etal-2025-need} compared the performance of LLM models in various  tasks in an ICL setting using demonstration examples of the forms \ref{eq:cot}, \ref{eq:explicit} and \ref{eq:implicit}. The results of the empirical study show that implicit in-context learning beats explicit ICL prompting in nearly all tasks and across all models. Although the answers produced using without corrective rationales are noticably shorter on average than with rationales, the answers were at least equally exhaustive. \textcite{alazraki-etal-2025-need} hypothesize that the model is over-constrained by the rationale, allowing the implicit learning setting to exceed the performance of explicit prompting.
 
-\subsection{Adversarial context generation} \label{sec:context_gen}
+\subsection{Adversarial Context Generation} \label{sec:context_gen}
 
 Many LLM benchmarks evaluate the model on input where all information is relevant to solving the task \cite{shi2023largelanguagemodelseasily}. However, in real-world information retrieval scenarios, e.g. RAG systems, the retrieved information passed as input to the model is often very long and might contain irrelevant information or contextual contradictions. To this end, \textcite{ming2025faithevallanguagemodelstay} created the FaithEval benchmark, which evaluates the faithfulness of an LLM in long and noisy contexts.
 
@@ -805,19 +799,15 @@ More importantly, LLMs have been used to generate complete programming exercises
 \textcite{10.1145/3501385.3543957} studied the generation of complete programming exercises along with the generation of code explanations using the Codex LLM. These exercises include a problem description, example solution, and unit tests validating the functionality of the student's code. The focus of the study was on the sensibility and novelty of the generated exercises, as well as the measure of how easily applicable they were to a learning environment. In the study, an exercise is defined as sensible if "the requirements are described clearly within a context that makes logical sense" and novel if  "the exercise description returns no valid matches when used as the input for a search using Google or GitHub". The applicability was a collection of multiple measures, including whether the generated sample solution matches the problem description, the
 
 
-Randomly selecting 120 generated exercises from a total of 240, 75.0\% were sensible, 81.8\% novel, and
+Randomly selecting 120 generated exercises from a total of 240, 75.0\% were sensible, 81.8\% novel, and TODO: Finish this subsection!
 
 \clearpage
 
 \section{Methods} \label{sec:methods}
 
-TODO: Short beginning paragraph!
+This section describes the framework developed to answer the research questions presented in section \ref{sec:intro}. The design choices are explained in detail, including how they relate to the studied qualities and parameters in the framework, and the metrics for measuring the results are described.
 
-In this section, etc
-
-%This part is the core of your work, where you explain the methodological choices you made, its limitations, how you pick your research material or subjects, the implementation of your study and the methods used. This section determines the methodological strengths and weaknesses of your thesis. Any earlier description of the method should limit itself to work done earlier by others. Here you tell your reader what you have done.
-
-\subsection{Research design} \label{sec:design}
+\subsection{Research Design} \label{sec:design}
 
 In this thesis, an experiment in which general-purpose LLMs are instructed to detect faithfulness hallucinations in LLM generated contextualized programming exercises. Failures and shortcomings in the contextualizations of the exercises and the usage of advanced programming concepts are treated as faithfulness hallucinations. The motivation for the experiment is to determine whether an LLM could be used as a human-independent system with the task of detecting faithfulness hallucinations. This kind of system could be deployed as part of a programming exercise generation pipeline that would autonomously generate content, check for hallucinations, and regenerate the exercise if necessary. 
 
@@ -860,7 +850,7 @@ A total of 11 rows were removed due to JSON parsing errors, resulting in a total
 \label{tb:augmented_data}
 \end{table}
 
-\subsection{Description of experiment} \label{sec:desc}
+\subsection{Description of Experiment} \label{sec:desc}
 
 As stated in section \ref{sec:design}, the aim of this study is to clarify whether an LLM could be used as an AI-judge to detect faithfulness hallucinations in LLM generated programming exercises. The model's answers to the questions listed in \ref{sec:design} directly correspond to the labels in \ref{tb:labels_interpretation}, where the interpretation of the labels is stated. If any of the labels are hallucinatory, the whole exercise is deemed to contain faithfulness hallucinations.
 
@@ -906,7 +896,7 @@ The results of \textcite{wei2023largerlanguagemodelsincontext} suggest that larg
 
 \subsubsection*{Consistency and significance}
 
-Introducing randomness into the generation process enables the measure of model robustness to noise and decreases the effect of outliers. For this reason, each suite is executed 5 times on different seeds. The seed affects the random state of the demonstration selection process, not the model itself. TODO: Statistical significance!
+Introducing randomness into the generation process enables the measure of model robustness to noise and decreases the effect of outliers. For this reason, each suite is executed 5 times on different seeds. The seed affects the random state of the demonstration selection process, not the model itself. It also needs to be established whether the results hold any statistical significance, which confirms whether the results are not explainable purely by stochastic variance.
 
 \subsubsection{Prompt structure}
 
@@ -1011,7 +1001,7 @@ in favor of the hypothesis that the classifiers have significantly different err
 
 \clearpage
 
-\section{Results} \label{sec:results}
+\section{Results \& Discussion } \label{sec:results}
 
 In this section, the results obtained from the execution of the experiment are explained and evaluated. The analysis is started from a more general level, and the most interesting points rising from the results are discussed and studied in more detail with respect to the research questions. The experiment evaluated multiple LLM families and parameter scales on the task of detecting faithfulness hallucinations in LLM-generated programming exercises. The models were first evaluated in a zero-shot setting, after which multiple in-context learning configurations were tested. Performance was measured using accuracy, precision, recall, F1-score, and McNemar's test. McNemar's tests were conducted to measure the statistical significance of the performance change for a given ICL configuration compared to the model's baseline with the significance threshold $\alpha = 0.05$. The results obtained were corrected for multiple comparisons using the Holm-Bonferroni method. For the sake of decluttering the document, all models are referred to by their family name and parameter count, e.g. Llama-8B refers to Llama-3.1-8B-Instruct.
 
@@ -1140,7 +1130,7 @@ list of interesting points and ideas
 \end{itemize}
 \fi
 
-\subsection{Handling of erroneous outputs}
+\subsection{Handling of Erroneous Outputs}
 
 As stated in section \ref{sec:design}, a total of 330 passes of the dataset were executed, resulting in a total of 175350 predicted samples. Of the predicted samples, a total of 1253 contained errors. Table \ref{tab:err_table} shows the distribution of errors. Parse errors refer to generated samples that were not valid JSON and thus could not be parsed for further processing, and generation errors refer to instances where the generated content was valid JSON but did not follow the specified output schema. Due to the low proportion of erroneous rows, they were simply discarded and thus do not affect the evaluation scores in any way.
 
@@ -1169,13 +1159,37 @@ In fact, all 181 generation error instances produced by Qwen3-32B occurred due t
 
 All generation errors occurred in implicit prompting scenarios, and they most likely occurred because the model was unable to learn the output schema only from the demonstrations. Parsing errors also occurred more frequently under implicit prompting. Of all models, the only models that produced any errors under explicit prompting were Mistral-24B and Qwen-32B. Table \ref{tab:err_table}, shows that more than 98\% of parsing errors occurred under implicit prompting. Since all generation errors and most parsing errors occurred in implicit prompting, it is hypothesized that the exclusion of task instructions, which also defined the output schema, leads to an increase in model failures.
 
+\subsection{Limitations} \label{sec:limitations}
+
+This thesis has several limitations. One of the limitations is present in the synthesized dataset: since no thorough qualitative analysis of the synthesized samples and manual verification on the ground truth labels were conducted, it is possible that the dataset contains non-sensical samples and false labelings. It was also found that some samples contained false information, e.g. regarding famous peoples' birthdays, but were not corrected since factual hallucinations should not affect the output of the predictions. Another limitation lies in the reproducibility of the experiment. The selected hyperparameters do not ensure a deterministic outcome, which means that the results can vary between executions. 
+
+Although the resources provided by the Aalto Scientific Computing team enabled the experiment to be carried out on this scale, for which the author of this thesis is very grateful, using the Triton cluster for computing restricted the selection of models used to those available in the cluster at the time of starting this thesis. This decision excluded many of the most prominent models, such as models developed by OpenAI and Anthropic. Some of the models used in the experiment have since been updated by their developers, but the newer versions were not available on the cluster when the thesis was started. Additionally, since only a small subset of models was used in the experiment, the results may not generalize to models from other families or other parameter counts. 
+
 \clearpage
 
 \section{Conclusions} \label{sec:conclusions}
 
+% Thesis outline
 This thesis explored the use of large language models in detecting faithfulness hallucinations in LLM generated programming exercises. A prompting strategy was employed on an LLM, synthesizing a dataset containing unfaithful samples based on the material produced by \textcite{10.1145/3632620.3671103}. The resulting dataset was then used as a test set in evaluating the capabilities of out-of-the-box LLMs and various ICL configurations with the objective of detecting faithfulness hallucinations in the samples. An analysis using performance metrics commonly used with binary classifiers together with a measure of statistical significance highlighted both the potential and limitations of the proposed strategy.
 
+% RQ1 in a nutshell
 The high F1 scores of the baseline classifiers, i.e., the out-of-the-box models, revealed that they are capable of detecting faithfulness hallucinations. Especially, the larger models evaluated in the experiment performed well, whereas the smaller models were too conservative, being correct when predicting a positive most of the time, but leaving a high number of positive samples undetected.
+
+% RQ2
+The results also established that the use of in-context learning is able to significantly alter the decision boundary of the models, proven by altered classification metrics and statistical significance measures. The results further highlight the sensitive nature of in-context learning, since the results varied substantially between ICL configurations. It was found that explicit prompting works better than implicit prompting in almost all cases and that in general the effect of the configuration on the model seems to scale with the number of demonstrations included in the prompt, where a higher number of demonstrations produces a stronger effect. The effect of the type of demonstrations depended on the prompting type: in an explicit prompting setting, the type of demonstrations did not have a great effect on the models, but in an implicit prompting setting, positive and mixed demonstrations enabled the models to make more accurate predictions, whereas negative demonstrations were detrimental in most cases. Together, it can be said that ICL generally produces the best results in an explicit prompting setting, with a high number of diverse demonstrations included in each prompt.
+
+% RQ3
+The results of the out-of-the-box models revealed a substantial performance gap between large and small models. With the use of in-context learning, the magnitude of the performance gap decreased but was not completely eliminated. Small models experienced gains in prediction performance of various scales with the use of ICL. With ICL, Llama-8B achieved prediction performance rivaling that of the best performers. Although Mistral-7B achieved significantly better performance, it could not match the performance of larger models. In-context learning did not have a major impact on the prediction performance of Qwen3-8B.
+
+% Reliability
+The proposed strategy is reliable and consistent. Each ICL configuration was evaluated 5 times on the test set, and the low standard deviations (\ref{tab:stds}) in each metric suggest that the models are consistent with their predictions. The low error rate ($\approx 0.7\%$) between all models implies that the strategy is resilient enough so that it could be implemented in a real-world setting.
+
+% Limitations
+
+% Future work
+TODO: Future work!
+
+\iffalse
 
 \begin{itemize}
     \item What has been done (idea => method => objective)
@@ -1203,21 +1217,9 @@ The high F1 scores of the baseline classifiers, i.e., the out-of-the-box models,
         \end{itemize}
     \item future work
         \begin{itemize}
-            \item todo
+            \item factuality hallucinations?
         \end{itemize}
 \end{itemize}
-
-\iffalse
-
-This is where you tie up any loose ends. Tell your reader briefly and clearly 
-what you have done, what you have discovered, and the value of your discovery 
-in the context of similar work done earlier. Draw clear conclusions regarding 
-the research problem, sub-problems or hypotheses. You also discuss future lines 
-of study and new questions your study might have posed.
-
-As the author of the thesis, you alone are responsible for ensuring that the 
-layout, form and structure of your thesis adheres to the guidelines outlined by 
-your school. This template aims to help you meet these requirements.
 
 \fi
 
