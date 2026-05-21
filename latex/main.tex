@@ -961,7 +961,7 @@ All runs were conducted with the same decoding and generation hyperparameters: t
     \label{tab:confusion-matrix}
 \end{table}
 
-The questions stated in section \ref{sec:design} are yes/no questions, meaning that the task of predicting hallucinations is in essence binary classification of 3 labels. There are common metrics for evaluating the performance of binary classifiers, comparing the true value with the predicted value. Depending on the values of true and predicted samples, binary classification is divided into 4 classes: True positive, False positive, True negative and False Negative. Their interpretation is shown in table \ref{tab:confusion-matrix} with regard to the sample values. In model evaluations, hallucinatory label values are interpreted as positives in the population, i.e, TP denotes the model correctly detecting a faithfulness hallucination in the sample. Setting the hallucinatory labels as positives enables presenting the models' hallucination detection capabilities more accurately. Using the classes, metrics can be calculated that describe the performance of the classifier more accurately. In this thesis, the models are evaluated based on the following metrics defined in \cite{Fawcett2006-aj, sanh2022multitaskpromptedtrainingenables}:
+The questions stated in section \ref{sec:design} are yes/no questions, meaning that the task of predicting hallucinations is in essence binary classification of 3 labels. There are common metrics for evaluating the performance of binary classifiers, comparing the true value with the predicted value. Depending on the values of true and predicted samples, binary classification is divided into 4 classes: True positive, False positive, True negative and False Negative. Their interpretation is shown in table \ref{tab:confusion-matrix} with regard to the sample values. In model evaluations, hallucinatory label values are interpreted as positives in the population, i.e, TP denotes the model correctly detecting a faithfulness hallucination in the sample. Setting the hallucinatory labels as positives enables presenting the models' hallucination detection capabilities more accurately. Using the classes, metrics can be calculated that describe the performance of the classifier more accurately. In this thesis, the models are evaluated based on the following metrics defined in \cite{Fawcett2006-aj, 6790639}:
 
 \subsubsection*{Accuracy} 
 Accuracy is the rate of correct classifications. It is defined as:
@@ -992,7 +992,7 @@ A high F1 score is the result of high precision and recall, while a low F1 score
 
 \input{latex/tables/contingency_table}
 
-McNemar's test compares the performance of two classifiers $A$ and $B$ evaluated on the same test set. In order to perform McNemar's test, predictions have to be obtained from both classifiers on the same test set. The predictions made by the classifiers are then compared sample-wise and compiled into a \textit{contingency table} of the form shown in table \ref{tab:contingency}, for which the commonly used notation is:
+McNemar's test compares the behavior of two classifiers $A$ and $B$ evaluated on the same test set. In order to perform McNemar's test, paired predictions have to be obtained by  both classifiers on the same test set. The predictions made by the classifiers are then compared sample-wise and compiled into a \textit{contingency table} of the form shown in table \ref{tab:contingency}, for which the commonly used notation is:
 \begin{align*}
     \begin{bmatrix}
     n_{00} & n_{01} \\
@@ -1171,8 +1171,43 @@ All generation errors occurred in implicit prompting scenarios, and they most li
 
 \clearpage
 
-\section{Summary/Conclusions}
-\label{sec:summary}
+\section{Conclusions} \label{sec:conclusions}
+
+This thesis explored the use of large language models in detecting faithfulness hallucinations in LLM generated programming exercises. A prompting strategy was employed on an LLM, synthesizing a dataset containing unfaithful samples based on the material produced by \textcite{10.1145/3632620.3671103}. The resulting dataset was then used as a test set in evaluating the capabilities of out-of-the-box LLMs and various ICL configurations with the objective of detecting faithfulness hallucinations in the samples. An analysis using performance metrics commonly used with binary classifiers together with a measure of statistical significance highlighted both the potential and limitations of the proposed strategy.
+
+The high F1 scores of the baseline classifiers, i.e., the out-of-the-box models, revealed that they are capable of detecting faithfulness hallucinations. Especially, the larger models evaluated in the experiment performed well, whereas the smaller models were too conservative, being correct when predicting a positive most of the time, but leaving a high number of positive samples undetected.
+
+\begin{itemize}
+    \item What has been done (idea => method => objective)
+        \begin{itemize}
+            \item Faithfulness hallucination detection in LLM gen CS content
+            \item Synthesize dataset based on existing one
+            \item Use LLMs as classifier
+        \end{itemize}
+    \item Main results
+        \begin{itemize}
+            \item LLMs are able to detect faithfulness hallucinations in CS content
+            \item ICL improved the performance of most models
+            \item ICL did bridge the performance gap, though did not eliminate it. Only 1/3 small models reached performance comparable to that of larger models.
+        \end{itemize}
+    \item auxiliary findings
+        \begin{itemize}
+            \item Number of errors generated is minor
+            \item Explicit instructions and high number of diverse demonstrations work best
+        \end{itemize}
+    \item Limitations
+        \begin{itemize}
+            \item No qualitative analysis of synthetisized dataset
+            \item Small subset of models
+            \item With more careful prompt configurations and prompt selection, better results could be achieved
+        \end{itemize}
+    \item future work
+        \begin{itemize}
+            \item todo
+        \end{itemize}
+\end{itemize}
+
+\iffalse
 
 This is where you tie up any loose ends. Tell your reader briefly and clearly 
 what you have done, what you have discovered, and the value of your discovery 
@@ -1184,13 +1219,7 @@ As the author of the thesis, you alone are responsible for ensuring that the
 layout, form and structure of your thesis adheres to the guidelines outlined by 
 your school. This template aims to help you meet these requirements.
 
-\subsection{Limitations}
-\begin{itemize}
-    \item Small subset of models, some model may perform better
-    \item With more careful prompt configurations and prompt selection, better results coudl be achieved
-    \item Factuality hallucinations, some generated exercises have false information in it.
-\end{itemize}
-
+\fi
 
 \clearpage
 %% Bibliography / list of references
