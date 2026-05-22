@@ -1001,7 +1001,7 @@ in favor of the hypothesis that the classifiers have significantly different err
 
 \clearpage
 
-\section{Results \& Discussion } \label{sec:results}
+\section{Results} \label{sec:results}
 
 In this section, the results obtained from the execution of the experiment are explained and evaluated. The analysis is started from a more general level, and the most interesting points rising from the results are discussed and studied in more detail with respect to the research questions. The experiment evaluated multiple LLM families and parameter scales on the task of detecting faithfulness hallucinations in LLM-generated programming exercises. The models were first evaluated in a zero-shot setting, after which multiple in-context learning configurations were tested. Performance was measured using accuracy, precision, recall, F1-score, and McNemar's test. McNemar's tests were conducted to measure the statistical significance of the performance change for a given ICL configuration compared to the model's baseline with the significance threshold $\alpha = 0.05$. The results obtained were corrected for multiple comparisons using the Holm-Bonferroni method. For the sake of decluttering the document, all models are referred to by their family name and parameter count, e.g. Llama-8B refers to Llama-3.1-8B-Instruct.
 
@@ -1014,11 +1014,9 @@ In this section, the results obtained from the execution of the experiment are e
     \label{fig:f1_mean_per_baseline}
 \end{figure}
 
-Figure \ref{fig:f1_mean_per_baseline} shows the means of the F1 scores of the baselines of the model for each predicted label. The means are calculated over all the seeds executed, and the black line in each bar shows the standard deviation of the measurements. There are several key findings to be made from the figure. Firstly, it can be seen that all models perform well (F1 at least $\approx 0.8$) in predicting the theme and topic. Additionally, the mean F1 scores for the theme and the topic are similar to each other for all models. This is quite expected, since the labels are strongly connected to each other in meaning. 
+Figure \ref{fig:f1_mean_per_baseline} shows the means of the F1 scores of the baselines of the model for each predicted label. The means are calculated over all the seeds executed, and the black line in each bar shows the standard deviation of the measurements. There are several key findings to be made from the figure. All models achieved F1 scores exceeding approximately 0.8 in predicting the theme and topic. The mean F1 scores for the theme and the topic are similar to each other for all models.
 
-Predicting the faithfulness of the programming concepts included in the exercise is clearly the most difficult label across all models' baselines, since the mean F1 score of it is the lowest of the three labels for all models. However, there is a clear gap in prediction performance in concept prediction between models: only the two Llama models performed well, while the other models performed poorly in the task. Due to the other models poor performance in the concept prediction, it can be said that the Llama models baselines' perform the best in the overall task, followed by Mistral-24b and the two Qwen models, leaving Mistral-7B as the worst baseline performer.
-
-The low standard deviation on each label suggests that the models are consistent with their predictions, rather than are affected by internal randomness. However, some variations can be found in the baselines' consistencies: Mistral-24B is the most inconsistent across all models, as shown by the greatest standard deviations across labels. Of interest is the cause of the poor performance of Qwen3-8B and Mistral-7B in the predictions of the concepts. Figures \ref{fig:precision_mean_per_suite} and \ref{fig:recall_mean_per_suite} show that the precision and recall values for the models are $(1, 0.26)$, $(1, 0.028)$, respectively. These values suggest that the models are too conservative out-of-the-box, resulting in positive predictions only when the models are absolutely sure of the predictions correctness. This results in the models scoring a high number of false negatives, letting a great number of unfaithful samples go undetected.
+For concept prediction, the obtained F1 scores were lower than for the other labels across all models. The highest concept prediction scores were obtained by the Llama models, while the remaining models achieved clearly lower scores. The low F1 scores are all a result of high precision and low recall (\ref{fig:precision_mean_per_suite}, \ref{fig:recall_mean_per_suite}). The standard deviations across runs remained relatively small for all labels and models, although Mistral-24B showed the largest deviations among the evaluated baselines.
 
 \subsection{RQ2: Effect of In-Context Learning on Hallucination Detection} \label{sec:rq2}
 
@@ -1037,7 +1035,7 @@ Figure \ref{fig:mcnemar_sig} shows a heatmap of the statistical significance lab
     \label{fig:mcnemar_sig}
 \end{figure}
 
-As can be seen in figure \ref{fig:mcnemar_sig}, most of the results have significance. The results of all except a few suites executed on the smaller models (Llama-8B, Qwen3-8B, Mistral-7B) and implicit prompting suites are significant, meaning that the prompting techniques had an effect on the models' decision boundaries. However, this does not automatically mean that the model performed better than the baseline. In the following subsections, the results of the experiment are studied in more detail, with focus on how the prompting methods compare to the obtained baseline, as well as which prompting type yields better results.
+As can be seen in figure \ref{fig:mcnemar_sig}, most of the results have significance. The results of all except a few suites executed on the smaller models (Llama-8B, Qwen3-8B, Mistral-7B) and implicit prompting suites are significant.
 
 \subsubsection{Overall effect of ICL} \label{sec:overall_effect_of_icl}
 
@@ -1118,17 +1116,23 @@ Table \ref{tab:best_with_mcnemar} also shows the weakest performers: both Mistra
 
 To address how the use of ICL affects the performance gap between models, table \ref{tab:ordered_models} was constructed. It consists of two subtables, one for model's baselines and one for each model's top scores, showing the top score for each label alongside with relative performance of the other models as the difference of the other scores to the top score. The last row in each subtable shows the mean difference from the top score. The table shows that while the highest F1 score for all labels, apart from topic, increased with the use of ICL, the mean difference has decreased more for all labels. The decrease of the means are minor for theme and topic F1 scores, but significant for concept F1 and the sum of scores. The mean delta in concept prediction is reduced to less than half of the original and the mean delta of the sum is nearly halved as well. Although the mean delta remains significant even with ICL, it can be said that the use of ICL can enable smaller models, resulting in performance comparable to larger models, proven by the development of F1 scores of Llama-8B.
 
-\iffalse
-list of interesting points and ideas
-\begin{itemize}
-    \item negative prompting may disable model, likely due to convincing the model that it should always answer with the negative label -> F1 score collapses \ref{sec:effect_icl_types}
-    \item Llama models more resilient to implicit prompting?
-    \item Why does Llama-8 perform better in concept prediction than Llama-70B?
-    \item Small models are not confident: High prec, low rec => Marks many positives as negative since decision threshold too high    
-    \item Some models (e.g. Qwen3-8b) may overfit to the demonstrations: in baseline: very low recall, high precision. When shown demonstrations (implicitly): high recall, low precision
-    \item Implicit prompting with 6 negative demonstrations improves concept prediction on all except llama models, although it collapses the scores of theme and topic.
-\end{itemize}
-\fi
+\clearpage
+
+\section{Discussion} \label{sec:discussion}
+
+This section discusses the implications of the obtained results with respect to the research questions and prior literature. Particular attention is given to the effect of in-context learning on hallucination detection performance, differences between prompting strategies, and the extent to which ICL can bridge the gap between smaller and larger language models.
+
+\subsection{RQ1: Baseline Ability of LLMs in Detecting Faithfulness Hallucinations} \label{sec:discussion_rq1}
+
+The obtained results show that detecting faithfulness hallucinations in programming exercises is substantially more difficult than predicting the exercise theme or topic. While all evaluated models achieved strong performance on theme and topic prediction, concept prediction consistently resulted in lower F1 scores. All models achieved F1 scores similar to each other in theme and topic prediction, which is quite expected, since the labels are strongly connected to each other in meaning.
+
+Predicting the faithfulness of the programming concepts included in the exercise is clearly the most difficult label across all models' baselines, since the mean F1 score of it is the lowest of the three labels for all models. However, there is a clear gap in prediction performance in concept prediction between models: only the two Llama models performed well, while the other models performed poorly in the task. The models that achieved low F1 scores had a high precision, but a low recall. This suggests that the models are too conservative out-of-the-box, resulting in positive predictions only when the models are absolutely sure of the predictions correctness. This results in the models scoring a high number of false negatives, letting a great number of unfaithful samples go undetected. Due to the other models poor performance in the concept prediction, it can be said that the Llama models baselines' perform the best in the overall task, followed by Mistral-24b and the two Qwen models, leaving Mistral-7B as the worst baseline performer. The low standard deviation on each label suggests that the models are consistent with their predictions, rather than affected by internal randomness. 
+
+\subsection{RQ2: Effect of In-Context Learning on Hallucination Detection} \label{sec:discussion_rq2}
+
+, meaning that the prompting techniques had an effect on the models' decision boundaries. However, this does not automatically mean that the model performed better than the baseline. In the following subsections, the results of the experiment are studied in more detail, with focus on how the prompting methods compare to the obtained baseline, as well as which prompting type yields better results.
+
+\subsection{RQ3: Bridging the Gap Between Large and Small Models Using In-Context Learning} \label{sec:discussion_rq3}
 
 \subsection{Handling of Erroneous Outputs}
 
@@ -1164,6 +1168,18 @@ All generation errors occurred in implicit prompting scenarios, and they most li
 This thesis has several limitations. One of the limitations is present in the synthesized dataset: since no thorough qualitative analysis of the synthesized samples and manual verification on the ground truth labels were conducted, it is possible that the dataset contains non-sensical samples and false labelings. It was also found that some samples contained false information, e.g. regarding famous peoples' birthdays, but were not corrected since factual hallucinations should not affect the output of the predictions. Another limitation lies in the reproducibility of the experiment. The selected hyperparameters do not ensure a deterministic outcome, which means that the results can vary between executions. 
 
 Although the resources provided by the Aalto Scientific Computing team enabled the experiment to be carried out on this scale, for which the author of this thesis is very grateful, using the Triton cluster for computing restricted the selection of models used to those available in the cluster at the time of starting this thesis. This decision excluded many of the most prominent models, such as models developed by OpenAI and Anthropic. Some of the models used in the experiment have since been updated by their developers, but the newer versions were not available on the cluster when the thesis was started. Additionally, since only a small subset of models was used in the experiment, the results may not generalize to models from other families or other parameter counts. 
+
+\iffalse
+list of interesting points and ideas
+\begin{itemize}
+    \item negative prompting may disable model, likely due to convincing the model that it should always answer with the negative label -> F1 score collapses \ref{sec:effect_icl_types}
+    \item Llama models more resilient to implicit prompting?
+    \item Why does Llama-8 perform better in concept prediction than Llama-70B?
+    \item Small models are not confident: High prec, low rec => Marks many positives as negative since decision threshold too high    
+    \item Some models (e.g. Qwen3-8b) may overfit to the demonstrations: in baseline: very low recall, high precision. When shown demonstrations (implicitly): high recall, low precision
+    \item Implicit prompting with 6 negative demonstrations improves concept prediction on all except llama models, although it collapses the scores of theme and topic.
+\end{itemize}
+\fi
 
 \clearpage
 
