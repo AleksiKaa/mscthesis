@@ -10,6 +10,7 @@ from sklearn.metrics import (
     f1_score,
     precision_recall_curve,
     average_precision_score,
+    precision_recall_fscore_support
 )
 
 from .constants import GT_COLS, PRED_COLS, LABELS, HALLUCINATORY_LABELS, POS_LABELS
@@ -34,6 +35,8 @@ def calculate_metrics(
     metrics = {}
     labels = ["theme", "topic", "concept"]
     for i, (c1, c2) in enumerate(zip(cols1, cols2)):
+        cur_label = labels[i]
+        
         # Normalize labels to "yes" and "no"
         y_true = normalize(df[c1])
         y_pred = normalize(df[c2])
@@ -42,15 +45,27 @@ def calculate_metrics(
         y_true = y_true.map(lambda x: 1 if x == "yes" else 0)
         y_pred = y_pred.map(lambda x: 1 if x == "yes" else 0)
 
-        metrics[labels[i] + "_precision"] = precision_score(
-            y_true, y_pred, pos_label=0, zero_division=np.nan
+        pos_label = 0 if cur_label != "concept" else 1
+        precision, recall, f1, _ = precision_recall_fscore_support(
+            y_true,
+            y_pred,
+            beta=1.0,
+            average="binary",
+            pos_label=pos_label,
+            labels=[0, 1],
+            zero_division=np.nan
         )
-        metrics[labels[i] + "_recall"] = recall_score(
-            y_true, y_pred, pos_label=0, zero_division=np.nan
-        )
-        metrics[labels[i] + "_f1"] = f1_score(
-            y_true, y_pred, pos_label=1, zero_division=np.nan
-        )  # Flip label to match labeling scheme
+
+        #print(str(pos_label) + " " + str(cur_label))
+
+        metrics[cur_label + "_precision"] = precision
+        # precision_score(y_true, y_pred, pos_label=0, zero_division=np.nan)
+        
+        metrics[cur_label + "_recall"] = recall
+        #recall_score(y_true, y_pred, pos_label=0, zero_division=np.nan)
+        metrics[cur_label + "_f1"] = f1
+        
+        #f1_score(y_true, y_pred, pos_label=1, zero_division=np.nan)  # Flip label to match labeling scheme
 
     return metrics
 
