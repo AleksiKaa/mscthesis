@@ -22,6 +22,8 @@ LABELS = ["yes", "no"]
 
 POS_LABELS = ["yes", "yes", "no"]
 
+HALLUCINATORY_LABELS = ["no", "no", "yes"]
+
 DEFAULT_DETECT_RESULT = {
     "themeCorrect": "PARSE ERROR",
     "topicCorrect": "PARSE ERROR",

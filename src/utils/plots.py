@@ -12,7 +12,7 @@ from sklearn.metrics import (
     average_precision_score,
 )
 
-from .constants import GT_COLS, PRED_COLS, LABELS, POS_LABELS
+from .constants import GT_COLS, PRED_COLS, LABELS, HALLUCINATORY_LABELS, POS_LABELS
 
 
 def normalize(series, pos_label=None):
@@ -57,10 +57,12 @@ def calculate_metrics(
         # Then, the labels should be 0, 0, 1
         # Otherwise, measure correctly classified non-hallucinatory data points
         # Labels are thus 1, 1, 0
-        label = 1 if POS_LABELS[i] == "yes" else 0
-        
+        label = 1 if HALLUCINATORY_LABELS[i] == "yes" else 0
+
         measure_label = label if measure_hallucination_detection else np.abs(label - 1)
-        
+
+        #print(f"{measure_hallucination_detection = }, label = {labels[i]}, hallucinatory label = {HALLUCINATORY_LABELS[i]}, {measure_label = }")
+
         metrics[labels[i] + "_precision"] = precision_score(
             y_true, y_pred, pos_label=int(measure_label), zero_division=np.nan
         )
@@ -111,8 +113,8 @@ def plot_confusion_matrices(
 
         fig = ax.figure
 
-        y_true = normalize(df[col1], POS_LABELS[i])
-        y_pred = normalize(df[col2], POS_LABELS[i])
+        y_true = normalize(df[col1], HALLUCINATORY_LABELS[i])
+        y_pred = normalize(df[col2], HALLUCINATORY_LABELS[i])
         cm = confusion_matrix(y_true, y_pred, labels=[1, 0])
         cm_perc = cm / cm.sum(axis=1, keepdims=True)
 
@@ -173,8 +175,8 @@ def plot_distributions(df, axes, labels=LABELS, cols1=GT_COLS, cols2=PRED_COLS):
 def plot_metric_heatmap(df, ax, cols1=GT_COLS, cols2=PRED_COLS):
     metrics = []
     for i, (c1, c2) in enumerate(zip(cols1, cols2)):
-        y_true = normalize(df[c1], POS_LABELS[i])
-        y_pred = normalize(df[c2], POS_LABELS[i])
+        y_true = normalize(df[c1], HALLUCINATORY_LABELS[i])
+        y_pred = normalize(df[c2], HALLUCINATORY_LABELS[i])
 
         p = precision_score(y_true, y_pred)
         r = recall_score(y_true, y_pred)
@@ -198,8 +200,8 @@ def plot_metric_heatmap(df, ax, cols1=GT_COLS, cols2=PRED_COLS):
 
 def plot_precision_recall_curves(df, ax, cols1=GT_COLS, cols2=PRED_COLS):
     for i, (c1, c2) in enumerate(zip(cols1, cols2)):
-        y_true = normalize(df[c1], POS_LABELS[i])
-        y_pred = normalize(df[c2], POS_LABELS[i])
+        y_true = normalize(df[c1], HALLUCINATORY_LABELS[i])
+        y_pred = normalize(df[c2], HALLUCINATORY_LABELS[i])
 
         precision, recall, _ = precision_recall_curve(y_true, y_pred)
         ap = average_precision_score(y_true, y_pred)
