@@ -14,29 +14,6 @@ from sklearn.metrics import (
 
 from .constants import GT_COLS, PRED_COLS, LABELS, HALLUCINATORY_LABELS, POS_LABELS
 
-
-def normalize(series, pos_label=None):
-    if pos_label is not None:
-        return (
-            series.astype(str)
-            .str.strip('"')
-            .str.lower()
-            .map(lambda x: 1 if x == pos_label else 0)
-        )
-
-    try:
-        pos_label = "no" if series.name == GT_COLS[2] else "yes"
-    except:
-        pos_label = "yes"
-
-    return (
-        series.astype(str)
-        .str.strip('"')
-        .str.lower()
-        .map(lambda x: 1 if x == pos_label else 0)
-    )
-
-
 def wrap_text(text, num_chars=20):
     if isinstance(text, str):
         return "\n".join(wrap(text, num_chars))
@@ -44,33 +21,35 @@ def wrap_text(text, num_chars=20):
     return ["\n".join(wrap(t, num_chars)) for t in text]
 
 
+def normalize(series):
+    return (
+        series.astype(str)
+        .str.strip('"')
+        .str.lower()
+    )
+
 def calculate_metrics(
-    df, cols1=GT_COLS, cols2=PRED_COLS, measure_hallucination_detection=True
+    df, cols1=GT_COLS, cols2=PRED_COLS
 ):
     metrics = {}
     labels = ["theme", "topic", "concept"]
     for i, (c1, c2) in enumerate(zip(cols1, cols2)):
-        y_true = normalize(df[c1], POS_LABELS[i])
-        y_pred = normalize(df[c2], POS_LABELS[i])
+        # Normalize labels to "yes" and "no"
+        y_true = normalize(df[c1])
+        y_pred = normalize(df[c2])
 
-        # If measure_detection is True, we want to capture metrics for correctly predicted hallucinations
-        # Then, the labels should be 0, 0, 1
-        # Otherwise, measure correctly classified non-hallucinatory data points
-        # Labels are thus 1, 1, 0
-        label = 1 if HALLUCINATORY_LABELS[i] == "yes" else 0
-
-        measure_label = label if measure_hallucination_detection else np.abs(label - 1)
-
-        #print(f"{measure_hallucination_detection = }, label = {labels[i]}, hallucinatory label = {HALLUCINATORY_LABELS[i]}, {measure_label = }")
+        # Map both to 0, 1
+        y_true = y_true.map(lambda x: 1 if x == "yes" else 0)
+        y_pred = y_pred.map(lambda x: 1 if x == "yes" else 0)
 
         metrics[labels[i] + "_precision"] = precision_score(
-            y_true, y_pred, pos_label=int(measure_label), zero_division=np.nan
+            y_true, y_pred, pos_label=0, zero_division=np.nan
         )
         metrics[labels[i] + "_recall"] = recall_score(
-            y_true, y_pred, pos_label=int(measure_label), zero_division=np.nan
+            y_true, y_pred, pos_label=0, zero_division=np.nan
         )
         metrics[labels[i] + "_f1"] = f1_score(
-            y_true, y_pred, pos_label=int(measure_label), zero_division=np.nan
+            y_true, y_pred, pos_label=1, zero_division=np.nan
         )  # Flip label to match labeling scheme
 
     return metrics
@@ -78,13 +57,13 @@ def calculate_metrics(
 
 def calculate_accuracy(df):
 
-    gt_theme = normalize(df[GT_COLS[0]], pos_label="yes")
-    gt_topic = normalize(df[GT_COLS[1]], pos_label="yes")
-    gt_concept = normalize(df[GT_COLS[2]], pos_label="no")
+    gt_theme = normalize(df[GT_COLS[0]])
+    gt_topic = normalize(df[GT_COLS[1]])
+    gt_concept = normalize(df[GT_COLS[2]])
 
-    pred_theme = normalize(df[PRED_COLS[0]], pos_label="yes")
-    pred_topic = normalize(df[PRED_COLS[1]], pos_label="yes")
-    pred_concept = normalize(df[PRED_COLS[2]], pos_label="no")
+    pred_theme = normalize(df[PRED_COLS[0]])
+    pred_topic = normalize(df[PRED_COLS[1]])
+    pred_concept = normalize(df[PRED_COLS[2]])
 
     # Accuracy calculation
     theme_acc = gt_theme == pred_theme
@@ -97,7 +76,6 @@ def calculate_accuracy(df):
         "concept_accuracy": concept_acc.mean(),
         "total_accuracy": (theme_acc & topic_acc & concept_acc).mean(),
     }
-
 
 def plot_confusion_matrices(
     df,
