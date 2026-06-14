@@ -1229,7 +1229,7 @@ Additionally, the work done in this thesis can be extended by experimenting with
 
 \subsection{Limitations} \label{sec:limitations}
 
-This thesis has several limitations. One of the limitations is present in the synthesized dataset: since no thorough qualitative analysis of the synthesized samples and manual verification on the ground truth labels were conducted, it is possible that the dataset contains non-sensical samples and false labelings. It was also found that some samples contained false information, e.g. regarding famous peoples' birthdays, but were not corrected since factual hallucinations should not affect the output of the predictions. Another limitation lies in the reproducibility of the experiment. The selected hyperparameters do not ensure a deterministic outcome, which means that the results can vary between executions. Additionally, the $p$-values obtained from the McNemar's tests are likely to be overly optimistic, since all observations are treated as independent observations. In truth, since the suites were executed multiple times on the same seed, the results are not truly independent.
+This thesis has several limitations. One of the limitations is present in the synthesized dataset: since no thorough qualitative analysis of the synthesized samples and manual verification on the ground truth labels were conducted, it is possible that the dataset contains non-sensical samples and false labelings. It was also found that some samples contained false information, e.g. regarding famous people's birthdays, but were not corrected since factual hallucinations should not affect the output of the predictions. Another limitation lies in the reproducibility of the experiment. The selected hyperparameters do not ensure a deterministic outcome, which means that the results can vary between executions. Additionally, the $p$-values obtained from the McNemar's tests are likely to be overly optimistic, since all observations are treated as independent observations. In truth, since the suites were executed multiple times on the same seed, the results are not truly independent.
 
 Although the resources provided by the Aalto Scientific Computing team enabled the experiment to be carried out on this scale, for which the author of this thesis is very grateful, using the Triton cluster for computing restricted the selection of models used to those available in the cluster at the time of starting this thesis. This decision excluded many of the most prominent models, such as models developed by OpenAI and Anthropic. Some of the models used in the experiment have since been updated by their developers, but the newer versions were not available on the cluster when the thesis was started. Additionally, since only a small subset of models was used in the experiment, the results may not generalize to models from other families or other parameter counts. 
 
@@ -1259,7 +1259,7 @@ In a real-world setting, the method would be integrated into a system that gener
 
 \section{Declaration of Generative AI Use}
 
-This thesis has been written with the aid of generative AI tools. An LLM was used in the process of procuring the dataset: an existing dataset was inputted to an LLM with the goal of modification of the topical context and source code present in the samples. Generative AI has also been present in the practical part: GitHub CoPilot was used during the development of the pipeline, and ChatGPT has been used as a code debugger. ChatGPT has also been used as a tool to polish text and find relevant literature. Furthermore, Overleaf integrated Writefull AI has been used throughout the writing process, fixing typos and reformulating awkward phrasing. The author of this thesis takes responsibility for all content presented in this thesis.
+This thesis has been written with the aid of generative AI tools. An LLM was used in the process of procuring the dataset: an existing dataset was inputted to an LLM with the goal of modification of the topical context and source code present in the samples. Generative AI has also been present in the practical part: GitHub Copilot was used during the development of the pipeline, and ChatGPT has been used as a code debugger. ChatGPT has also been used as a tool to polish text and find relevant literature. Furthermore, Overleaf integrated Writefull AI has been used throughout the writing process, fixing typos and reformulating awkward phrasing. The author of this thesis takes responsibility for all content presented in this thesis.
 
 \clearpage
 %% Bibliography / list of references
@@ -1427,7 +1427,7 @@ The system prompt shown in Figure~\ref{fig:augment_system_prompt} contains the t
     \input{latex/tables/means_table_v4}
     }
     \caption{Means of all executed suites per model, where the maximum and minimum values of each column per model are highlighted}
-    \label{tab:means}criticize
+    \label{tab:means}
 \end{table}
 
 \clearpage
@@ -1437,7 +1437,7 @@ The system prompt shown in Figure~\ref{fig:augment_system_prompt} contains the t
     \centering
     \resizebox{\textwidth}{!}{%
     \input{latex/tables/std_table_v4}
-    }criticize
+    }
     \caption{Standard deviations of all executed suites per model, where the maximum and minimum values of each column per model are highlighted}
     \label{tab:stds}
 \end{table}
