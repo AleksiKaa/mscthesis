@@ -949,7 +949,7 @@ The prompts used for the detection task are shown in Figure~\ref{fig:detect_prom
             \ref{fig:demo_template}. Concatenate all demonstrations into a single string.
         \end{itemize}
     \item Inject demonstrations into \$DEMONSTRATIONS\$ shown in Figure~\ref{fig:detect_template}
-    \item If $I = 1$, inject the system prompt listed in Figure~\ref{fig:detect_system_prompt} into \$SYSTEMPROMPT\$ shown in Figure~\ref{fig:detect_template}, otherwise the tag is removed.
+    \item If $I = implicit$, inject the system prompt listed in Figure~\ref{fig:detect_system_prompt} into \$SYSTEMPROMPT\$ shown in Figure~\ref{fig:detect_template}, otherwise the tag is removed.
 \end{enumerate}
 However, in 0-shot runs, i.e., runs where $N = 0$, the procedure is skipped and only the system prompt in Figure~\ref{fig:detect_system_prompt} is used. To avoid data leakage, for runs with $N > 0$, the rows that were used as demonstrations were removed from the dataset, so the total number of generated responses varies from 529 to 535 depending on the value of $N$.
 
