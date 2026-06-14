@@ -589,7 +589,7 @@ The Transformer model consists of an encoder stack and a decoder stack, pictured
 
 However, many LLMs, most notably the GPT-family and the Llama-family, omit the encoder completely and are strictly \textit{Decoder-Only models} \cite{Minaee2024-fr}. These models function purely as auto-regressive language models, predicting the next token based only on previous tokens. Decoder-Only models have been shown to excel in different text generation tasks, such as answering questions and generating program code \cite{Chen2021EvaluatingLL}.
 
-\subsubsection{Training stages of LLMs} \label{sec:training}
+\subsubsection{Training Stages of LLMs} \label{sec:training}
 
 In order for any neural LM to be able to take text as input, the text first has to be converted to a form that the LM can understand. Tokenization is the practice of breaking down text into smaller chunks, called tokens. A token is the basic unit of operation in LMs. The most basic tokenizers split text on whitespace, but more advanced tokenizers break each individual word into subwords, or even into single characters. Using smaller tokens enables combining multiple tokens to form words, effectively increasing the size of the vocabulary and decreasing the chance of out-of-vocabulary encounters \cite{Minaee2024-fr}.
 
@@ -612,7 +612,7 @@ LLMs acquire their capabilities through a three phase training process:
     \item \textbf{Reinforcement Learning from Human Feedback:} Reinforcement Learning from Human Feedback (RLHF), sometimes called Alignment and in some literature included in the SFT phase, is the final stage of training an LLM. RLHF is the process of aligning the output of the model to the preference of human users. Figure \ref{fig:rlhf} shows the progress of RLHF: the model is first fine-tuned in the SFT phase. Then, a reward model is trained on human-ranked responses and finally, using a policy optimization algorithm, such as Proximal Policy Optimization (PPO) \cite{zhang2025instructiontuninglargelanguage}, the reward is maximized. This type of training allows the model to learn high-level objectives, such as values, tone, and behavior patterns. RLHF is also used to mitigate the possible harm the model could do once deployed in the real world \cite{ouyang2022traininglanguagemodelsfollow}. These unwanted responses include biased outputs, leaking private information, presenting misinformation as factual content, and generating harmful and toxic content \cite{weidinger2021ethicalsocialrisksharm}.
 \end{enumerate}
 
-\subsubsection{Decoding strategies} \label{sec:decoding}
+\subsubsection{Decoding Strategies} \label{sec:decoding}
 
 During inference, given an input to the LLM, the input is first transformed into tokens, and then using these tokens, the model produces logits. The logits are converted into probabilities using a softmax function \cite{bishop2006pattern}. Softmax is defined as
 \begin{align}
@@ -677,7 +677,7 @@ In the context of LLMs, their versatility and usage in various fields of researc
     \label{fig:hallucination_types}
 \end{figure}
 
-\subsubsection{Factuality hallucinations} \label{sec:factuality_hallucinations}
+\subsubsection{Factuality Hallucinations} \label{sec:factuality_hallucinations}
 
 Factuality hallucinations refer to generated content that deviates from established world knowledge, containing either inconsistentities that conflict real-world facts or unverifiable information \cite{10.1145/3703155}. Factuality hallucinations are further divided into two subcategories:
 
@@ -688,7 +688,7 @@ Factuality hallucinations refer to generated content that deviates from establis
 
 \end{enumerate}
 
-\subsubsection{Faithfulness hallucinations} \label{sec:faithfulness_hallucinations}
+\subsubsection{Faithfulness Hallucinations} \label{sec:faithfulness_hallucinations}
 
 Faithfulness hallucinations refer to generated content that does not follow the given context or set of instructions. They are divided into three subcategories:
 
@@ -702,7 +702,7 @@ Faithfulness hallucinations refer to generated content that does not follow the 
 
 The root-causes for hallucinations are multi-faceted, spanning the LLM ability obtaining process comprehensively. This section covers the three main elements from which hallucinations originate: data, training, and inference. 
 
-\subsubsection{Hallucination from data} \label{sec:data_hallucination}
+\subsubsection{Hallucination from Data} \label{sec:data_hallucination}
 
 Training LLMs require data in two forms: raw textual data used in the pre-training phase, which lays the foundation for the abilities and world knowledge of the model, and alignment data, in the form of $(\texttt{instruction, output})$ pairs, which trains the model to conform to and follow user instructions. While diverse data expands the abilities of LLMs, it is also one of the primary causes for LLM hallucinations \cite{Kalai2025-fl}. The hallucinations are caused by misinformation and biases in the pre-training data, as well as the knowledge boundaries of the pre-training data, and low-quality alignment data used in the SFT phase.
 
@@ -712,7 +712,7 @@ Some hallucinations, mainly factual contradictions, are caused by the knowledge 
 
 Alignment data of low quality used in the SFT phase can also cause hallucinations. \textcite{gekhman2024doesfinetuningllmsnew} show that LLMs struggle to take in new information during SFT compared to pre-training. They also find that the tendency of LLMs to hallucinate grows linearly with the amount of new information obtained during SFT.
 
-\subsubsection{Hallucination from training} \label{sec:training_hallucination}
+\subsubsection{Hallucination from Training} \label{sec:training_hallucination}
 
 As explained in more detail in section \ref{sec:training}, an LLM obtains its capabilities through a 3-step training process, with general world-knowledge and language understanding being obtained in pre-training, task completion in SFT, and alignment with human preferences in RLHF. Although these phases are crucial for equipping LLMs with their exceptional language understanding capabilities, each phase has its pitfalls that may induce hallucinations.
 
@@ -722,7 +722,7 @@ Referring to section \ref{sec:training}, SFT seeks to turn the capabilities of t
 
 \textcite{azaria2023internalstatellmknows} propose that LLMs may have an internal mechanism to know the truthfulness of the responses generated. Despite that, LLMs consistently output unfactual responses. In addition, models have been shown to conform to and affirm users' beliefs over truthful ones. The root for this kind of behavior might be learned by the model during RLHF. While RLHF is used to teach the model to avoid generating harmful content and to follow values and behave in a specific way, studies \cite{sharma2025understandingsycophancylanguagemodels, wei2024simplesyntheticdatareduces} have shown that RLHF also encourages this sycophantic behavior in the model.
 
-\subsubsection{Hallucination from inference} \label{sec:inference_hallucination}
+\subsubsection{Hallucination from Inference} \label{sec:inference_hallucination}
 
 Decoding is a crucial component in utilizing the capabilities obtained by an LLM during training to the fullest. However, there are weaknesses in decoding strategies that can induce hallucinations. As established in section \ref{sec:decoding}, the greedy search is deterministic and always outputs the same response for the same input by selecting the most probable token at each step. This in turn means that the greedy search produces bland, low-quality text, and repeats false information if it is most probable. Through stochastic sampling,  LLMs can produce diverse and rich content, circumventing the shortcomings of the greedy search. Although utilizing randomness in the selection process introduces a different reason for hallucinations, since sampling tokens includes the possibility of selecting those with false or unfaithful content.
 
@@ -892,11 +892,11 @@ As stated in section \ref{sec:design}, the aim of this study is to clarify wheth
 
 In addition to simply measuring the performance of a model in detecting faithfulness hallucinations, the performance is measured by the following aspects:
 
-\subsubsection*{Model family}
+\subsubsection*{Model Family}
 
 Model families have different architectures that affect their performance in ways that are difficult to tract analytically \cite{alqahtani2019performanceanalysiscomparisondistributed}. Additionally, the performance of a model can be task-specific, varying even intra-task depending on e.g. input data \cite{zhang2023whydidmodelfail}. For this reason, an empirical experiment comparing the model families' performance in this specific task is justified. To make the study relevant and current, recent models from widely used and prominent model families are selected for evaluation. For this experiment, the use of models from the Qwen3, Llama-3, and Mistral families was decided.
 
-\subsubsection*{Model size}
+\subsubsection*{Model Size}
 
 Section \ref{sec:icl} explained how the ICL of smaller and larger models differ, and established that generally, larger models outperform smaller models. However, the inference of large models is resource-heavy, thus it is of interest to determine whether a smaller model could match or nearly achieve the performance of a large model in detecting faithfulness hallucinations. Additionally, it is of interest to discover how ICL affects hallucination detection performance both in small and large models. In this experiment, small models have under 10 billion parameters, and larger models have many times more. It was decided that for the model families used, the models are:
 \begin{itemize}
@@ -915,17 +915,17 @@ This experiment studies the effect of ICL in detecting faithfulness hallucinatio
     
 The effect of the number of demonstrations on the prompts is also studied. \textcite{chen-etal-2023-many} suggest that random 1-shot prompting performs nearly as well in arithmetic tasks as prompts with 7-8 demonstrations. The aim of this study is to determine whether these findings can be extended to multi-label classification tasks, by first drawing a baseline with 0-shot prompting and then comparing the performance of random 1-shot prompting and 6-shot prompting to the baseline.
 
-\subsubsection*{Type of demonstrations in ICL}
+\subsubsection*{Type of Demonstrations in ICL}
 
 \textcite{chen-etal-2023-many} also compare the effect of negative and positive demonstrations in the prompts. In their study, demonstrations are labeled ``positive'' or ``negative'' for each query based on whether the demonstration leads the model to the correct answer. In this experiment, however, non-hallucinatory examples are classified as positive demonstrations and hallucinatory examples as negative demonstrations. This follows the findings of \textcite{alazraki-etal-2025-need}, where showing the models incorrect (hallucinatory) demonstrations yielded improved accuracy over showing correct demonstrations.
     
 The results of \textcite{wei2023largerlanguagemodelsincontext} suggest that larger models are better at ``learning'' the task distribution from in-context demonstrations, where smaller models especially tend not to generalize to demonstration examples, showing significantly lower ICL capabilities. Measuring the performance of the model with specific demonstration setups may give insight on under which circumstances the model performs the best. The performance of the models shown positive, negative, and mixed (only for 6-shot prompting) is measured.
 
-\subsubsection*{Consistency and significance}
+\subsubsection*{Consistency and Significance}
 
 Introducing randomness into the generation process enables the measure of model robustness to noise and decreases the effect of outliers. For this reason, each suite is executed 5 times on different seeds. The seed affects the random state of the demonstration selection process, not the model itself. It also needs to be established whether the results hold any statistical significance, which confirms whether the results are not explainable purely by stochastic variance.
 
-\subsubsection{Prompt structure}
+\subsubsection{Prompt Structure}
 
 \begin{figure*}
     \centering
@@ -964,7 +964,7 @@ Another model specific configuration done relates to the Qwen3 models. They have
     \label{tb:suites}
 \end{table}
 
-\subsubsection{Final experiment setup}
+\subsubsection{Final Experiment Setup}
 
 Based on the hyperparameters explained in section \ref{sec:desc} the suites visible in table \ref{tb:suites} were constructed. These suites were executed once for each model and once for each random seed \footnote{Used seeds: 1, 10, 42, 50, 100}, resulting in $6 * 5 * 11 = 330$ passes of the dataset. It was decided that 0-shot prompting would only run with included task instructions, since the context given to the model would not be sufficient without instructions, leading to excessive erroneous generations.
 
@@ -998,14 +998,14 @@ Recall, or Sensitivity, is the rate of all correctly identified positive samples
     recall = \frac{TP}{P}.
 \end{align*}
 Recall answers the question: Of all positive samples, how many did the classifier correctly identify? Recall is especially descriptive when missing a positive sample is unwanted or detrimental.
-\subsubsection*{F1 score} 
+\subsubsection*{F1 Score} 
 F1 score is the harmonic mean of precision and recall. It combines the two metrics into a single number:
 \begin{align*}
     F1 = \frac{2 TP}{2 TP + FP + FN} = \frac{2 \cdot precision \cdot recall}{precision + recall}.
 \end{align*}
 A high F1 score is the result of high precision and recall, while a low F1 score means that at least one of the metrics is low. If a classifier's precision is high while the recall is low, the classifier is conservative in positive predictions. This means that the classifier's decision threshold is too high, which results in the model being correct in positive predictions, but predicting positive far too rarely. A low precision and a high recall signifies the opposite behavior: the classifier is over-eager, predicting positives easily, but making lots of false predictions.
 
-\subsubsection*{McNemar's test}
+\subsubsection*{McNemar's Test}
 
 \input{latex/tables/contingency_table}
 
@@ -1049,7 +1049,7 @@ For concept prediction, the obtained F1 scores were lower than for the other lab
 
 Various ICL setups were executed to evaluate the effect of in-context learning on model performance. The results are compared against the baselines presented in section \ref{sec:rq1}.
 
-\subsubsection{Statistical significance of the results}
+\subsubsection{Statistical Significance of the Results}
 
 Figure \ref{fig:mcnemar_sig} shows a heatmap of the statistical significance labels obtained from performing McNemar's test on each model and suite against the model's baseline. A McNemar test was performed for each label, measuring per-label prediction differences, and once for all labels combined (titled Sum), which compares the overall performances. In the table, the light background color indicates that the results of the suite are not statistically significant. Each cell also includes the Holm-Bonferroni corrected $p$-values of the test that were compared with $p$ cut off at two decimals. The full results of the McNemar's tests are listed in \ref{tab:mcnemar}. Figure \ref{fig:mcnemar_sig} shows that most of the results have significance. In topic and theme prediction, most of the non-significant results are obtained on the larger models in an explicit prompting setting. In concept prediction, most of the non-significant results are in an implicit prompting setting, but some explicit suites executed on the larger model resulted in non-significant results. Almost all results on small models have statistical significance.
 
@@ -1071,7 +1071,7 @@ Figure \ref{fig:mcnemar_sig} shows a heatmap of the statistical significance lab
     \label{fig:f1_scatter}
 \end{figure}
 
-\subsubsection{Overall effect of ICL} \label{sec:overall_effect_of_icl}
+\subsubsection{Overall Effect of ICL} \label{sec:overall_effect_of_icl}
 
 The resulting F1 scores of each suite execution are shown as a scatterplot in figure \ref{fig:f1_scatter}. Each label is marked with its own color, but each baseline is marked with a red circle. The figure shows that ICL in general had a negative effect on the model, i.e., most suites deteriorated the models' performance. However, for most of the models and labels, there is a configuration of ICL that exceeds the baseline model's performance, and some configuration nearly matches the performance for all models and labels. The most notable gains in F1 scores are in concept prediction, where even the models that had a poor baseline performance in section \ref{sec:rq1} have achieved markedly improved F1 scores. Although Mistral-7B and Qwen3-8B achieved significant improvements in concept prediction, their improvements in predicting the other two labels are minor. This also holds for Llama-70B, Mistral-24B, and Qwen3-32B. Llama-8B was clearly the most affected by ICL, experiencing significantly higher F1 scores between all labels.
 
@@ -1092,7 +1092,7 @@ ICL did not have a great hindering effect on two models: Llama-70B and Qwen3-32B
     \label{fig:f1_mean_per_suite}
 \end{figure}
 
-\subsubsection{Effect of prompting type} \label{sec:implicit_explicit_compared} % Compare explicit, implicit prompting
+\subsubsection{Effect of Prompting Type} \label{sec:implicit_explicit_compared} % Compare explicit, implicit prompting
 
 Figure \ref{fig:f1_mean_per_suite} shows the mean F1 score obtained for each combination of model and suite aggregated on each seed, i.e., the value in each cell is the mean of 5 sets of results, one for each seed used. Each cell also has a background color, where a darker color denotes a larger value. The models, from smallest to largest, are shown on the $y$-axis. The $x$-axis states the  executed suites. They have been grouped by the type of prompting used: explicit prompting suites are on the left and implicit ones on the right. The groups are then ordered by the number of demonstrations provided in the prompts. This layout is selected to make the differences in the performance of models based on the model size and prompt type as clear as possible. It can be seen quite clearly from figure \ref{fig:f1_mean_per_suite} that there is a distinct divide in scores on the $x$-axis: models perform better with explicit prompting than with implicit prompting in nearly all variations of suite parameters.
 
@@ -1100,7 +1100,7 @@ In fact, implicit prompting performs worse than baseline 0-shot prompting in mos
 
 Explicit prompting yielded better results than implicit prompting, even exceeding almost all baseline scores (stated in \ref{sec:overall_effect_of_icl}). Even stronger evidence for the superior performance of explicit prompting is that some type of explicit prompting was able to obtain the highest score in most of the measured metrics. Table \ref{tab:baselines_compared} shows that, in total, a type of explicit prompting (excluding the baselines) obtained the best score in 17 of the total 24 measured metrics.
 
-\subsubsection{Effect of the number and type of demonstrations} \label{sec:effect_icl_types} % Type of demonstrations, continuation to interpretation
+\subsubsection{Effect of the Number and Type of Demonstrations} \label{sec:effect_icl_types} % Type of demonstrations, continuation to interpretation
 
 In figure \ref{fig:f1_mean_per_suite}, focusing on the changes in model F1 scores across suites, it can be said that the severity of the effect that ICL has on a model's prediction performance generally increases as the number of demonstrations increases. That is, if an ICL setup with 1 demonstration impacts the score in some way compared to the baseline, increasing the number of demonstrations to 6 while keeping the rest of the hyperparameters unchanged, the effect on the score is further amplified.
 
@@ -1112,7 +1112,7 @@ While mixed demonstrations have a similar effect on the F1 score, only less pron
 
 In this subsection, the scaling of performance with the use of ICL is compared between models of varying sizes and then establish whether the performance gap is significant between the models based on the results obtained.
 
-\subsubsection{Performance scaling across model sizes}
+\subsubsection{Performance Scaling Across Model Sizes}
 
 Two clear trends are visible in figure \ref{fig:f1_mean_per_suite}: the F1 score for each label increases with model size, and explicit prompting performs better than implicit prompting. The highest F1 scores thus concentrate in the top-left quadrants of the heatmaps, but there are exceptions as well: of the small models, Llama-8B is the only one that achieves mean F1 scores in the 0.9 range for all labels.
 
@@ -1124,7 +1124,7 @@ Interpreting the results in table \ref{tab:best_with_mcnemar}, it can be said th
 
 As implied in the previous paragraph, smaller models experienced larger performance gains in concept prediction performance with ICL compared to larger models. The magnitude of the increases in scores also varies more compared to larger models: the F1 score of Llama-8B increased more than 20\%, resulting in a score exceeding 0.90, Qwen3-8B went from 0.41 to almost 0.68 (65\% increase), and Mistral-7B went from 0.054 to 0.69 (almost 1200\% increase). McNemar's tests implied that all these results are statistically significant.
 
-\subsubsection{Comparison of models' top performances}
+\subsubsection{Comparison of Models' Top Performances}
 
 \input{latex/tables/top10s_v3}
 
@@ -1280,9 +1280,9 @@ In a real-world setting, the method would be integrated into a system that gener
 
 \thesisappendix
 
-\section{Appendix: Context modification} \label{app:mod}
+\section{Appendix: Context Modification} \label{app:mod}
 
-\subsection{Themes, topics and concepts used in modifying context} \label{app:context_values}
+\subsection{Themes, Topics and Concepts Used in Modifying Context} \label{app:context_values}
 
 Themes and topics:
 \begin{itemize}
@@ -1311,7 +1311,7 @@ Concepts and their respective intended order of introduction:
     \item 3: for loops, while loops
 \end{itemize}
 
-\subsection{Prompts and value selection}
+\subsection{Prompts and Value Selection}
 \begin{figure*}[!h]
     \centering
     \begin{subfigure}[b]{0.49\textwidth}
@@ -1339,7 +1339,7 @@ The system prompt shown in figure \ref{fig:augment_system_prompt} contains the t
     \item \$CODE\$: The example solution of the sample was inserted.
 \end{itemize}
 
-\subsection{Result of context modification}
+\subsection{Result of Context Modification}
 \begin{figure*}[!h]
     \centering
     \begin{subfigure}[b]{0.49\textwidth}
@@ -1360,7 +1360,7 @@ The system prompt shown in figure \ref{fig:augment_system_prompt} contains the t
 
 \clearpage
 
-\section{Appendix: Hallucination detection} \label{app:B}
+\section{Appendix: Hallucination Detection} \label{app:B}
 
 %Appendices are not essential in a thesis, and so you must plan the content of your thesis as if it does not contain an appendix. The appendix cannot be used as a dumping ground for text and ideas from an overgrown thesis.
 
