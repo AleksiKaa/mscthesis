@@ -1031,7 +1031,7 @@ In this section, the results obtained from the execution of the experiment are p
 \begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{latex/images/baselines_f1_v2.png}
-    \caption{Means of F1 scores for each predicted label for baseline models}
+    \caption{Means and standard deviations of F1 scores for each predicted label for baseline models}
     \label{fig:f1_mean_per_baseline}
 \end{figure}
 
@@ -1130,7 +1130,7 @@ Contrary to the impression given by Figure~\ref{fig:f1_scatter}, where the best 
 
 Table~\ref{tab:best_with_mcnemar} also shows the weakest performers: both Mistral models and Qwen3-8B. Although the larger of the two Mistral models, Mistral-24B, performs decently in predicting the theme and the topic, it cannot match the top models in concept prediction. The scores only decrease with the other two models: Qwen3-8B performs slightly worse than Mistral-24B in predicting all three labels, and Mistral-7B is clearly the worst of all in predicting the theme and the topic, and narrowly surpasses the lowest score in concept prediction obtained by Qwen3-8B.
 
-To address how the use of ICL affects the performance gap between models, Table~\ref{tab:ordered_models} was constructed. It consists of two subtables, one for model's baselines and one for each model's top scores, showing the top score for each label alongside relative performance of the other models as the difference of the other scores to the top score. The last row in each subtable shows the mean difference from the top score. The table shows that while the highest F1 score for all labels, apart from topic, increased with the use of ICL, the mean difference has decreased more for all labels. The decrease of the means are notable but not major for theme and topic F1 scores ($\approx 0.05$), but major for concept F1 ($\approx 0.2$) and the sum of scores ($\approx 0.25$). The mean delta in concept prediction is reduced to almost of the original and the mean delta of the sum is nearly halved as well. Although the mean delta remains notable even with ICL, it can be said that the use of ICL can enable smaller models, resulting in performance comparable to larger models, proven by the development of F1 scores of Llama-8B.
+To address how the use of ICL affects the performance gap between models, Table~\ref{tab:ordered_models} was constructed. It consists of two subtables, one for model's baselines and one for each model's top scores, showing the top score for each label alongside relative performance of the other models as the difference of the other scores to the top score. The last row in each subtable shows the mean difference from the top score. The table shows that while the highest F1 score for all labels, apart from topic, increased with the use of ICL, the mean difference has decreased more for all labels. The decrease of the means are notable but not major for theme and topic F1 scores ($\approx 0.05$), but major for concept F1 ($\approx 0.2$) and the sum of scores ($\approx 0.25$). The mean delta in concept prediction is reduced to less than half of the original and the mean delta of the sum is nearly halved as well. Although the mean delta remains notable even with ICL, it can be said that the use of ICL can enable smaller models, resulting in performance comparable to larger models, proven by the development of F1 scores of Llama-8B.
 
 \subsection{Handling of Erroneous Outputs}
 
